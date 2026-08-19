@@ -1,0 +1,14 @@
+# Dependencies and generated output
+node_modules/
+website/node_modules/
+website/.astro/
+website/dist/
+.wrangler/
+
+# Environment and local tooling
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log
+

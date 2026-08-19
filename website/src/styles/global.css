@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: oklch(0.24 0.03 55);
+  --color-paper: oklch(0.98 0.02 85);
+  --color-crust: oklch(0.58 0.12 55);
+  --color-wheat: oklch(0.79 0.13 79);
+  --font-sans: "Arial", sans-serif;
+  --font-display: Georgia, serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply min-h-screen bg-paper font-sans text-ink antialiased;
+  }
+
+  ::selection {
+    @apply bg-wheat text-ink;
+  }
+}
+
+@layer components {
+  .site-container {
+    @apply mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "zotov-landing",
+  "private": true,
+  "version": "0.0.0",
+  "license": "Apache-2.0",
+  "packageManager": "bun@1.3.14",
+  "type": "module",
+  "workspaces": [
+    "website"
+  ],
+  "scripts": {
+    "dev": "bun run dev:website",
+    "dev:website": "bun run --cwd website dev",
+    "build": "bun run build:website",
+    "build:website": "bun run --cwd website build",
+    "typecheck": "bun run typecheck:website",
+    "typecheck:website": "bun run --cwd website typecheck",
+    "preview": "bun run --cwd website preview",
+    "cf:dev": "bunx wrangler pages dev website/dist",
+    "cf:deploy": "bunx wrangler pages deploy website/dist",
+    "cf:deploy:preview": "bunx wrangler pages deploy website/dist --branch=preview"
+  },
+  "devDependencies": {
+    "wrangler": "^4.70.0"
+  }
+}

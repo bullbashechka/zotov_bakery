@@ -1,0 +1,23 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import '@/styles/global.css';
+
+const title = 'Пекарня — скоро здесь появится сайт';
+const description = 'Сайт пекарни готовится по макету Figma.';
+const publicWebsiteUrl = import.meta.env.PUBLIC_WEBSITE_URL;
+const canonicalUrl = publicWebsiteUrl
+  ? new URL(Astro.url.pathname, publicWebsiteUrl).toString()
+  : undefined;
+---
+
+<BaseLayout {title} {description} {canonicalUrl}>
+  <main id="main-content" class="site-container grid min-h-screen place-items-center py-16">
+    <section class="max-w-xl text-center">
+      <p class="mb-5 text-sm font-semibold tracking-[0.2em] text-crust uppercase">Zotov Landing</p>
+      <h1 class="font-display text-5xl leading-none text-ink sm:text-7xl">Основа сайта готова</h1>
+      <p class="mt-6 text-lg leading-8 text-ink/75">
+        Здесь появится сайт пекарни по макету Figma: быстрый, адаптивный и готовый к поисковой выдаче.
+      </p>
+    </section>
+  </main>
+</BaseLayout>

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Пекарня">
+  <rect width="64" height="64" rx="14" fill="#fdf7e9"/>
+  <path d="M17 41c0-12 7-21 15-21s15 9 15 21H17Z" fill="#b8662d"/>
+  <path d="M25 23c-2 6-2 12 0 18M32 20c-2 7-2 14 0 21M39 23c-2 6-2 12 0 18" fill="none" stroke="#f8d38a" stroke-linecap="round" stroke-width="3"/>
+</svg>
