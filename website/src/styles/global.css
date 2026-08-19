@@ -1,12 +1,66 @@
 @import "tailwindcss";
 
-@theme {
-  --color-ink: oklch(0.24 0.03 55);
-  --color-paper: oklch(0.98 0.02 85);
-  --color-crust: oklch(0.58 0.12 55);
-  --color-wheat: oklch(0.79 0.13 79);
-  --font-sans: "Arial", sans-serif;
-  --font-display: Georgia, serif;
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/Montserrat-Variable.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/Montserrat-VariableItalic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Vetrino';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/Vetrino-Regular.woff2') format('woff2');
+}
+
+:root {
+  color-scheme: light dark;
+  --page: #f4ece6;
+  --surface: #f9f5f3;
+  --surface-elevated: #ffffff;
+  --text-primary: #3b2627;
+  --text-muted: #6b5252;
+  --accent: #d47212;
+  --accent-muted: #cb721f;
+  --focus: #8a4300;
+  --header-offset: 6rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --page: #241719;
+    --surface: #302022;
+    --surface-elevated: #3b2627;
+    --text-primary: #f9f5f3;
+    --text-muted: #d8c7c0;
+    --accent: #d47212;
+    --accent-muted: #cb721f;
+    --focus: #f0a45e;
+  }
+}
+
+@theme inline {
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-ink: var(--text-primary);
+  --color-muted: var(--text-muted);
+  --color-accent: var(--accent);
+  --color-accent-muted: var(--accent-muted);
+  --color-focus: var(--focus);
+  --font-sans: 'Montserrat', Arial, sans-serif;
+  --font-display: 'Vetrino', Georgia, serif;
 }
 
 @layer base {
@@ -15,21 +69,89 @@
   }
 
   body {
-    @apply min-h-screen bg-paper font-sans text-ink antialiased;
+    @apply min-h-screen bg-page font-sans text-ink antialiased;
+    text-rendering: optimizeLegibility;
   }
 
   ::selection {
-    @apply bg-wheat text-ink;
+    background: var(--accent);
+    color: #ffffff;
+  }
+
+  :target {
+    scroll-margin-top: var(--header-offset);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 3px;
   }
 }
 
 @layer components {
   .site-container {
-    @apply mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10;
+    width: min(calc(100% - 2.5rem), 77.5rem);
+    margin-inline: auto;
+  }
+
+  .skip-link {
+    position: fixed;
+    z-index: 50;
+    top: 1rem;
+    left: 1rem;
+    transform: translateY(-200%);
+    border-radius: 0.5rem;
+    background: var(--text-primary);
+    color: var(--surface-elevated);
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+  }
+
+  .skip-link:focus-visible {
+    transform: translateY(0);
+  }
+
+  .button {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+    border-radius: 0.5rem;
+    padding: 0.625rem 1rem;
+    font-weight: 600;
+    line-height: 1.25;
+    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+  }
+
+  .button--primary {
+    background: var(--text-primary);
+    color: var(--surface-elevated);
+  }
+
+  .button--primary:hover {
+    background: var(--accent-muted);
+  }
+
+  .button--secondary {
+    border-color: currentColor;
+    color: var(--text-primary);
+  }
+
+  .button--secondary:hover {
+    background: var(--surface-elevated);
+  }
+
+  .section-anchor {
+    scroll-margin-top: var(--header-offset);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   *,
   *::before,
   *::after {

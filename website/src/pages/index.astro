@@ -1,23 +1,84 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import { CONTACTS, HOME_SECTION_IDS, getWhatsAppUrl } from '@/lib/site';
 import '@/styles/global.css';
 
-const title = 'Пекарня — скоро здесь появится сайт';
-const description = 'Сайт пекарни готовится по макету Figma.';
+const title = 'ZOTOV bakery — десерты с характером';
+const description = 'ZOTOV bakery — десерты, которые хочется разделить с близкими.';
 const publicWebsiteUrl = import.meta.env.PUBLIC_WEBSITE_URL;
 const canonicalUrl = publicWebsiteUrl
   ? new URL(Astro.url.pathname, publicWebsiteUrl).toString()
   : undefined;
+
+const whatsappUrl = getWhatsAppUrl('general');
+
+const sectionLinks = [
+  { href: `#${HOME_SECTION_IDS.honeyCake}`, label: 'Медовик' },
+  { href: `#${HOME_SECTION_IDS.assortment}`, label: 'Ассортимент' },
+  { href: `#${HOME_SECTION_IDS.whereToBuy}`, label: 'Где купить' },
+  { href: `#${HOME_SECTION_IDS.contacts}`, label: 'Контакты' },
+];
+
+const pageSections = [
+  { id: HOME_SECTION_IDS.advantages, title: 'Почему ZOTOV bakery' },
+  { id: HOME_SECTION_IDS.honeyCake, title: 'Медовик' },
+  { id: HOME_SECTION_IDS.assortment, title: 'Ассортимент' },
+  { id: HOME_SECTION_IDS.whereToBuy, title: 'Где купить' },
+  { id: HOME_SECTION_IDS.history, title: 'Наша история' },
+  { id: HOME_SECTION_IDS.faq, title: 'Вопросы и ответы' },
+  { id: HOME_SECTION_IDS.conversion, title: 'Выберите свой десерт' },
+];
 ---
 
 <BaseLayout {title} {description} {canonicalUrl}>
-  <main id="main-content" class="site-container grid min-h-screen place-items-center py-16">
-    <section class="max-w-xl text-center">
-      <p class="mb-5 text-sm font-semibold tracking-[0.2em] text-crust uppercase">Zotov Landing</p>
-      <h1 class="font-display text-5xl leading-none text-ink sm:text-7xl">Основа сайта готова</h1>
-      <p class="mt-6 text-lg leading-8 text-ink/75">
-        Здесь появится сайт пекарни по макету Figma: быстрый, адаптивный и готовый к поисковой выдаче.
+  <div slot="header" class="site-container flex min-h-24 items-center justify-between gap-5">
+    <a class="font-display text-3xl leading-none" href={`#${HOME_SECTION_IDS.hero}`} aria-label="ZOTOV bakery, на главную">
+      ZOTOV
+    </a>
+    <nav aria-label="Основная навигация" class="hidden items-center gap-6 text-sm font-medium md:flex">
+      {sectionLinks.map((link) => <a href={link.href}>{link.label}</a>)}
+    </nav>
+    <a class="button button--primary" href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+      Написать в WhatsApp
+    </a>
+  </div>
+
+  <section id={HOME_SECTION_IDS.hero} class="section-anchor site-container grid min-h-[34rem] content-center gap-8 py-16 lg:min-h-[42rem]">
+    <p class="text-sm font-semibold tracking-[0.18em] text-muted uppercase">ZOTOV bakery</p>
+    <div class="max-w-3xl">
+      <h1 class="font-display text-5xl leading-[0.92] sm:text-6xl lg:text-8xl">Десерты с характером</h1>
+      <p class="mt-6 max-w-xl text-lg leading-8 text-muted">
+        Основа сайта готова. Следующие блоки будут реализованы по согласованной композиции из макета.
       </p>
+    </div>
+    <div class="flex flex-wrap gap-3">
+      <a class="button button--primary" href={whatsappUrl} target="_blank" rel="noopener noreferrer">Уточнить наличие</a>
+      <a class="button button--secondary" href={`#${HOME_SECTION_IDS.assortment}`}>Посмотреть ассортимент</a>
+    </div>
+  </section>
+
+  {pageSections.map((section) => (
+    <section id={section.id} class="section-anchor border-t border-ink/10 py-12">
+      <div class="site-container">
+        <h2 class="font-display text-3xl">{section.title}</h2>
+      </div>
     </section>
-  </main>
+  ))}
+
+  <section id={HOME_SECTION_IDS.contacts} class="section-anchor border-t border-ink/10 py-12">
+    <div class="site-container">
+      <h2 class="font-display text-3xl">Контакты</h2>
+      <div class="mt-5 flex flex-wrap gap-x-6 gap-y-3 text-muted">
+        <a href={CONTACTS.bakery.href}>{CONTACTS.bakery.display}</a>
+        <a href={CONTACTS.mobile.href}>{CONTACTS.mobile.display}</a>
+      </div>
+    </div>
+  </section>
+
+  <div slot="footer" class="border-t border-ink/10 py-8">
+    <div class="site-container flex flex-wrap items-center justify-between gap-4 text-sm text-muted">
+      <p>© {new Date().getFullYear()} ZOTOV bakery</p>
+      <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">WhatsApp</a>
+    </div>
+  </div>
 </BaseLayout>
