@@ -10,6 +10,14 @@ export const HOME_SECTION_IDS = {
   contacts: 'contacts',
 } as const;
 
+export const HOME_NAV_LINKS = [
+  { href: `#${HOME_SECTION_IDS.assortment}`, label: 'Ассортимент' },
+  { href: `#${HOME_SECTION_IDS.honeyCake}`, label: 'Медовик' },
+  { href: `#${HOME_SECTION_IDS.whereToBuy}`, label: 'Где купить' },
+  { href: `#${HOME_SECTION_IDS.history}`, label: 'История' },
+  { href: `#${HOME_SECTION_IDS.contacts}`, label: 'Контакты' },
+] as const;
+
 export const CONTACTS = {
   bakery: {
     display: '+7 (7152) 42-43-54',

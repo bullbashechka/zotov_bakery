@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import SiteHeader from '@/components/SiteHeader.astro';
 import { CONTACTS, HOME_SECTION_IDS, getWhatsAppUrl } from '@/lib/site';
 import '@/styles/global.css';
 
@@ -11,13 +12,6 @@ const canonicalUrl = publicWebsiteUrl
   : undefined;
 
 const whatsappUrl = getWhatsAppUrl('general');
-
-const sectionLinks = [
-  { href: `#${HOME_SECTION_IDS.honeyCake}`, label: 'Медовик' },
-  { href: `#${HOME_SECTION_IDS.assortment}`, label: 'Ассортимент' },
-  { href: `#${HOME_SECTION_IDS.whereToBuy}`, label: 'Где купить' },
-  { href: `#${HOME_SECTION_IDS.contacts}`, label: 'Контакты' },
-];
 
 const pageSections = [
   { id: HOME_SECTION_IDS.advantages, title: 'Почему ZOTOV bakery' },
@@ -31,17 +25,7 @@ const pageSections = [
 ---
 
 <BaseLayout {title} {description} {canonicalUrl}>
-  <div slot="header" class="site-container flex min-h-24 items-center justify-between gap-5">
-    <a class="font-display text-3xl leading-none" href={`#${HOME_SECTION_IDS.hero}`} aria-label="ZOTOV bakery, на главную">
-      ZOTOV
-    </a>
-    <nav aria-label="Основная навигация" class="hidden items-center gap-6 text-sm font-medium md:flex">
-      {sectionLinks.map((link) => <a href={link.href}>{link.label}</a>)}
-    </nav>
-    <a class="button button--primary" href={whatsappUrl} target="_blank" rel="noopener noreferrer">
-      Написать в WhatsApp
-    </a>
-  </div>
+  <SiteHeader slot="header" />
 
   <section id={HOME_SECTION_IDS.hero} class="section-anchor site-container grid min-h-[34rem] content-center gap-8 py-16 lg:min-h-[42rem]">
     <p class="text-sm font-semibold tracking-[0.18em] text-muted uppercase">ZOTOV bakery</p>
