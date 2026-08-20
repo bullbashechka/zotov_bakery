@@ -538,6 +538,7 @@
     .advantages {
       min-height: 37.1875rem;
       margin-top: -2.75rem;
+      background: transparent;
     }
 
     .advantages__line {
