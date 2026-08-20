@@ -54,6 +54,8 @@
   --accent: #d47212;
   --accent-muted: #cb721f;
   --focus: #8a4300;
+  --advantages-heading-bg: #3b2627;
+  --advantages-heading-text: #ffffff;
   --header-expanded-height: 4.5rem;
   --header-compact-height: 4.5rem;
   --header-offset: 5.25rem;
@@ -76,6 +78,8 @@
     --accent: #d47212;
     --accent-muted: #cb721f;
     --focus: #f0a45e;
+    --advantages-heading-bg: #f9f5f3;
+    --advantages-heading-text: #3b2627;
     --header-shadow: rgb(0 0 0 / 28%);
     --hero-veil: linear-gradient(
       90deg,
@@ -145,8 +149,8 @@
     left: 1rem;
     transform: translateY(-200%);
     border-radius: 0.5rem;
-    background: var(--text-primary);
-    color: var(--surface-elevated);
+    background: var(--advantages-heading-bg);
+    color: var(--advantages-heading-text);
     padding: 0.75rem 1rem;
     font-weight: 600;
   }
@@ -193,6 +197,11 @@
 
   .section-anchor {
     scroll-margin-top: var(--header-offset);
+  }
+
+  .hero-advantages-flow {
+    position: relative;
+    overflow: clip;
   }
 
   .hero {
@@ -323,6 +332,256 @@
     -webkit-mask: url('/hero/scallop.svg') center / 100% 100% no-repeat;
     mask: url('/hero/scallop.svg') center / 100% 100% no-repeat;
     pointer-events: none;
+  }
+
+  .advantages {
+    position: relative;
+    z-index: 3;
+    background: var(--page);
+  }
+
+  .advantages__line {
+    position: absolute;
+    z-index: 1;
+    top: -0.5rem;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 14rem;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .advantages__line img {
+    position: absolute;
+    top: -5rem;
+    left: 50%;
+    display: block;
+    width: 95rem;
+    max-width: none;
+    height: 31.1875rem;
+    transform: translateX(-50%);
+  }
+
+  .advantages__content {
+    position: relative;
+    z-index: 2;
+    padding-block: 4rem 3rem;
+  }
+
+  .advantages__title {
+    display: grid;
+    min-height: 4.25rem;
+    place-items: center;
+    margin-inline: auto;
+    border-radius: 0.25rem;
+    background: var(--text-primary);
+    color: var(--surface-elevated);
+    padding: 0.5rem 1rem;
+    font-family: 'Vetrino', Georgia, serif;
+    font-size: clamp(1.75rem, 8vw, 2rem);
+    font-weight: 400;
+    line-height: 1;
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  .advantages__title-break {
+    display: none;
+  }
+
+  advantages-carousel {
+    display: block;
+    margin-top: 1.875rem;
+  }
+
+  .advantages__track {
+    display: flex;
+    gap: 1rem;
+    width: 100vw;
+    margin-inline: calc(50% - 50vw);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    padding-inline: 1.25rem;
+    scroll-padding-inline: 1.25rem;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .advantages__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .advantages__card {
+    display: grid;
+    flex: 0 0 calc(100vw - 3.75rem);
+    grid-template-rows: minmax(3.75rem, auto) minmax(10.75rem, 1fr) auto;
+    min-height: 25rem;
+    scroll-snap-align: start;
+    border-radius: 0.75rem;
+    background: var(--surface);
+    padding: 1.5rem;
+  }
+
+  .advantages__card-title {
+    max-width: 15rem;
+    font-family: 'Vetrino', Georgia, serif;
+    font-size: 1.875rem;
+    font-weight: 400;
+    line-height: 1;
+  }
+
+  .advantages__art {
+    display: grid;
+    align-items: center;
+    justify-items: center;
+    min-height: 10.75rem;
+    padding-block: 0.625rem;
+  }
+
+  .advantages__art img {
+    display: block;
+    width: min(100%, 13.3125rem);
+    max-height: 10.75rem;
+    object-fit: contain;
+  }
+
+  .advantages__description {
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+
+  .advantages__pagination {
+    display: flex;
+    justify-content: center;
+    gap: 0.25rem;
+    margin-top: 1.25rem;
+  }
+
+  .advantages__dot {
+    display: grid;
+    width: 2.75rem;
+    min-height: 2.75rem;
+    place-items: center;
+    border-radius: 999px;
+    color: var(--text-primary);
+  }
+
+  .advantages__dot span {
+    display: block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 999px;
+    background: currentColor;
+    transition: width 180ms ease, background-color 180ms ease;
+  }
+
+  .advantages__dot[data-active] span {
+    width: 1.5rem;
+    background: var(--accent);
+  }
+
+  @media (min-width: 48rem) {
+    .advantages__line {
+      top: -5.5625rem;
+      height: 31.1875rem;
+    }
+
+    .advantages__line img {
+      top: -6rem;
+    }
+
+    .advantages__content {
+      padding-block: 5rem;
+    }
+
+    .advantages__title {
+      width: min(100%, 42rem);
+      padding-inline: 2rem;
+    }
+
+    .advantages__track {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      width: auto;
+      margin-inline: 0;
+      overflow: visible;
+      padding: 0;
+    }
+
+    .advantages__card {
+      min-width: 0;
+    }
+
+    .advantages__pagination {
+      display: none;
+    }
+  }
+
+  @media (max-width: 47.999rem) {
+    .advantages__title-break {
+      display: block;
+    }
+  }
+
+  @media (min-width: 80rem) {
+    .advantages {
+      min-height: 37.1875rem;
+      margin-top: -2.75rem;
+    }
+
+    .advantages__line {
+      position: absolute;
+      z-index: 1;
+      top: -5.5625rem;
+      left: 50%;
+      display: block;
+      width: max(95rem, 100vw);
+      height: 30.5rem;
+      overflow: visible;
+      transform: translateX(-50%);
+    }
+
+    .advantages__line img {
+      position: static;
+      display: block;
+      width: 100%;
+      height: 100%;
+      transform: none;
+    }
+
+    .advantages__content {
+      padding-top: 6.0625rem;
+      padding-bottom: 0;
+    }
+
+    .advantages__title {
+      width: 60.875rem;
+      min-height: 4.25rem;
+      padding: 0.5rem 2rem;
+      font-size: 3rem;
+    }
+
+    advantages-carousel {
+      margin-top: 1.875rem;
+    }
+
+    .advantages__track {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1.25rem;
+    }
+
+    .advantages__card {
+      grid-template-rows: minmax(3.75rem, auto) minmax(10.75rem, 1fr) auto;
+      min-height: 25rem;
+      padding: 1.875rem;
+    }
+
+    .advantages__card-title {
+      max-width: none;
+    }
   }
 
   .site-header {
@@ -597,6 +856,16 @@
   }
 
   @media (min-width: 48rem) and (max-width: 74.999rem) {
+    .hero__veil {
+      background: linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--page) 94%, transparent) 0%,
+        color-mix(in srgb, var(--page) 88%, transparent) 40%,
+        color-mix(in srgb, var(--page) 62%, transparent) 58%,
+        transparent 78%
+      );
+    }
+
     .hero__actions {
       display: flex;
       width: auto;

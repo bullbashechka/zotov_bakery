@@ -1,0 +1,201 @@
+---
+import { HOME_SECTION_IDS } from '@/lib/site';
+
+const advantages = [
+  {
+    title: 'Семейные рецепты',
+    description: 'Сохраняем семейные рецепты и знакомый вкус любимых десертов.',
+    image: '/advantages/family-recipes.svg',
+  },
+  {
+    title: 'Печём торты и десерты с 1992 года',
+    description: 'Сохраняем проверенные рецептуры и совершенствуем производство более 30 лет.',
+    image: '/advantages/baking-since-1992.svg',
+  },
+  {
+    title: 'Собственное производство',
+    description: 'Контролируем каждый этап – от выбора ингредиентов до упаковки готового десерта.',
+    image: '/advantages/own-production.svg',
+  },
+  {
+    title: 'Натуральные ингредиенты',
+    description: 'Используем натуральный мёд, сливочное масло и другие проверенные ингредиенты.',
+    image: '/advantages/natural-ingredients.svg',
+  },
+] as const;
+---
+
+<section id={HOME_SECTION_IDS.advantages} class="advantages section-anchor" aria-labelledby="advantages-title">
+  <div class="advantages__line" aria-hidden="true">
+    <img src="/advantages/line.svg" width="1440" height="499" alt="" />
+  </div>
+
+  <div class="advantages__content site-container">
+    <h2 id="advantages-title" class="advantages__title">Секрет вкуса,<br class="advantages__title-break" /> знакомого с детства</h2>
+
+    <advantages-carousel class="advantages__carousel" aria-roledescription="carousel" aria-label="Преимущества ZOTOV bakery">
+      <div class="advantages__track" data-advantages-track tabindex="0" aria-label="Свайп-карусель преимуществ">
+        {advantages.map((advantage, index) => (
+          <article class="advantages__card" data-advantages-card aria-label={`Преимущество ${index + 1} из ${advantages.length}`}>
+            <h3 class="advantages__card-title">{advantage.title}</h3>
+            <div class="advantages__art" aria-hidden="true">
+              <img src={advantage.image} width="213" height="171" alt="" loading="lazy" />
+            </div>
+            <p class="advantages__description">{advantage.description}</p>
+          </article>
+        ))}
+      </div>
+
+      <div class="advantages__pagination" aria-label="Выбор преимущества">
+        {advantages.map((advantage, index) => (
+          <button
+            class="advantages__dot"
+            type="button"
+            data-advantages-dot={index}
+            aria-label={`Показать: ${advantage.title}`}
+            aria-current={index === 0 ? 'true' : undefined}
+          >
+            <span aria-hidden="true"></span>
+          </button>
+        ))}
+      </div>
+
+      <p class="sr-only" data-advantages-status role="status" aria-live="polite">Карточка 1 из 4</p>
+    </advantages-carousel>
+  </div>
+</section>
+
+<script>
+  class AdvantagesCarousel extends HTMLElement {
+    private track: HTMLElement | null = null;
+    private cards: HTMLElement[] = [];
+    private dots: HTMLButtonElement[] = [];
+    private status: HTMLElement | null = null;
+    private activeIndex = 0;
+    private announcedIndex = 0;
+    private scrollFrame = 0;
+    private announceTimer = 0;
+    private resizeObserver: ResizeObserver | null = null;
+    private mobileQuery = window.matchMedia('(max-width: 47.999rem)');
+
+    connectedCallback() {
+      this.track = this.querySelector<HTMLElement>('[data-advantages-track]');
+      this.cards = Array.from(this.querySelectorAll<HTMLElement>('[data-advantages-card]'));
+      this.dots = Array.from(this.querySelectorAll<HTMLButtonElement>('[data-advantages-dot]'));
+      this.status = this.querySelector<HTMLElement>('[data-advantages-status]');
+
+      if (!this.track || this.cards.length === 0) return;
+
+      this.track.addEventListener('scroll', this.handleScroll, { passive: true });
+      this.track.addEventListener('keydown', this.handleKeydown);
+      this.dots.forEach((dot) => dot.addEventListener('click', this.handleDotClick));
+      this.mobileQuery.addEventListener('change', this.handleBreakpointChange);
+      this.resizeObserver = new ResizeObserver(this.updateFromScroll);
+      this.resizeObserver.observe(this.track);
+      this.renderActive(false);
+    }
+
+    disconnectedCallback() {
+      this.track?.removeEventListener('scroll', this.handleScroll);
+      this.track?.removeEventListener('keydown', this.handleKeydown);
+      this.dots.forEach((dot) => dot.removeEventListener('click', this.handleDotClick));
+      this.mobileQuery.removeEventListener('change', this.handleBreakpointChange);
+      this.resizeObserver?.disconnect();
+      window.cancelAnimationFrame(this.scrollFrame);
+      window.clearTimeout(this.announceTimer);
+    }
+
+    private isMobile = () => this.mobileQuery.matches;
+
+    private handleScroll = () => {
+      if (!this.isMobile()) return;
+
+      window.cancelAnimationFrame(this.scrollFrame);
+      this.scrollFrame = window.requestAnimationFrame(() => this.updateFromScroll());
+      window.clearTimeout(this.announceTimer);
+      this.announceTimer = window.setTimeout(() => this.renderActive(true), 140);
+    };
+
+    private handleKeydown = (event: KeyboardEvent) => {
+      if (!this.isMobile()) return;
+      if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+
+      event.preventDefault();
+      this.scrollToIndex(this.activeIndex + (event.key === 'ArrowRight' ? 1 : -1));
+    };
+
+    private handleDotClick = (event: Event) => {
+      const target = event.currentTarget as HTMLButtonElement;
+      const index = Number(target.dataset.advantagesDot);
+      this.scrollToIndex(index);
+    };
+
+    private handleBreakpointChange = () => {
+      this.activeIndex = 0;
+      this.track?.scrollTo({ left: 0, behavior: 'auto' });
+      this.renderActive(false);
+    };
+
+    private updateFromScroll = () => {
+      if (!this.track || !this.isMobile()) return;
+
+      const trackCenter = this.track.scrollLeft + this.track.clientWidth / 2;
+      let closestIndex = 0;
+      let closestDistance = Number.POSITIVE_INFINITY;
+
+      this.cards.forEach((card, index) => {
+        const center = card.offsetLeft + card.offsetWidth / 2;
+        const distance = Math.abs(center - trackCenter);
+
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestIndex = index;
+        }
+      });
+
+      if (closestIndex !== this.activeIndex) {
+        this.activeIndex = closestIndex;
+        this.renderActive(false);
+      }
+    };
+
+    private scrollToIndex(index: number) {
+      if (!this.track || !this.isMobile()) return;
+
+      const nextIndex = Math.max(0, Math.min(index, this.cards.length - 1));
+      const card = this.cards[nextIndex];
+      const scrollPadding = Number.parseFloat(getComputedStyle(this.track).scrollPaddingLeft) || 0;
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      this.activeIndex = nextIndex;
+      this.renderActive(false);
+      this.track.scrollTo({
+        left: card.offsetLeft - scrollPadding,
+        behavior: prefersReducedMotion ? 'auto' : 'smooth',
+      });
+      window.clearTimeout(this.announceTimer);
+      this.announceTimer = window.setTimeout(() => this.renderActive(true), prefersReducedMotion ? 0 : 180);
+    }
+
+    private renderActive(announce: boolean) {
+      this.dots.forEach((dot, index) => {
+        const isActive = index === this.activeIndex;
+        dot.toggleAttribute('data-active', isActive);
+        if (isActive) {
+          dot.setAttribute('aria-current', 'true');
+        } else {
+          dot.removeAttribute('aria-current');
+        }
+      });
+
+      if (announce && this.status && this.announcedIndex !== this.activeIndex) {
+        this.status.textContent = `Карточка ${this.activeIndex + 1} из ${this.cards.length}`;
+        this.announcedIndex = this.activeIndex;
+      }
+    }
+  }
+
+  if (!customElements.get('advantages-carousel')) {
+    customElements.define('advantages-carousel', AdvantagesCarousel);
+  }
+</script>

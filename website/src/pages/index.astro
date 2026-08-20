@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import Advantages from '@/components/Advantages.astro';
 import Hero from '@/components/Hero.astro';
 import SiteHeader from '@/components/SiteHeader.astro';
 import { CONTACTS, HOME_SECTION_IDS, getWhatsAppUrl } from '@/lib/site';
@@ -15,7 +16,6 @@ const canonicalUrl = publicWebsiteUrl
 const whatsappUrl = getWhatsAppUrl('general');
 
 const pageSections = [
-  { id: HOME_SECTION_IDS.advantages, title: 'Почему ZOTOV bakery' },
   { id: HOME_SECTION_IDS.honeyCake, title: 'Медовик' },
   { id: HOME_SECTION_IDS.assortment, title: 'Ассортимент' },
   { id: HOME_SECTION_IDS.whereToBuy, title: 'Где купить' },
@@ -28,7 +28,10 @@ const pageSections = [
 <BaseLayout {title} {description} {canonicalUrl}>
   <SiteHeader slot="header" />
 
-  <Hero />
+  <div class="hero-advantages-flow">
+    <Hero />
+    <Advantages />
+  </div>
 
   {pageSections.map((section) => (
     <section id={section.id} class="section-anchor border-t border-ink/10 py-12">
