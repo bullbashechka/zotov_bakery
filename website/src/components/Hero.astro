@@ -1,0 +1,88 @@
+---
+import { Picture } from 'astro:assets';
+import heroCake from '@/assets/hero/hero-cake.png';
+import { HOME_SECTION_IDS } from '@/lib/site';
+---
+
+<section id={HOME_SECTION_IDS.hero} class="hero section-anchor">
+  <div class="hero__media" data-hero-media aria-hidden="true">
+    <Picture
+      src={heroCake}
+      formats={['avif', 'webp']}
+      widths={[320, 480, 768, 1024, 1280, 1440]}
+      sizes="100vw"
+      alt=""
+      priority
+    />
+  </div>
+
+  <div class="hero__veil" aria-hidden="true"></div>
+
+  <div class="hero__inner site-container">
+    <p class="hero__location">
+      <img src="/hero/location-pin.svg" width="14" height="18" alt="" />
+      <span>г. Петропавловск</span>
+    </p>
+
+    <div class="hero__copy">
+      <h1 class="hero__title">
+        Тот самый медовик из&nbsp;детства по&nbsp;семейному рецепту{' '}
+        <span class="hero__desktop-break">от&nbsp;<span class="hero__brand-z">Z</span>OTOV bakery</span>
+      </h1>
+
+      <p class="hero__intro">
+        Кондитерская домашних традиций. Попробуйте наш легендарный медовик, воздушные
+        «Дамские пальчики», тающий торт «Нежность» и другие свежие десерты на каждый день и
+        для особого повода.
+      </p>
+
+      <div class="hero__actions">
+        <a
+          class="button button--primary"
+          href={`#${HOME_SECTION_IDS.whereToBuy}`}
+          data-hero-anchor
+        >
+          Где купить
+        </a>
+        <a
+          class="button button--secondary"
+          href={`#${HOME_SECTION_IDS.assortment}`}
+          data-hero-anchor
+        >
+          Посмотреть ассортимент
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero__scallop" aria-hidden="true"></div>
+</section>
+
+<script is:inline>
+  const media = document.querySelector('[data-hero-media]');
+  const image = media?.querySelector('img');
+
+  if (media && image && !image.complete) {
+    media.dataset.loading = 'true';
+    const reveal = () => delete media.dataset.loading;
+    image.addEventListener('load', reveal, { once: true });
+    image.addEventListener('error', reveal, { once: true });
+  }
+
+  document.querySelectorAll('[data-hero-anchor]').forEach((link) => {
+    link.addEventListener('click', () => {
+      const targetId = link.getAttribute('href');
+      const target = targetId ? document.querySelector(targetId) : null;
+
+      if (!target) return;
+
+      window.setTimeout(() => {
+        const heading = target.querySelector('h1, h2, h3, h4, h5, h6');
+        if (!heading) return;
+
+        heading.setAttribute('tabindex', '-1');
+        heading.focus({ preventScroll: true });
+      }, 0);
+    });
+  });
+</script>

@@ -18,7 +18,7 @@
 
 ```bash
 bun install
-bun run dev
+
 ```
 
 Проверки и сборка:

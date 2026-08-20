@@ -1,3 +1,6 @@
 [install]
 linker = "hoisted"
 
+# Не принимать пакеты, опубликованные менее 21 дня назад.
+# Значение задаётся в секундах и применяется к install/add/update.
+minimumReleaseAge = 1814400

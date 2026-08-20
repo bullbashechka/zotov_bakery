@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/Hero.astro';
 import SiteHeader from '@/components/SiteHeader.astro';
 import { CONTACTS, HOME_SECTION_IDS, getWhatsAppUrl } from '@/lib/site';
 import '@/styles/global.css';
@@ -27,19 +28,7 @@ const pageSections = [
 <BaseLayout {title} {description} {canonicalUrl}>
   <SiteHeader slot="header" />
 
-  <section id={HOME_SECTION_IDS.hero} class="section-anchor site-container grid min-h-[34rem] content-center gap-8 py-16 lg:min-h-[42rem]">
-    <p class="text-sm font-semibold tracking-[0.18em] text-muted uppercase">ZOTOV bakery</p>
-    <div class="max-w-3xl">
-      <h1 class="font-display text-5xl leading-[0.92] sm:text-6xl lg:text-8xl">Десерты с характером</h1>
-      <p class="mt-6 max-w-xl text-lg leading-8 text-muted">
-        Основа сайта готова. Следующие блоки будут реализованы по согласованной композиции из макета.
-      </p>
-    </div>
-    <div class="flex flex-wrap gap-3">
-      <a class="button button--primary" href={whatsappUrl} target="_blank" rel="noopener noreferrer">Уточнить наличие</a>
-      <a class="button button--secondary" href={`#${HOME_SECTION_IDS.assortment}`}>Посмотреть ассортимент</a>
-    </div>
-  </section>
+  <Hero />
 
   {pageSections.map((section) => (
     <section id={section.id} class="section-anchor border-t border-ink/10 py-12">
