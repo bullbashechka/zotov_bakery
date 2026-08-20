@@ -899,6 +899,15 @@
       min-width: 20.1875rem;
       padding-inline: 2.5rem;
     }
+
+    .site-header__logo img {
+      width: 10rem;
+    }
+
+    site-header[data-compact] .site-header__logo img,
+    site-header[data-menu-open='true'] .site-header__logo img {
+      width: 7.5rem;
+    }
   }
 
   @media (min-width: 75rem) {
