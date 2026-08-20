@@ -25,6 +25,14 @@
 }
 
 @font-face {
+  font-family: 'Bergamasco';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/Bergamasco-Regular.woff') format('woff');
+}
+
+@font-face {
   font-family: 'Nunito';
   font-style: normal;
   font-weight: 400;
@@ -296,7 +304,7 @@
   }
 
   .hero__brand-z {
-    font-family: inherit;
+    font-family: 'Bergamasco', 'Vetrino', Georgia, serif;
   }
 
   .hero__intro {
@@ -860,9 +868,9 @@
       background: linear-gradient(
         90deg,
         color-mix(in srgb, var(--page) 94%, transparent) 0%,
-        color-mix(in srgb, var(--page) 88%, transparent) 40%,
-        color-mix(in srgb, var(--page) 62%, transparent) 58%,
-        transparent 78%
+        color-mix(in srgb, var(--page) 88%, transparent) 30%,
+        color-mix(in srgb, var(--page) 58%, transparent) 46%,
+        transparent 64%
       );
     }
 
@@ -978,9 +986,9 @@
 
     .hero__scallop {
       top: 42.75rem;
-      right: -1.5625rem;
+      right: -0.9375rem;
       bottom: auto;
-      left: -1.5625rem;
+      left: -2.1875rem;
     }
 
     site-header {
