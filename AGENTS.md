@@ -30,6 +30,8 @@ bun run build     # create website/dist
 bun run preview   # serve the production build
 ```
 
+After local edits and verification, stop any dev or preview process that was started and release its port.
+
 `bun run cf:dev` serves the build through Cloudflare Pages. Build before using a deploy command; never deploy without explicit approval.
 
 ## Coding Style & Naming Conventions

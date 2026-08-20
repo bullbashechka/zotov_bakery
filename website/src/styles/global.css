@@ -65,7 +65,7 @@
   --advantages-heading-bg: #3b2627;
   --advantages-heading-text: #ffffff;
   --header-expanded-height: 4.5rem;
-  --header-compact-height: 4.5rem;
+  --header-compact-height: 3.75rem;
   --header-offset: 5.25rem;
   --header-shadow: rgb(59 38 39 / 8%);
   --hero-veil: linear-gradient(
@@ -659,6 +659,12 @@
   .site-header__logo img {
     width: 7.5rem;
     height: auto;
+    transition: width 180ms ease;
+  }
+
+  site-header[data-compact] .site-header__logo img,
+  site-header[data-menu-open='true'] .site-header__logo img {
+    width: 6rem;
   }
 
   .site-header__desktop-nav,
@@ -987,9 +993,18 @@
 
     .hero__scallop {
       top: 42.75rem;
-      right: -0.9375rem;
+      right: 0;
       bottom: auto;
-      left: -2.1875rem;
+      left: 0;
+      width: auto;
+      -webkit-mask-image: url('/hero/scallop-tile.svg');
+      -webkit-mask-position: center;
+      -webkit-mask-size: 3.6rem 4.0625rem;
+      -webkit-mask-repeat: repeat-x;
+      mask-image: url('/hero/scallop-tile.svg');
+      mask-position: center;
+      mask-size: 3.6rem 4.0625rem;
+      mask-repeat: repeat-x;
     }
 
     site-header {
