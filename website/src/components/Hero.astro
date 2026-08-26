@@ -10,13 +10,11 @@ import { HOME_SECTION_IDS } from '@/lib/site';
       src={heroCake}
       formats={['avif', 'webp']}
       widths={[320, 480, 768, 1024, 1280, 1440]}
-      sizes="100vw"
+      sizes="(max-width: 639px) 32rem, (max-width: 899px) 56rem, (max-width: 1199px) 74rem, 90rem"
       alt=""
       priority
     />
   </div>
-
-  <div class="hero__veil" aria-hidden="true"></div>
 
   <div class="hero__inner site-container">
     <p class="hero__location">
@@ -65,8 +63,16 @@ import { HOME_SECTION_IDS } from '@/lib/site';
   if (media && image && !image.complete) {
     media.dataset.loading = 'true';
     const reveal = () => delete media.dataset.loading;
+    const fallback = () => {
+      delete media.dataset.loading;
+      media.dataset.error = 'true';
+      image.hidden = true;
+    };
     image.addEventListener('load', reveal, { once: true });
-    image.addEventListener('error', reveal, { once: true });
+    image.addEventListener('error', fallback, { once: true });
+  } else if (media && image && image.complete && image.naturalWidth === 0) {
+    media.dataset.error = 'true';
+    image.hidden = true;
   }
 
   document.querySelectorAll('[data-hero-anchor]').forEach((link) => {

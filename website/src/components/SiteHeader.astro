@@ -8,10 +8,7 @@ const desktopRightLinks = HOME_NAV_LINKS.slice(3);
 <site-header id="site-top" class="site-header-control" data-menu-open="false">
   <div class="site-header__content site-container">
     <a class="site-header__logo" href="#site-top" aria-label="ZOTOV bakery, в начало страницы">
-      <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="/zotov-logo-dark.svg" />
-        <img src="/zotov-logo.svg" width="331" height="127" alt="ZOTOV bakery" />
-      </picture>
+      <img src="/zotov-logo.svg" width="331" height="127" alt="ZOTOV bakery" />
     </a>
 
     <nav class="site-header__desktop-nav" aria-label="Основная навигация">
@@ -24,10 +21,9 @@ const desktopRightLinks = HOME_NAV_LINKS.slice(3);
           {desktopRightLinks.map((link) => <a href={link.href}>{link.label}</a>)}
         </div>
         <a class="site-header__phone" href={CONTACTS.mobile.href}>
-          <picture class="site-header__phone-icon" aria-hidden="true">
-            <source media="(prefers-color-scheme: dark)" srcset="/phone-icon-dark.svg" />
+          <span class="site-header__phone-icon" aria-hidden="true">
             <img src="/phone-icon.svg" width="20" height="20" alt="" />
-          </picture>
+          </span>
           <span>{CONTACTS.mobile.display}</span>
         </a>
       </div>
@@ -55,10 +51,9 @@ const desktopRightLinks = HOME_NAV_LINKS.slice(3);
         {HOME_NAV_LINKS.map((link) => <a href={link.href}>{link.label}</a>)}
       </nav>
       <a class="site-header__mobile-phone" href={CONTACTS.mobile.href}>
-        <picture class="site-header__phone-icon" aria-hidden="true">
-          <source media="(prefers-color-scheme: dark)" srcset="/phone-icon-dark.svg" />
+        <span class="site-header__phone-icon" aria-hidden="true">
           <img src="/phone-icon.svg" width="20" height="20" alt="" />
-        </picture>
+        </span>
         <span>{CONTACTS.mobile.display}</span>
       </a>
     </div>

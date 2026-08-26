@@ -14,11 +14,11 @@ const { title, description, canonicalUrl } = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
-    <meta name="theme-color" content="#f4ece6" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#241719" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f4ece6" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preload" href="/fonts/Montserrat-Variable.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/Vetrino-Regular.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/Bergamasco-Regular.woff" as="font" type="font/woff" crossorigin />
     <title>{title}</title>
     <meta name="description" content={description} />
     {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
