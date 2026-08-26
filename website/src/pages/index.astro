@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Advantages from '@/components/Advantages.astro';
+import Faq from '@/components/Faq.astro';
 import Hero from '@/components/Hero.astro';
 import SiteHeader from '@/components/SiteHeader.astro';
 import { CONTACTS, HOME_SECTION_IDS, getWhatsAppUrl } from '@/lib/site';
@@ -34,11 +35,15 @@ const pageSections = [
   </div>
 
   {pageSections.map((section) => (
-    <section id={section.id} class="section-anchor border-t border-ink/10 py-12">
-      <div class="site-container">
-        <h2 class="font-display text-3xl">{section.title}</h2>
-      </div>
-    </section>
+    section.id === HOME_SECTION_IDS.faq ? (
+      <Faq />
+    ) : (
+      <section id={section.id} class="section-anchor border-t border-ink/10 py-12">
+        <div class="site-container">
+          <h2 class="font-display text-3xl">{section.title}</h2>
+        </div>
+      </section>
+    )
   ))}
 
   <section id={HOME_SECTION_IDS.contacts} class="section-anchor border-t border-ink/10 py-12">
