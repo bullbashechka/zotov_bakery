@@ -1,0 +1,37 @@
+---
+import { getWhatsAppUrl } from '@/lib/site';
+
+const whatsappUrl = getWhatsAppUrl('general');
+---
+
+<div class="site-footer__surface">
+  <div class="site-footer__content">
+    <p>© {new Date().getFullYear()} ZOTOV bakery</p>
+    <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">WhatsApp</a>
+  </div>
+</div>
+
+<style>
+  .site-footer__surface {
+    border-top: 1px solid color-mix(in srgb, var(--text-primary) 10%, transparent);
+    padding-block: 2rem;
+  }
+
+  .site-footer__content {
+    display: flex;
+    width: min(calc(100% - 2.5rem), 77.5rem);
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-inline: auto;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+
+  a:hover {
+    color: var(--text-primary);
+    text-decoration-line: underline;
+    text-underline-offset: 0.2em;
+  }
+</style>

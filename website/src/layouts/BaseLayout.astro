@@ -32,7 +32,7 @@ const { title, description, canonicalUrl } = Astro.props;
     <a class="skip-link" href="#main-content">
       Перейти к содержанию
     </a>
-    <header class="site-header">
+    <header class="site-header-shell">
       <slot name="header" />
     </header>
     <main id="main-content">
@@ -43,3 +43,38 @@ const { title, description, canonicalUrl } = Astro.props;
     </footer>
   </body>
 </html>
+
+<style>
+  .skip-link {
+    position: fixed;
+    z-index: 50;
+    top: 1rem;
+    left: 1rem;
+    transform: translateY(-200%);
+    border-radius: 0.5rem;
+    background: var(--advantages-heading-bg);
+    color: var(--advantages-heading-text);
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+  }
+
+  .skip-link:focus-visible {
+    transform: translateY(0);
+  }
+
+  .site-header-shell {
+    position: relative;
+    height: var(--header-expanded-height);
+    pointer-events: none;
+  }
+
+  @media (min-width: 75rem) {
+    .site-header-shell {
+      position: absolute;
+      z-index: 40;
+      top: 0;
+      right: 0;
+      left: 0;
+    }
+  }
+</style>

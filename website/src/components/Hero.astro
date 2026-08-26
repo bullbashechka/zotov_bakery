@@ -1,22 +1,23 @@
 ---
 import { Picture } from 'astro:assets';
 import heroCake from '@/assets/hero/hero-cake.png';
+import ActionLink from '@/components/ActionLink.astro';
 import { HOME_SECTION_IDS } from '@/lib/site';
 ---
 
-<section id={HOME_SECTION_IDS.hero} class="hero section-anchor">
+<section id={HOME_SECTION_IDS.hero} class="hero">
   <div class="hero__media" data-hero-media aria-hidden="true">
     <Picture
       src={heroCake}
       formats={['avif', 'webp']}
       widths={[320, 480, 768, 1024, 1280, 1440]}
-      sizes="(max-width: 639px) 32rem, (max-width: 899px) 56rem, (max-width: 1199px) 74rem, 90rem"
+      sizes="(max-width: 639px) min(179.5vw, 44rem), (max-width: 899px) 56rem, (max-width: 1199px) 74rem, min(100vw, 100rem)"
       alt=""
       priority
     />
   </div>
 
-  <div class="hero__inner site-container">
+  <div class="hero__inner">
     <p class="hero__location">
       <img src="/hero/location-pin.svg" width="14" height="18" alt="" />
       <span>г. Петропавловск</span>
@@ -35,20 +36,12 @@ import { HOME_SECTION_IDS } from '@/lib/site';
       </p>
 
       <div class="hero__actions">
-        <a
-          class="button button--primary"
-          href={`#${HOME_SECTION_IDS.whereToBuy}`}
-          data-hero-anchor
-        >
+        <ActionLink variant="primary" href={`#${HOME_SECTION_IDS.whereToBuy}`}>
           Где купить
-        </a>
-        <a
-          class="button button--secondary"
-          href={`#${HOME_SECTION_IDS.assortment}`}
-          data-hero-anchor
-        >
+        </ActionLink>
+        <ActionLink variant="secondary" href={`#${HOME_SECTION_IDS.assortment}`}>
           Посмотреть ассортимент
-        </a>
+        </ActionLink>
       </div>
     </div>
   </div>
@@ -75,7 +68,7 @@ import { HOME_SECTION_IDS } from '@/lib/site';
     image.hidden = true;
   }
 
-  document.querySelectorAll('[data-hero-anchor]').forEach((link) => {
+  document.querySelectorAll('.hero__actions a').forEach((link) => {
     link.addEventListener('click', () => {
       const targetId = link.getAttribute('href');
       const target = targetId ? document.querySelector(targetId) : null;
@@ -92,3 +85,351 @@ import { HOME_SECTION_IDS } from '@/lib/site';
     });
   });
 </script>
+
+<style>
+  .hero {
+    position: relative;
+    z-index: 4;
+    min-height: 38.5rem;
+    overflow: hidden;
+    isolation: isolate;
+    background: var(--hero-background);
+  }
+
+  .hero__media {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    overflow: hidden;
+    background: var(--hero-background) url('/hero/hero-cake-placeholder.jpg') 59% 100% / auto 100% no-repeat;
+  }
+
+  .hero__media picture,
+  .hero__media img {
+    display: block;
+    width: auto;
+    max-width: none;
+    height: 100%;
+  }
+
+  .hero__media img {
+    position: absolute;
+    right: calc(50% - 22.5rem);
+    bottom: 0;
+    transform: translateX(50%);
+    object-fit: cover;
+    object-position: center bottom;
+    opacity: 1;
+    transition: opacity 240ms ease;
+  }
+
+  .hero__media[data-loading='true'] img {
+    opacity: 0;
+  }
+
+  .hero__media[data-error='true'] {
+    background: var(--hero-background);
+  }
+
+  .hero__inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    width: min(calc(100% - 2rem), 77.5rem);
+    min-height: 38.5rem;
+    flex-direction: column;
+    margin-inline: auto;
+    padding-top: 0;
+    padding-bottom: 14.6875rem;
+  }
+
+  .hero__location {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    align-self: flex-end;
+    justify-content: center;
+    gap: 0.875rem;
+    border-radius: 0.5rem;
+    background: var(--text-primary);
+    color: var(--surface-elevated);
+    padding: 0.625rem 1.25rem;
+    font-family: 'Vetrino', Georgia, serif;
+    font-size: 0.9375rem;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .hero__location img {
+    display: block;
+    flex: none;
+  }
+
+  .hero__copy {
+    margin-top: 1.1875rem;
+  }
+
+  .hero__title {
+    max-width: 23.1875rem;
+    font-family: 'Vetrino', Georgia, serif;
+    font-size: 1.75rem;
+    font-weight: 400;
+    line-height: 1.06;
+    letter-spacing: 0.01em;
+    text-wrap: pretty;
+  }
+
+  .hero__desktop-break {
+    display: inline;
+  }
+
+  .hero__brand-z {
+    font-family: 'Bergamasco', 'Vetrino', Georgia, serif;
+  }
+
+  .hero__intro {
+    max-width: 20.6875rem;
+    margin-top: 0.625rem;
+    font-family: 'Nunito', Arial, sans-serif;
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  .hero__actions {
+    display: grid;
+    width: fit-content;
+    gap: 0.625rem;
+    margin-top: 1.25rem;
+  }
+
+  .hero__scallop {
+    position: absolute;
+    z-index: 2;
+    right: 0;
+    bottom: -0.0625rem;
+    left: 0;
+    height: 1.15625rem;
+    background: var(--page);
+    -webkit-mask: url('/hero/scallop-tile.svg') center top / 2.0625rem 2.3125rem repeat-x;
+    mask: url('/hero/scallop-tile.svg') center top / 2.0625rem 2.3125rem repeat-x;
+    pointer-events: none;
+  }
+
+  @media (max-width: 39.999rem) {
+    .hero__media {
+      background: var(--hero-background);
+    }
+
+    .hero__media img {
+      right: auto;
+      bottom: 0.75rem;
+      left: 50%;
+      width: min(179.5vw, 43.75rem);
+      height: auto;
+      transform: translateX(-76.5%);
+    }
+  }
+
+  @media (min-width: 40rem) and (max-width: 56.249rem) {
+    .hero,
+    .hero__inner {
+      min-height: 31rem;
+    }
+
+    .hero__media img {
+      right: -8.375rem;
+      bottom: 0;
+      height: 100%;
+      transform: none;
+    }
+
+    .hero__inner {
+      width: calc(100% - 5rem);
+      padding-bottom: 0;
+    }
+
+    .hero__location {
+      position: absolute;
+      top: 0;
+      right: clamp(2.5rem, 13vw, 6.25rem);
+      min-height: 2.75rem;
+      padding: 0.75rem 1.625rem;
+      font-size: 1.25rem;
+    }
+
+    .hero__copy {
+      width: 100%;
+      max-width: 37.625rem;
+      margin-top: 4.375rem;
+    }
+
+    .hero__title {
+      max-width: 37.1875rem;
+      font-size: 2.25rem;
+      line-height: 1.05;
+      text-wrap: balance;
+    }
+
+    .hero__desktop-break {
+      display: block;
+    }
+
+    .hero__intro {
+      max-width: 24.75rem;
+      margin-top: 0.9375rem;
+    }
+
+    .hero__actions {
+      gap: 0.5625rem;
+      margin-top: 1.25rem;
+    }
+  }
+
+  @media (min-width: 56.25rem) and (max-width: 74.999rem) {
+    .hero,
+    .hero__inner {
+      min-height: 30.3125rem;
+    }
+
+    .hero__media img {
+      right: -6.5625rem;
+      bottom: -2.375rem;
+      height: 37.5rem;
+      transform: none;
+    }
+
+    .hero__inner {
+      width: calc(100% - 8.75rem);
+      max-width: none;
+      padding-bottom: 0;
+    }
+
+    .hero__location {
+      position: absolute;
+      top: 0;
+      right: 1.875rem;
+      min-height: 2.75rem;
+      padding: 0.75rem 1.625rem;
+      font-size: 1.25rem;
+    }
+
+    .hero__copy {
+      width: 100%;
+      max-width: 50.4375rem;
+      margin-top: 6.5rem;
+    }
+
+    .hero__title {
+      max-width: 50.4375rem;
+      font-size: 3rem;
+      line-height: 1;
+      text-wrap: balance;
+    }
+
+    .hero__desktop-break {
+      display: block;
+    }
+
+    .hero__intro {
+      max-width: 32.5625rem;
+      margin-top: 0.9375rem;
+    }
+
+    .hero__actions {
+      display: flex;
+      gap: 0.5625rem;
+      margin-top: 2.5rem;
+    }
+
+    .hero__scallop {
+      height: 1.44625rem;
+      -webkit-mask-size: 2.5625rem 2.8925rem;
+      mask-size: 2.5625rem 2.8925rem;
+    }
+  }
+
+  @media (min-width: 75rem) {
+    .hero {
+      min-height: calc(35.1875rem + var(--header-expanded-height));
+      background:
+        linear-gradient(to bottom, #e0d9d0 0%, #e2dcd5 50%, #ded8d2 100%) left / 50% 100%
+          no-repeat,
+        linear-gradient(to bottom, #f0e9e3 0%, #e7e0d8 50%, #e6e0db 100%) right / 50% 100%
+          no-repeat;
+    }
+
+    .hero__media {
+      background: transparent url('/hero/hero-cake-placeholder.jpg') center bottom / auto 100%
+        no-repeat;
+    }
+
+    .hero__media[data-error='true'] {
+      background: transparent;
+    }
+
+    .hero__inner {
+      display: block;
+      min-height: calc(35.1875rem + var(--header-expanded-height));
+      padding-bottom: 0;
+    }
+
+    .hero__media img {
+      right: 50%;
+      bottom: 0;
+      width: clamp(90.3125rem, 100vw, 100rem);
+      height: auto;
+      transform: translateX(50%);
+    }
+
+    .hero__location {
+      position: absolute;
+      top: calc(1.625rem + var(--header-expanded-height));
+      right: 0;
+      width: 16.5rem;
+      min-height: 2.875rem;
+      justify-content: center;
+      gap: 1.0625rem;
+      padding: 0.75rem 1.625rem;
+      font-size: 1.25rem;
+    }
+
+    .hero__copy {
+      position: absolute;
+      top: calc(6.1875rem + var(--header-expanded-height));
+      left: 0;
+      margin-top: 0;
+    }
+
+    .hero__title {
+      width: 57.8125rem;
+      max-width: none;
+      font-size: 3.4375rem;
+      line-height: 1;
+      text-wrap: initial;
+    }
+
+    .hero__desktop-break {
+      display: block;
+    }
+
+    .hero__intro {
+      width: 42.8125rem;
+      max-width: none;
+      margin-top: 1.0625rem;
+      line-height: 1;
+    }
+
+    .hero__actions {
+      display: flex;
+      width: fit-content;
+      gap: 0.5625rem;
+      margin-top: 1.5rem;
+    }
+
+    .hero__scallop {
+      height: 2.03125rem;
+      -webkit-mask-size: 3.6rem 4.0625rem;
+      mask-size: 3.6rem 4.0625rem;
+    }
+  }
+</style>

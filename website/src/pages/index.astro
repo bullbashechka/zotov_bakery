@@ -1,10 +1,14 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Advantages from '@/components/Advantages.astro';
+import ContactSection from '@/components/ContactSection.astro';
 import Faq from '@/components/Faq.astro';
 import Hero from '@/components/Hero.astro';
+import HeroAdvantagesFlow from '@/components/HeroAdvantagesFlow.astro';
+import PlaceholderSection from '@/components/PlaceholderSection.astro';
 import SiteHeader from '@/components/SiteHeader.astro';
-import { CONTACTS, HOME_SECTION_IDS, getWhatsAppUrl } from '@/lib/site';
+import SiteFooter from '@/components/SiteFooter.astro';
+import { HOME_SECTION_IDS } from '@/lib/site';
 import '@/styles/global.css';
 
 const title = 'ZOTOV bakery — десерты с характером';
@@ -13,8 +17,6 @@ const publicWebsiteUrl = import.meta.env.PUBLIC_WEBSITE_URL;
 const canonicalUrl = publicWebsiteUrl
   ? new URL(Astro.url.pathname, publicWebsiteUrl).toString()
   : undefined;
-
-const whatsappUrl = getWhatsAppUrl('general');
 
 const pageSections = [
   { id: HOME_SECTION_IDS.honeyCake, title: 'Медовик' },
@@ -29,37 +31,20 @@ const pageSections = [
 <BaseLayout {title} {description} {canonicalUrl}>
   <SiteHeader slot="header" />
 
-  <div class="hero-advantages-flow">
+  <HeroAdvantagesFlow>
     <Hero />
     <Advantages />
-  </div>
+  </HeroAdvantagesFlow>
 
   {pageSections.map((section) => (
     section.id === HOME_SECTION_IDS.faq ? (
       <Faq />
     ) : (
-      <section id={section.id} class="section-anchor border-t border-ink/10 py-12">
-        <div class="site-container">
-          <h2 class="font-display text-3xl">{section.title}</h2>
-        </div>
-      </section>
+      <PlaceholderSection id={section.id} title={section.title} />
     )
   ))}
 
-  <section id={HOME_SECTION_IDS.contacts} class="section-anchor border-t border-ink/10 py-12">
-    <div class="site-container">
-      <h2 class="font-display text-3xl">Контакты</h2>
-      <div class="mt-5 flex flex-wrap gap-x-6 gap-y-3 text-muted">
-        <a href={CONTACTS.bakery.href}>{CONTACTS.bakery.display}</a>
-        <a href={CONTACTS.mobile.href}>{CONTACTS.mobile.display}</a>
-      </div>
-    </div>
-  </section>
+  <ContactSection />
 
-  <div slot="footer" class="border-t border-ink/10 py-8">
-    <div class="site-container flex flex-wrap items-center justify-between gap-4 text-sm text-muted">
-      <p>© {new Date().getFullYear()} ZOTOV bakery</p>
-      <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">WhatsApp</a>
-    </div>
-  </div>
+  <SiteFooter slot="footer" />
 </BaseLayout>

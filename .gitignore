@@ -4,6 +4,7 @@ website/node_modules/
 website/.astro/
 website/dist/
 .wrangler/
+artifacts/
 
 # Environment and local tooling
 .env
@@ -11,4 +12,3 @@ website/dist/
 !.env.example
 .DS_Store
 *.log
-

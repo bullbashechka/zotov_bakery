@@ -1,0 +1,71 @@
+---
+interface Props {
+  href: string;
+  variant: 'primary' | 'secondary';
+}
+
+const { href, variant } = Astro.props;
+---
+
+<a class="action-link" data-variant={variant} {href}>
+  <slot />
+</a>
+
+<style>
+  .action-link {
+    display: inline-flex;
+    width: fit-content;
+    max-width: 100%;
+    min-height: 2.75rem;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+    border-radius: 0.5rem;
+    padding: 0.625rem 1.875rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.25;
+    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease,
+      transform 120ms ease;
+  }
+
+  .action-link[data-variant='primary'] {
+    min-width: 8.625rem;
+    background: var(--text-primary);
+    color: var(--surface-elevated);
+  }
+
+  .action-link[data-variant='primary']:hover {
+    background: var(--accent-muted);
+  }
+
+  .action-link[data-variant='secondary'] {
+    min-width: 15.5rem;
+    border-color: currentColor;
+    color: var(--text-primary);
+  }
+
+  .action-link[data-variant='secondary']:hover {
+    background: var(--surface-elevated);
+  }
+
+  .action-link:active {
+    transform: translateY(1px);
+  }
+
+  @media (min-width: 40rem) {
+    .action-link {
+      min-height: 3.125rem;
+      padding-inline: 2.5rem;
+      font-size: 1rem;
+    }
+
+    .action-link[data-variant='primary'] {
+      min-width: 10.625rem;
+    }
+
+    .action-link[data-variant='secondary'] {
+      min-width: 20.1875rem;
+    }
+  }
+</style>
