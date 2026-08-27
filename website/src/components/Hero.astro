@@ -232,6 +232,12 @@ import { HOME_SECTION_IDS } from '@/lib/site';
     pointer-events: none;
   }
 
+  @media (max-width: 74.999rem) {
+    .hero {
+      padding-top: var(--header-expanded-height);
+    }
+  }
+
   @media (max-width: 39.999rem) {
     .hero__cake::before {
       bottom: 5%;
@@ -379,7 +385,7 @@ import { HOME_SECTION_IDS } from '@/lib/site';
       bottom: 1.5rem;
       left: auto;
       width: clamp(37rem, 44vw, 43rem);
-      transform: none;
+      transform: translateX(clamp(6.25rem, calc(38vw - 30.4rem), 20rem));
     }
 
     .hero__cake::before {

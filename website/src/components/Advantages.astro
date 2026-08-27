@@ -28,8 +28,9 @@ const advantages = [
 <section id={HOME_SECTION_IDS.advantages} class="advantages" aria-labelledby="advantages-title">
   <div class="advantages__desktop-line" aria-hidden="true">
     <picture>
-      <source media="(max-width: 79.999rem)" srcset="/advantages/line-tablet.svg" />
-      <img src="/advantages/line.svg" width="1440" height="499" alt="" />
+      <source media="(max-width: 55.999rem)" srcset="/advantages/line-tablet.svg" />
+      <source media="(max-width: 79.999rem)" srcset="/advantages/line-laptop.svg" />
+      <img src="/advantages/line.svg" width="1440" height="366" alt="" />
     </picture>
   </div>
 
@@ -200,7 +201,7 @@ const advantages = [
   .advantages {
     position: relative;
     z-index: 3;
-    min-height: 97.3125rem;
+    min-height: 102.1875rem;
     overflow: hidden;
     background: var(--page);
   }
@@ -352,21 +353,25 @@ const advantages = [
       left: 0;
       display: block;
       width: 100%;
-      height: 17.25rem;
-      overflow: hidden;
+      height: 12.9375rem;
+      overflow: clip;
       pointer-events: none;
     }
 
-    .advantages__desktop-line picture,
-    .advantages__desktop-line img {
+    .advantages__desktop-line picture {
       display: block;
       width: 100%;
       height: 100%;
+      overflow: clip;
     }
 
     .advantages__desktop-line img {
+      display: block;
+      width: max(48rem, 100%);
+      height: auto;
       max-width: none;
-      object-fit: cover;
+      margin-left: 50%;
+      transform: translateX(-50%);
     }
 
     .advantages__content {
@@ -436,6 +441,11 @@ const advantages = [
 
     .advantages__desktop-line {
       top: -5.3125rem;
+      height: 16.875rem;
+    }
+
+    .advantages__desktop-line img {
+      width: max(64rem, 100%);
     }
 
     .advantages__content {
@@ -489,28 +499,6 @@ const advantages = [
     }
   }
 
-  @media (min-width: 56.25rem) and (max-width: 74.999rem) {
-    .advantages {
-      z-index: 5;
-      overflow: visible;
-    }
-
-    .advantages__desktop-line {
-      clip-path: inset(3.92875rem 0 0);
-    }
-  }
-
-  @media (min-width: 75rem) and (max-width: 79.999rem) {
-    .advantages {
-      z-index: 5;
-      overflow: visible;
-    }
-
-    .advantages__desktop-line {
-      clip-path: inset(3.34375rem 0 0);
-    }
-  }
-
   @media (min-width: 80rem) {
     .advantages {
       z-index: 5;
@@ -522,15 +510,14 @@ const advantages = [
 
     .advantages__desktop-line {
       top: -5.5625rem;
-      left: 50%;
-      width: max(95rem, 100vw);
-      height: 30.5rem;
-      overflow: visible;
-      transform: translateX(-50%);
+      left: 0;
+      width: 100%;
+      height: 22.875rem;
+      overflow: clip;
     }
 
     .advantages__desktop-line img {
-      object-fit: fill;
+      width: max(90rem, 100%);
     }
 
     .advantages__content {
