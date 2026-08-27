@@ -127,19 +127,27 @@ const advantages = [
     private updateFromScroll = () => {
       if (!this.track || !this.isScrollable()) return;
 
-      const trackCenter = this.track.scrollLeft + this.track.clientWidth / 2;
       let closestIndex = 0;
       let closestDistance = Number.POSITIVE_INFINITY;
+      const maxScrollLeft = Math.max(0, this.track.scrollWidth - this.track.clientWidth);
 
-      this.cards.forEach((card, index) => {
-        const center = card.offsetLeft + card.offsetWidth / 2;
-        const distance = Math.abs(center - trackCenter);
+      if (this.track.scrollLeft <= 1) {
+        closestIndex = 0;
+      } else if (this.track.scrollLeft >= maxScrollLeft - 1) {
+        closestIndex = this.cards.length - 1;
+      } else {
+        const scrollPadding = Number.parseFloat(getComputedStyle(this.track).scrollPaddingLeft) || 0;
+        const snapPosition = this.track.scrollLeft + scrollPadding;
 
-        if (distance < closestDistance) {
-          closestDistance = distance;
-          closestIndex = index;
-        }
-      });
+        this.cards.forEach((card, index) => {
+          const distance = Math.abs(card.offsetLeft - snapPosition);
+
+          if (distance < closestDistance) {
+            closestDistance = distance;
+            closestIndex = index;
+          }
+        });
+      }
 
       if (closestIndex !== this.activeIndex) {
         this.activeIndex = closestIndex;
@@ -376,7 +384,7 @@ const advantages = [
       margin-inline: auto;
       background: var(--text-primary);
       padding: 0.4375rem 1.5rem;
-      font-size: 2.25rem;
+      font-size: 1.875rem;
       white-space: nowrap;
     }
 
@@ -397,10 +405,11 @@ const advantages = [
     .advantages__track {
       display: flex;
       gap: 1.25rem;
-      width: calc(100% - 2.5rem);
-      margin-left: 2.5rem;
+      width: 100%;
+      margin-left: 0;
       overflow-x: auto;
       overscroll-behavior-x: contain;
+      padding-inline: 2.5rem;
       scroll-padding-inline: 2.5rem;
       scroll-snap-type: x mandatory;
       scrollbar-width: none;
@@ -444,8 +453,9 @@ const advantages = [
     }
 
     .advantages__track {
-      width: calc(100% - 6.25rem);
-      margin-left: 4.375rem;
+      width: 100%;
+      margin-left: 0;
+      padding-inline: 4.375rem;
       scroll-padding-inline: 4.375rem;
     }
 
@@ -479,8 +489,31 @@ const advantages = [
     }
   }
 
+  @media (min-width: 56.25rem) and (max-width: 74.999rem) {
+    .advantages {
+      z-index: 5;
+      overflow: visible;
+    }
+
+    .advantages__desktop-line {
+      clip-path: inset(3.92875rem 0 0);
+    }
+  }
+
+  @media (min-width: 75rem) and (max-width: 79.999rem) {
+    .advantages {
+      z-index: 5;
+      overflow: visible;
+    }
+
+    .advantages__desktop-line {
+      clip-path: inset(3.34375rem 0 0);
+    }
+  }
+
   @media (min-width: 80rem) {
     .advantages {
+      z-index: 5;
       min-height: 37.875rem;
       margin-top: -2.75rem;
       overflow: visible;
@@ -524,6 +557,8 @@ const advantages = [
       width: 100%;
       margin-left: 0;
       overflow: visible;
+      padding-inline: 0;
+      scroll-padding-inline: 0;
       scroll-snap-type: none;
     }
 
