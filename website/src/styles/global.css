@@ -87,6 +87,12 @@
   }
 }
 
+@media (min-width: 87.5rem) {
+  :root {
+    font-size: calc(100vw / 87.5);
+  }
+}
+
 @theme inline {
   --color-page: var(--page);
   --color-surface: var(--surface);

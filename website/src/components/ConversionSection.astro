@@ -2,6 +2,7 @@
 import { Picture } from 'astro:assets';
 import dessertLeft from '@/assets/conversion/dessert-left.png';
 import dessertRight from '@/assets/conversion/dessert-right.png';
+import selectionFlow from '@/assets/conversion/selection-flow.svg?raw';
 import ActionLink from '@/components/ActionLink.astro';
 import { getWhatsAppUrl, HOME_SECTION_IDS } from '@/lib/site';
 
@@ -9,7 +10,9 @@ const whatsappUrl = getWhatsAppUrl('selectionHelp');
 ---
 
 <section id={HOME_SECTION_IDS.conversion} class="conversion-section" aria-labelledby="conversion-title">
-  <div class="conversion-section__inner" data-conversion-motion>
+  <div class="conversion-section__line" data-conversion-line aria-hidden="true" set:html={selectionFlow}></div>
+
+  <div class="conversion-section__inner">
     <div class="conversion-section__copy">
       <h2 id="conversion-title" class="conversion-section__title">Не знаете что выбрать?</h2>
       <p class="conversion-section__description">
@@ -53,30 +56,14 @@ const whatsappUrl = getWhatsAppUrl('selectionHelp');
 </section>
 
 <script>
-  const conversion = document.querySelector<HTMLElement>('[data-conversion-motion]');
+  const line = document.querySelector<HTMLElement>('[data-conversion-line]');
 
-  if (conversion && conversion.dataset.motionReady !== 'true') {
-    conversion.dataset.motionReady = 'true';
+  if (line && line.dataset.motionReady !== 'true') {
+    line.dataset.motionReady = 'true';
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    let active = false;
-    let frame = 0;
+    const path = line.querySelector<SVGPathElement>('path');
 
-    const update = () => {
-      frame = 0;
-      if (!active || reducedMotion.matches) return;
-
-      const rect = conversion.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      const progress = Math.min(1, Math.max(0, (viewportHeight - rect.top) / (viewportHeight + rect.height)));
-      conversion.style.setProperty('--conversion-progress', progress.toFixed(3));
-    };
-
-    const requestUpdate = () => {
-      if (frame) return;
-      frame = window.requestAnimationFrame(update);
-    };
-
-    conversion.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((link) => {
+    line.closest<HTMLElement>('.conversion-section')?.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((link) => {
       link.addEventListener('click', () => {
         window.setTimeout(() => {
           const target = document.querySelector<HTMLElement>(link.getAttribute('href') ?? '');
@@ -85,47 +72,103 @@ const whatsappUrl = getWhatsAppUrl('selectionHelp');
       });
     });
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        active = entry.isIntersecting;
-        if (active) requestUpdate();
-      },
-      { rootMargin: '180px 0px' },
-    );
+    if (!path || reducedMotion.matches) {
+      line.dataset.drawn = 'true';
+    } else {
+      const length = path.getTotalLength();
+      let started = false;
+      let observer: IntersectionObserver | undefined;
 
-    const handleMotionChange = () => {
-      if (reducedMotion.matches) {
-        conversion.style.removeProperty('--conversion-progress');
-      } else {
-        requestUpdate();
-      }
+      path.style.strokeDasharray = `${length}`;
+      path.style.strokeDashoffset = `${-length}`;
+
+      const finish = () => {
+        path.style.strokeDashoffset = '0';
+        line.dataset.drawn = 'true';
+        delete line.dataset.drawing;
+      };
+
+      const start = () => {
+        if (started || reducedMotion.matches) return;
+        started = true;
+        line.dataset.drawing = 'true';
+        requestAnimationFrame(() => {
+          path.style.strokeDashoffset = '0';
+        });
+      };
+
+      path.addEventListener('transitionend', (event) => {
+        if (event.propertyName === 'stroke-dashoffset') finish();
+      });
+
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry.isIntersecting) return;
+          start();
+          observer?.disconnect();
+        },
+        { rootMargin: '0px 0px 20% 0px' },
+      );
+
+      reducedMotion.addEventListener('change', () => {
+        if (reducedMotion.matches) {
+          observer?.disconnect();
+          finish();
+        }
+      });
+
+      observer.observe(line);
     };
-
-    observer.observe(conversion);
-    window.addEventListener('scroll', requestUpdate, { passive: true });
-    window.addEventListener('resize', requestUpdate, { passive: true });
-    reducedMotion.addEventListener('change', handleMotionChange);
   }
 </script>
 
 <style>
   .conversion-section {
-    overflow: clip;
-    background: var(--page);
+    position: relative;
+    isolation: isolate;
+    overflow: visible;
+    clip-path: inset(-100vmax 0);
+    background: transparent;
     padding-block: clamp(4.5rem, 8vw, 7.5rem) clamp(4.5rem, 7vw, 6.5rem);
+  }
+
+  .conversion-section__line {
+    position: absolute;
+    z-index: 0;
+    top: 3rem;
+    left: 0;
+    width: 100vw;
+    height: max(17.65625rem, 41.475vw);
+    overflow: clip;
+    pointer-events: none;
+  }
+
+  .conversion-section__line :global(svg) {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    display: block;
+    width: max(46rem, 108vw);
+    height: auto;
+    overflow: visible;
+    transform: translateX(-50%);
+  }
+
+  .conversion-section__line[data-drawing='true'] :global(path) {
+    transition: stroke-dashoffset 1600ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .conversion-section__inner {
     position: relative;
+    z-index: 1;
     width: min(calc(100% - 2rem), 77.5rem);
     min-height: 25rem;
     margin-inline: auto;
-    --conversion-progress: 0;
   }
 
   .conversion-section__copy {
     position: relative;
-    z-index: 1;
+    z-index: 2;
     display: grid;
     justify-items: center;
     max-width: 32.1875rem;
@@ -159,6 +202,8 @@ const whatsappUrl = getWhatsAppUrl('selectionHelp');
   }
 
   .conversion-section__desserts {
+    position: relative;
+    z-index: 1;
     display: flex;
     align-items: end;
     justify-content: space-between;
@@ -181,12 +226,10 @@ const whatsappUrl = getWhatsAppUrl('selectionHelp');
 
   .conversion-section__dessert--left {
     width: min(56vw, 17rem);
-    transform: translateX(calc(var(--conversion-progress) * 1.25rem));
   }
 
   .conversion-section__dessert--right {
     width: min(60vw, 18rem);
-    transform: translateX(calc(var(--conversion-progress) * -1.25rem));
   }
 
   @media (min-width: 40rem) {
@@ -214,18 +257,24 @@ const whatsappUrl = getWhatsAppUrl('selectionHelp');
       top: 1.5rem;
       left: 0;
       width: min(31vw, 24.5rem);
-      transform: translateX(calc(var(--conversion-progress) * 2rem));
     }
 
     .conversion-section__dessert--right {
       top: 3.75rem;
       right: 0;
       width: min(34vw, 28.7rem);
-      transform: translateX(calc(var(--conversion-progress) * -2rem));
     }
   }
 
   @media (min-width: 75rem) {
+    .conversion-section__line {
+      top: 4.3125rem;
+    }
+
+    .conversion-section__line :global(svg) {
+      left: 51.75%;
+    }
+
     .conversion-section__inner {
       min-height: 25rem;
     }
@@ -244,9 +293,8 @@ const whatsappUrl = getWhatsAppUrl('selectionHelp');
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .conversion-section__dessert--left,
-    .conversion-section__dessert--right {
-      transform: none;
+    .conversion-section__line[data-drawing='true'] :global(path) {
+      transition: none;
     }
   }
 </style>
