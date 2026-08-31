@@ -201,7 +201,7 @@ const advantages = [
   .advantages {
     position: relative;
     z-index: 5;
-    min-height: 102.1875rem;
+    min-height: max(102.1875rem, 419.2308vw);
     overflow: visible;
     background: var(--page);
   }
@@ -215,8 +215,9 @@ const advantages = [
     z-index: 1;
     top: -3.9375rem;
     left: 0;
-    width: 100%;
-    height: 105.875rem;
+    width: max(100%, 24.375rem);
+    height: auto;
+    aspect-ratio: 390 / 1694;
     pointer-events: none;
   }
 
@@ -229,21 +230,22 @@ const advantages = [
   }
 
   .advantages__mobile-line--top {
-    top: 0.4375rem;
+    top: 0.4132%;
   }
 
   .advantages__mobile-line--middle {
-    top: 12.375rem;
+    top: 11.6883%;
   }
 
   .advantages__mobile-line--bottom {
-    top: 64.3125rem;
+    top: 60.7438%;
+    left: max(0px, calc(100vw - 24.375rem));
   }
 
   .advantages__content {
     position: relative;
     z-index: 2;
-    width: min(100%, 24.375rem);
+    width: 100%;
     margin-inline: auto;
     padding-top: 0.125rem;
   }
@@ -280,7 +282,7 @@ const advantages = [
   .advantages__track {
     display: grid;
     gap: 1.25rem;
-    width: min(100%, 24.375rem);
+    width: 100%;
     overflow: visible;
   }
 
@@ -334,6 +336,12 @@ const advantages = [
     color: var(--text-primary);
     font-size: 1rem;
     line-height: 1;
+  }
+
+  @media (min-width: 24.375rem) and (max-width: 39.999rem) {
+    .advantages__mobile-lines {
+      top: -16.1538vw;
+    }
   }
 
   @media (min-width: 40rem) {
