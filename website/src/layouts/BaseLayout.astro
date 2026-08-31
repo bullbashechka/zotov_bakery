@@ -3,9 +3,10 @@ interface Props {
   title: string;
   description: string;
   canonicalUrl?: string;
+  robots?: string;
 }
 
-const { title, description, canonicalUrl } = Astro.props;
+const { title, description, canonicalUrl, robots } = Astro.props;
 ---
 
 <!doctype html>
@@ -21,6 +22,7 @@ const { title, description, canonicalUrl } = Astro.props;
     <link rel="preload" href="/fonts/Bergamasco-Regular.woff" as="font" type="font/woff" crossorigin />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {robots && <meta name="robots" content={robots} />}
     {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />

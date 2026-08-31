@@ -19,6 +19,9 @@ export const HOME_NAV_LINKS = [
 ] as const;
 
 export const CONTACTS = {
+  address: 'г. Петропавловск, ул. Лермонтова, 63',
+  twoGisUrl: null as string | null,
+  hours: 'пн–вс: 09:00–22:00',
   bakery: {
     display: '+7 (7152) 42-43-54',
     href: 'tel:+77152424354',
@@ -28,7 +31,13 @@ export const CONTACTS = {
     href: 'tel:+77074939363',
   },
   whatsappNumber: '77074939363',
+  instagramUrl: 'https://www.instagram.com/zotov.bakery/',
 } as const;
+
+export const POLICY_LINKS = [
+  { href: '/privacy/', label: 'Политика конфиденциальности' },
+  { href: '/data-processing/', label: 'Политика обработки данных' },
+] as const;
 
 export const WHATSAPP_MESSAGES = {
   general: 'Здравствуйте! Подскажите, пожалуйста, какие десерты есть в наличии и где их можно купить?',

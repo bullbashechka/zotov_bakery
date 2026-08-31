@@ -2,12 +2,15 @@
 interface Props {
   href: string;
   variant: 'primary' | 'secondary';
+  fullWidth?: boolean;
+  target?: '_blank';
+  rel?: string;
 }
 
-const { href, variant } = Astro.props;
+const { href, variant, fullWidth = false, target, rel } = Astro.props;
 ---
 
-<a class="action-link" data-variant={variant} {href}>
+<a class="action-link" data-variant={variant} data-full-width={fullWidth} {href} {target} {rel}>
   <slot />
 </a>
 
@@ -33,6 +36,10 @@ const { href, variant } = Astro.props;
     min-width: 8.625rem;
     background: var(--text-primary);
     color: var(--surface-elevated);
+  }
+
+  .action-link[data-full-width='true'] {
+    width: 100%;
   }
 
   .action-link[data-variant='primary']:hover {

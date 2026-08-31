@@ -1,0 +1,100 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { CONTACTS } from '@/lib/site';
+
+interface Props {
+  title: string;
+  description: string;
+  canonicalUrl?: string;
+}
+
+const { title, description, canonicalUrl } = Astro.props;
+---
+
+<BaseLayout {title} {description} {canonicalUrl} robots="noindex,follow">
+  <section class="legal-placeholder" aria-labelledby="legal-placeholder-title">
+    <div class="legal-placeholder__content">
+      <a class="legal-placeholder__logo" href="/#hero" aria-label="ZOTOV bakery, на главную страницу">
+        <img src="/footer/zotov-footer-logo.svg" width="391" height="466" alt="ZOTOV bakery" />
+      </a>
+      <h1 id="legal-placeholder-title">{title}</h1>
+      <p>
+        Документ находится в подготовке. По вопросам, связанным с персональными данными,
+        свяжитесь с ZOTOV bakery по телефону.
+      </p>
+      <div class="legal-placeholder__contacts">
+        <a href={CONTACTS.bakery.href}>{CONTACTS.bakery.display}</a>
+        <a href={CONTACTS.mobile.href}>{CONTACTS.mobile.display}</a>
+      </div>
+      <a class="legal-placeholder__home" href="/#hero">Вернуться на главную</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .legal-placeholder {
+    min-height: 100vh;
+    background: var(--page);
+    padding: max(8rem, 18vh) 1rem 4rem;
+  }
+
+  .legal-placeholder__content {
+    display: grid;
+    justify-items: center;
+    width: min(100%, 38rem);
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .legal-placeholder__logo {
+    display: block;
+    width: min(10rem, 42vw);
+    border-radius: 0.5rem;
+  }
+
+  .legal-placeholder__logo img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  h1 {
+    margin-top: 1.5rem;
+    font-family: 'Vetrino', Georgia, serif;
+    font-size: clamp(2.25rem, 7vw, 4rem);
+    font-weight: 400;
+    line-height: 1;
+  }
+
+  p {
+    max-width: 34rem;
+    margin-top: 1.25rem;
+    font-size: 1.125rem;
+    line-height: 1.35;
+  }
+
+  .legal-placeholder__contacts {
+    display: grid;
+    gap: 0.4rem;
+    margin-top: 1.5rem;
+  }
+
+  .legal-placeholder__contacts a,
+  .legal-placeholder__home {
+    color: inherit;
+    text-underline-offset: 0.2em;
+  }
+
+  .legal-placeholder__home {
+    display: inline-flex;
+    min-height: 3rem;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2rem;
+    border-radius: 0.5rem;
+    background: var(--text-primary);
+    color: var(--surface-elevated);
+    padding: 0.75rem 1.5rem;
+    text-decoration: none;
+  }
+</style>

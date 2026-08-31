@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Advantages from '@/components/Advantages.astro';
-import ContactSection from '@/components/ContactSection.astro';
+import ConversionSection from '@/components/ConversionSection.astro';
 import Faq from '@/components/Faq.astro';
 import Hero from '@/components/Hero.astro';
 import HeroAdvantagesFlow from '@/components/HeroAdvantagesFlow.astro';
@@ -18,13 +18,11 @@ const canonicalUrl = publicWebsiteUrl
   ? new URL(Astro.url.pathname, publicWebsiteUrl).toString()
   : undefined;
 
-const pageSections = [
+const placeholderSections = [
   { id: HOME_SECTION_IDS.honeyCake, title: 'Медовик' },
   { id: HOME_SECTION_IDS.assortment, title: 'Ассортимент' },
   { id: HOME_SECTION_IDS.whereToBuy, title: 'Где купить' },
   { id: HOME_SECTION_IDS.history, title: 'Наша история' },
-  { id: HOME_SECTION_IDS.faq, title: 'Вопросы и ответы' },
-  { id: HOME_SECTION_IDS.conversion, title: 'Выберите свой десерт' },
 ];
 ---
 
@@ -36,15 +34,11 @@ const pageSections = [
     <Advantages />
   </HeroAdvantagesFlow>
 
-  {pageSections.map((section) => (
-    section.id === HOME_SECTION_IDS.faq ? (
-      <Faq />
-    ) : (
-      <PlaceholderSection id={section.id} title={section.title} />
-    )
+  {placeholderSections.map((section) => (
+    <PlaceholderSection id={section.id} title={section.title} />
   ))}
-
-  <ContactSection />
+  <Faq />
+  <ConversionSection />
 
   <SiteFooter slot="footer" />
 </BaseLayout>

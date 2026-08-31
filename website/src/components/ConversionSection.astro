@@ -1,0 +1,252 @@
+---
+import { Picture } from 'astro:assets';
+import dessertLeft from '@/assets/conversion/dessert-left.png';
+import dessertRight from '@/assets/conversion/dessert-right.png';
+import ActionLink from '@/components/ActionLink.astro';
+import { getWhatsAppUrl, HOME_SECTION_IDS } from '@/lib/site';
+
+const whatsappUrl = getWhatsAppUrl('selectionHelp');
+---
+
+<section id={HOME_SECTION_IDS.conversion} class="conversion-section" aria-labelledby="conversion-title">
+  <div class="conversion-section__inner" data-conversion-motion>
+    <div class="conversion-section__copy">
+      <h2 id="conversion-title" class="conversion-section__title">Не знаете что выбрать?</h2>
+      <p class="conversion-section__description">
+        Напишите нам в WhatsApp. Подскажем, какие десерты есть в наличии и где их удобнее купить.
+      </p>
+      <div class="conversion-section__actions">
+        <ActionLink
+          variant="primary"
+          href={whatsappUrl}
+          fullWidth
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Написать в WhatsApp
+        </ActionLink>
+        <ActionLink variant="secondary" href={`#${HOME_SECTION_IDS.assortment}`} fullWidth>
+          Посмотреть ассортимент
+        </ActionLink>
+      </div>
+    </div>
+
+    <div class="conversion-section__desserts" aria-hidden="true">
+      <Picture
+        class="conversion-section__dessert conversion-section__dessert--left"
+        src={dessertLeft}
+        formats={['avif', 'webp']}
+        widths={[240, 320, 392, 480, 640, 784]}
+        sizes="(max-width: 39.999rem) 56vw, (max-width: 74.999rem) 31vw, 31rem"
+        alt=""
+      />
+      <Picture
+        class="conversion-section__dessert conversion-section__dessert--right"
+        src={dessertRight}
+        formats={['avif', 'webp']}
+        widths={[260, 360, 459, 560, 720, 918]}
+        sizes="(max-width: 39.999rem) 60vw, (max-width: 74.999rem) 34vw, 35rem"
+        alt=""
+      />
+    </div>
+  </div>
+</section>
+
+<script>
+  const conversion = document.querySelector<HTMLElement>('[data-conversion-motion]');
+
+  if (conversion && conversion.dataset.motionReady !== 'true') {
+    conversion.dataset.motionReady = 'true';
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let active = false;
+    let frame = 0;
+
+    const update = () => {
+      frame = 0;
+      if (!active || reducedMotion.matches) return;
+
+      const rect = conversion.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const progress = Math.min(1, Math.max(0, (viewportHeight - rect.top) / (viewportHeight + rect.height)));
+      conversion.style.setProperty('--conversion-progress', progress.toFixed(3));
+    };
+
+    const requestUpdate = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(update);
+    };
+
+    conversion.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((link) => {
+      link.addEventListener('click', () => {
+        window.setTimeout(() => {
+          const target = document.querySelector<HTMLElement>(link.getAttribute('href') ?? '');
+          target?.focus({ preventScroll: true });
+        }, 0);
+      });
+    });
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        active = entry.isIntersecting;
+        if (active) requestUpdate();
+      },
+      { rootMargin: '180px 0px' },
+    );
+
+    const handleMotionChange = () => {
+      if (reducedMotion.matches) {
+        conversion.style.removeProperty('--conversion-progress');
+      } else {
+        requestUpdate();
+      }
+    };
+
+    observer.observe(conversion);
+    window.addEventListener('scroll', requestUpdate, { passive: true });
+    window.addEventListener('resize', requestUpdate, { passive: true });
+    reducedMotion.addEventListener('change', handleMotionChange);
+  }
+</script>
+
+<style>
+  .conversion-section {
+    overflow: clip;
+    background: var(--page);
+    padding-block: clamp(4.5rem, 8vw, 7.5rem) clamp(4.5rem, 7vw, 6.5rem);
+  }
+
+  .conversion-section__inner {
+    position: relative;
+    width: min(calc(100% - 2rem), 77.5rem);
+    min-height: 25rem;
+    margin-inline: auto;
+    --conversion-progress: 0;
+  }
+
+  .conversion-section__copy {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    justify-items: center;
+    max-width: 32.1875rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .conversion-section__title {
+    display: inline-block;
+    background: var(--text-primary);
+    color: var(--surface-elevated);
+    padding: 0.625rem clamp(1rem, 3vw, 1.625rem);
+    font-family: 'Vetrino', Georgia, serif;
+    font-size: clamp(2.25rem, 5vw, 4rem);
+    font-weight: 400;
+    line-height: 1;
+  }
+
+  .conversion-section__description {
+    max-width: 32.1875rem;
+    margin-top: 1.75rem;
+    font-size: 1rem;
+    line-height: 1.1;
+  }
+
+  .conversion-section__actions {
+    display: grid;
+    width: min(100%, 18.25rem);
+    gap: 0.75rem;
+    margin-top: 1.75rem;
+  }
+
+  .conversion-section__desserts {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin: 2.5rem calc(50% - 50vw) 0;
+    padding-inline: max(0.25rem, calc((100vw - 22rem) / 2));
+    pointer-events: none;
+  }
+
+  .conversion-section__dessert {
+    display: block;
+    flex: 0 1 auto;
+  }
+
+  .conversion-section__dessert :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .conversion-section__dessert--left {
+    width: min(56vw, 17rem);
+    transform: translateX(calc(var(--conversion-progress) * 1.25rem));
+  }
+
+  .conversion-section__dessert--right {
+    width: min(60vw, 18rem);
+    transform: translateX(calc(var(--conversion-progress) * -1.25rem));
+  }
+
+  @media (min-width: 40rem) {
+    .conversion-section__inner {
+      min-height: 27rem;
+    }
+
+    .conversion-section__copy {
+      padding-top: 0.5rem;
+    }
+
+    .conversion-section__desserts {
+      position: absolute;
+      inset: 2.75rem -2rem auto;
+      display: block;
+      margin: 0;
+      padding: 0;
+    }
+
+    .conversion-section__dessert {
+      position: absolute;
+    }
+
+    .conversion-section__dessert--left {
+      top: 1.5rem;
+      left: 0;
+      width: min(31vw, 24.5rem);
+      transform: translateX(calc(var(--conversion-progress) * 2rem));
+    }
+
+    .conversion-section__dessert--right {
+      top: 3.75rem;
+      right: 0;
+      width: min(34vw, 28.7rem);
+      transform: translateX(calc(var(--conversion-progress) * -2rem));
+    }
+  }
+
+  @media (min-width: 75rem) {
+    .conversion-section__inner {
+      min-height: 25rem;
+    }
+
+    .conversion-section__desserts {
+      inset-inline: -3.125rem;
+    }
+
+    .conversion-section__dessert--left {
+      top: 0.65rem;
+    }
+
+    .conversion-section__dessert--right {
+      top: 2.25rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .conversion-section__dessert--left,
+    .conversion-section__dessert--right {
+      transform: none;
+    }
+  }
+</style>
