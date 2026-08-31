@@ -79,6 +79,8 @@ const faqs: ReadonlyArray<{
       })}
     </faq-accordion>
   </div>
+
+  <div class="faq__background" aria-hidden="true"></div>
 </section>
 
 <script>
@@ -288,13 +290,26 @@ const faqs: ReadonlyArray<{
 
 <style>
   .faq {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
     background: var(--page);
     padding-block: 3.5rem 5rem;
   }
 
   .faq__container {
+    position: relative;
+    z-index: 1;
     width: min(calc(100% - 2.5rem), 77.5rem);
     margin-inline: auto;
+  }
+
+  .faq__background {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    background: url('/faq/union.svg') center / cover no-repeat;
+    pointer-events: none;
   }
 
   .faq__title {
@@ -458,14 +473,18 @@ const faqs: ReadonlyArray<{
 
     .faq__answer {
       font-size: 1rem;
-      line-height: 1.2;
+      line-height: 1;
     }
   }
 
   @media (min-width: 80rem) {
     .faq {
-      min-height: 49.1875rem;
-      padding-block: 3.5rem 5.4375rem;
+      min-height: 49.25rem;
+      padding-block: 3.1875rem 5.8125rem;
+    }
+
+    .faq__background {
+      background-size: 100% 100%;
     }
 
     .faq__title {

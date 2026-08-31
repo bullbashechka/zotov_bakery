@@ -74,7 +74,7 @@ const advantages = [
     private scrollFrame = 0;
     private announceTimer = 0;
     private resizeObserver: ResizeObserver | null = null;
-    private scrollQuery = window.matchMedia('(min-width: 40rem) and (max-width: 79.999rem)');
+    private scrollQuery = window.matchMedia('(min-width: 30rem) and (max-width: 79.999rem)');
 
     connectedCallback() {
       this.track = this.querySelector<HTMLElement>('[data-advantages-track]');
@@ -201,7 +201,7 @@ const advantages = [
   .advantages {
     position: relative;
     z-index: 5;
-    min-height: max(102.1875rem, 419.2308vw);
+    min-height: 102.1875rem;
     overflow: visible;
     background: var(--page);
   }
@@ -338,13 +338,30 @@ const advantages = [
     line-height: 1;
   }
 
-  @media (min-width: 24.375rem) and (max-width: 39.999rem) {
+  @media (min-width: 24.4375rem) and (max-width: 29.999rem) {
     .advantages__mobile-lines {
-      top: -16.1538vw;
+      left: 0;
+      width: 100%;
+      height: 105.875rem;
+      aspect-ratio: auto;
+      transform: none;
+    }
+
+    .advantages__mobile-line--top {
+      height: 7.4375rem;
+    }
+
+    .advantages__mobile-line--middle {
+      height: 46.6875rem;
+    }
+
+    .advantages__mobile-line--bottom {
+      left: 0;
+      height: 41.8125rem;
     }
   }
 
-  @media (min-width: 40rem) {
+  @media (min-width: 30rem) {
     .advantages {
       min-height: 27.375rem;
     }
@@ -388,7 +405,7 @@ const advantages = [
 
     .advantages__title {
       display: flex;
-      width: 38.125rem;
+      width: calc(100% - 2rem);
       min-height: 3.125rem;
       align-items: center;
       justify-content: center;
@@ -396,7 +413,7 @@ const advantages = [
       margin-inline: auto;
       background: var(--text-primary);
       padding: 0.4375rem 1.5rem;
-      font-size: 1.875rem;
+      font-size: clamp(1.5rem, 4.6875vw, 1.875rem);
       white-space: nowrap;
     }
 
@@ -421,8 +438,8 @@ const advantages = [
       margin-left: 0;
       overflow-x: auto;
       overscroll-behavior-x: contain;
-      padding-inline: 2.5rem;
-      scroll-padding-inline: 2.5rem;
+      padding-inline: 1.5rem;
+      scroll-padding-inline: 1.5rem;
       scroll-snap-type: x mandatory;
       scrollbar-width: none;
       -webkit-overflow-scrolling: touch;
@@ -438,6 +455,18 @@ const advantages = [
       min-height: 22rem;
       scroll-snap-align: start;
       margin: 0;
+    }
+  }
+
+  @media (min-width: 40rem) {
+    .advantages__title {
+      width: 38.125rem;
+      font-size: 1.875rem;
+    }
+
+    .advantages__track {
+      padding-inline: 2.5rem;
+      scroll-padding-inline: 2.5rem;
     }
   }
 
