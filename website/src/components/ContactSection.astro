@@ -7,6 +7,7 @@ const whatsappUrl = getWhatsAppUrl('general');
 <section id="contacts" class="contact-section" aria-labelledby="contacts-title">
   <h2 id="contacts-title" class="contact-section__title" data-footer-reveal-item>Контакты</h2>
   <div class="contact-section__card">
+    <img class="contact-section__frame" src="/footer/frame-1050.svg" alt="" aria-hidden="true" />
     <span class="contact-section__scallop contact-section__scallop--top" aria-hidden="true"></span>
     <span class="contact-section__scallop contact-section__scallop--right" aria-hidden="true"></span>
     <span class="contact-section__scallop contact-section__scallop--bottom" aria-hidden="true"></span>
@@ -77,6 +78,16 @@ const whatsappUrl = getWhatsAppUrl('general');
     margin: 0.9rem;
     background: var(--surface);
     border-radius: 1.5rem;
+  }
+
+  .contact-section__frame {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    display: none;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
   }
 
   .contact-section__content {
@@ -208,11 +219,29 @@ const whatsappUrl = getWhatsAppUrl('general');
   }
 
   @media (min-width: 40rem) {
+    .contact-section__card {
+      width: min(100%, 41.375rem);
+      aspect-ratio: 662 / 407;
+      margin: 0 auto;
+      background: transparent;
+      border-radius: 0;
+    }
+
+    .contact-section__frame {
+      display: block;
+    }
+
+    .contact-section__scallop {
+      display: none;
+    }
+
     .contact-section__title {
       margin-bottom: 0.5rem;
     }
 
     .contact-section__content {
+      position: absolute;
+      inset: 0;
       gap: 1.5rem;
       padding: 3.25rem;
     }
