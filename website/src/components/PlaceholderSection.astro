@@ -1,0 +1,33 @@
+---
+interface Props {
+  id: string;
+  title: string;
+}
+
+const { id, title } = Astro.props;
+---
+
+<section {id} class="placeholder-section">
+  <div class="placeholder-section__content">
+    <h2>{title}</h2>
+  </div>
+</section>
+
+<style>
+  .placeholder-section {
+    border-top: 1px solid color-mix(in srgb, var(--text-primary) 10%, transparent);
+    padding-block: 3rem;
+  }
+
+  .placeholder-section__content {
+    width: min(calc(100% - 2.5rem), 77.5rem);
+    margin-inline: auto;
+  }
+
+  h2 {
+    font-family: 'Vetrino', Georgia, serif;
+    font-size: 1.875rem;
+    font-weight: 400;
+    line-height: 1;
+  }
+</style>

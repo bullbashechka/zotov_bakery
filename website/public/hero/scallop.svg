@@ -1,0 +1,33 @@
+<svg width="1440" height="65" viewBox="0 0 1440 65" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <circle id="scallop-circle" cx="0" cy="32.5" r="32.5" />
+  </defs>
+  <g fill="#F4ECE6">
+    <use href="#scallop-circle" x="0" />
+    <use href="#scallop-circle" x="57.6" />
+    <use href="#scallop-circle" x="115.2" />
+    <use href="#scallop-circle" x="172.8" />
+    <use href="#scallop-circle" x="230.4" />
+    <use href="#scallop-circle" x="288" />
+    <use href="#scallop-circle" x="345.6" />
+    <use href="#scallop-circle" x="403.2" />
+    <use href="#scallop-circle" x="460.8" />
+    <use href="#scallop-circle" x="518.4" />
+    <use href="#scallop-circle" x="576" />
+    <use href="#scallop-circle" x="633.6" />
+    <use href="#scallop-circle" x="691.2" />
+    <use href="#scallop-circle" x="748.8" />
+    <use href="#scallop-circle" x="806.4" />
+    <use href="#scallop-circle" x="864" />
+    <use href="#scallop-circle" x="921.6" />
+    <use href="#scallop-circle" x="979.2" />
+    <use href="#scallop-circle" x="1036.8" />
+    <use href="#scallop-circle" x="1094.4" />
+    <use href="#scallop-circle" x="1152" />
+    <use href="#scallop-circle" x="1209.6" />
+    <use href="#scallop-circle" x="1267.2" />
+    <use href="#scallop-circle" x="1324.8" />
+    <use href="#scallop-circle" x="1382.4" />
+    <use href="#scallop-circle" x="1440" />
+  </g>
+</svg>

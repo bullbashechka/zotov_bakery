@@ -1,0 +1,14 @@
+---
+import LegalPlaceholder from '@/components/LegalPlaceholder.astro';
+
+const publicWebsiteUrl = import.meta.env.PUBLIC_WEBSITE_URL;
+const canonicalUrl = publicWebsiteUrl
+  ? new URL(Astro.url.pathname, publicWebsiteUrl).toString()
+  : undefined;
+---
+
+<LegalPlaceholder
+  title="Политика конфиденциальности"
+  description="Временная страница политики конфиденциальности ZOTOV bakery."
+  {canonicalUrl}
+/>

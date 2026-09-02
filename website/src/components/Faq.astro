@@ -1,0 +1,498 @@
+---
+import { HOME_SECTION_IDS } from '@/lib/site';
+
+const faqs: ReadonlyArray<{
+  question: string;
+  answer: string;
+  branded?: boolean;
+}> = [
+  {
+    question: 'Нужно ли заказывать десерт заранее?',
+    answer:
+      'Готовые десерты можно выбрать из наличия. Заказы к определённой дате лучше оформить заранее.',
+  },
+  {
+    question: 'Как узнать цену и наличие?',
+    answer:
+      'Напишите нам в WhatsApp или позвоните. Мы сообщим актуальную цену и подскажем, какие десерты есть в наличии.',
+  },
+  {
+    question: 'Есть ли доставка?',
+    answer:
+      'Да, доступна доставка на дом или в офис. Стоимость и условия зависят от адреса и уточняются при оформлении заказа в WhatsApp.',
+  },
+  {
+    question: 'Одинаковый ли ассортимент в ZOTOV bakery и AIMER?',
+    answer:
+      'Нет, ассортимент в пекарне и супермаркетах AIMER может отличаться. Актуальное наличие лучше уточнить заранее.',
+    branded: true,
+  },
+  {
+    question: 'Можно ли заказать торт к определённой дате?',
+    answer:
+      'Да. Напишите нам в WhatsApp заранее, укажите желаемую дату и выбранный десерт — мы подтвердим возможность заказа.',
+  },
+];
+---
+
+<section id={HOME_SECTION_IDS.faq} class="faq" aria-labelledby="faq-title">
+  <div class="faq__container">
+    <h2 id="faq-title" class="faq__title">Частые вопросы</h2>
+
+    <faq-accordion class="faq__list">
+      {faqs.map((faq, index) => {
+        const questionId = `faq-question-${index + 1}`;
+        const answerId = `faq-answer-${index + 1}`;
+        const isInitiallyOpen = index === 0;
+
+        return (
+          <details class="faq__item" name="zotov-faq" open={isInitiallyOpen}>
+            <summary
+              id={questionId}
+              class="faq__summary"
+              aria-controls={answerId}
+            >
+              <span class="faq__question">
+                {faq.branded ? (
+                  <>Одинаковый ли ассортимент в <span class="faq__brand-z">Z</span>OTOV bakery и AIMER?</>
+                ) : (
+                  faq.question
+                )}
+              </span>
+              <span class="faq__icon" aria-hidden="true">
+                <img src="/faq/toggle-icon.svg" width="39" height="39" alt="" />
+              </span>
+            </summary>
+
+            <div class="faq__answer-clip">
+              <div
+                id={answerId}
+                class="faq__answer-panel"
+                role="region"
+                aria-labelledby={questionId}
+              >
+                <p class="faq__answer">{faq.answer}</p>
+              </div>
+            </div>
+          </details>
+        );
+      })}
+    </faq-accordion>
+  </div>
+
+  <div class="faq__background" aria-hidden="true"></div>
+</section>
+
+<script>
+  class FaqAccordion extends HTMLElement {
+    private items: HTMLDetailsElement[] = [];
+    private clips = new Map<HTMLDetailsElement, HTMLElement>();
+    private transitionCleanups = new Map<HTMLDetailsElement, () => void>();
+    private transitionTokens = new Map<HTMLDetailsElement, number>();
+    private expandedItem: HTMLDetailsElement | null = null;
+    private abortController: AbortController | null = null;
+    private motionQuery: MediaQueryList | null = null;
+    private prefersReducedMotion = false;
+
+    connectedCallback() {
+      if (this.abortController) return;
+
+      this.abortController = new AbortController();
+      const { signal } = this.abortController;
+      this.items = Array.from(this.querySelectorAll<HTMLDetailsElement>('.faq__item'));
+
+      let hasInitialOpenItem = false;
+      this.items.forEach((item) => {
+        const summary = item.querySelector<HTMLElement>('.faq__summary');
+        const clip = item.querySelector<HTMLElement>('.faq__answer-clip');
+        if (!summary || !clip) return;
+
+        const initiallyOpen = item.open && !hasInitialOpenItem;
+        hasInitialOpenItem ||= initiallyOpen;
+        item.open = initiallyOpen;
+        item.removeAttribute('name');
+        item.dataset.expanded = String(initiallyOpen);
+        item.dataset.state = initiallyOpen ? 'open' : 'closed';
+        summary.setAttribute('aria-expanded', String(initiallyOpen));
+        clip.style.blockSize = initiallyOpen ? 'auto' : '0px';
+        clip.style.opacity = initiallyOpen ? '1' : '0';
+
+        this.clips.set(item, clip);
+        summary.addEventListener('click', this.handleSummaryClick, { signal });
+        summary.addEventListener('keydown', this.handleKeydown, { signal });
+      });
+
+      this.expandedItem = this.items.find((item) => item.dataset.expanded === 'true') ?? null;
+      this.motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+      this.prefersReducedMotion = this.motionQuery.matches;
+      this.motionQuery.addEventListener('change', this.handleMotionChange, { signal });
+      window.addEventListener('resize', this.handleResize, { signal });
+      this.dataset.enhanced = 'true';
+    }
+
+    disconnectedCallback() {
+      this.abortController?.abort();
+      this.transitionCleanups.forEach((cleanup) => cleanup());
+      this.transitionCleanups.clear();
+      this.items = [];
+      this.clips.clear();
+      this.transitionTokens.clear();
+      this.expandedItem = null;
+      this.motionQuery = null;
+      this.abortController = null;
+      delete this.dataset.enhanced;
+    }
+
+    private handleSummaryClick = (event: MouseEvent) => {
+      event.preventDefault();
+      const item = (event.currentTarget as HTMLElement).closest<HTMLDetailsElement>('.faq__item');
+      if (item) this.toggleItem(item);
+    };
+
+    private handleKeydown = (event: KeyboardEvent) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+
+      event.preventDefault();
+      if (event.repeat) return;
+
+      const item = (event.currentTarget as HTMLElement).closest<HTMLDetailsElement>('.faq__item');
+      if (item) this.toggleItem(item);
+    };
+
+    private handleMotionChange = (event: MediaQueryListEvent) => {
+      this.prefersReducedMotion = event.matches;
+      if (event.matches) this.finishTransitions();
+    };
+
+    private handleResize = () => {
+      if (this.transitionCleanups.size > 0) this.finishTransitions();
+    };
+
+    private toggleItem(item: HTMLDetailsElement) {
+      const isExpanded = item === this.expandedItem && item.dataset.expanded === 'true';
+
+      if (isExpanded) {
+        this.expandedItem = null;
+        this.animateItem(item, false);
+        return;
+      }
+
+      const previousItem = this.expandedItem;
+      this.expandedItem = item;
+      if (previousItem && previousItem !== item) this.animateItem(previousItem, false);
+      this.animateItem(item, true);
+    }
+
+    private animateItem(item: HTMLDetailsElement, shouldOpen: boolean) {
+      const clip = this.clips.get(item);
+      const summary = item.querySelector<HTMLElement>('.faq__summary');
+      if (!clip || !summary) return;
+
+      const currentHeight = clip.getBoundingClientRect().height;
+      const currentOpacity = Number.parseFloat(getComputedStyle(clip).opacity);
+      this.cancelTransition(item);
+      this.freezeClip(clip, currentHeight, Number.isNaN(currentOpacity) ? 1 : currentOpacity);
+
+      const token = (this.transitionTokens.get(item) ?? 0) + 1;
+      this.transitionTokens.set(item, token);
+      item.dataset.expanded = String(shouldOpen);
+      item.dataset.state = shouldOpen ? 'opening' : 'closing';
+      summary.setAttribute('aria-expanded', String(shouldOpen));
+      if (shouldOpen) item.open = true;
+
+      const targetHeight = shouldOpen ? clip.scrollHeight : 0;
+      if (this.prefersReducedMotion || Math.abs(currentHeight - targetHeight) < 0.5) {
+        this.finalizeTransition(item, shouldOpen, token);
+        return;
+      }
+
+      let finished = false;
+      let cleanup = () => {};
+      const finish = () => {
+        if (finished || this.transitionTokens.get(item) !== token) return;
+        finished = true;
+        cleanup();
+        this.transitionCleanups.delete(item);
+        this.finalizeTransition(item, shouldOpen, token);
+      };
+      const handleTransitionEnd = (event: TransitionEvent) => {
+        if (event.target === clip && event.propertyName === 'block-size') finish();
+      };
+      const timeout = window.setTimeout(finish, 260);
+      cleanup = () => {
+        window.clearTimeout(timeout);
+        clip.removeEventListener('transitionend', handleTransitionEnd);
+      };
+
+      this.transitionCleanups.set(item, cleanup);
+      clip.addEventListener('transitionend', handleTransitionEnd);
+      requestAnimationFrame(() => {
+        if (this.transitionTokens.get(item) !== token) return;
+        clip.style.blockSize = `${targetHeight}px`;
+        clip.style.opacity = shouldOpen ? '1' : '0';
+      });
+    }
+
+    private freezeClip(clip: HTMLElement, height: number, opacity: number) {
+      clip.style.transition = 'none';
+      clip.style.blockSize = `${height}px`;
+      clip.style.opacity = String(opacity);
+      void clip.offsetHeight;
+      clip.style.transition = '';
+    }
+
+    private cancelTransition(item: HTMLDetailsElement) {
+      const cleanup = this.transitionCleanups.get(item);
+      if (!cleanup) return;
+
+      cleanup();
+      this.transitionCleanups.delete(item);
+    }
+
+    private finishTransitions() {
+      this.items.forEach((item) => {
+        if (!this.transitionCleanups.has(item)) return;
+
+        const shouldOpen = item.dataset.expanded === 'true';
+        const token = this.transitionTokens.get(item) ?? 0;
+        this.cancelTransition(item);
+        this.finalizeTransition(item, shouldOpen, token);
+      });
+    }
+
+    private finalizeTransition(item: HTMLDetailsElement, shouldOpen: boolean, token: number) {
+      if (this.transitionTokens.get(item) !== token) return;
+
+      const clip = this.clips.get(item);
+      if (!clip) return;
+
+      this.cancelTransition(item);
+      clip.style.transition = 'none';
+      item.dataset.state = shouldOpen ? 'open' : 'closed';
+      if (shouldOpen) {
+        item.open = true;
+        clip.style.blockSize = 'auto';
+        clip.style.opacity = '1';
+      } else {
+        item.open = false;
+        clip.style.blockSize = '0px';
+        clip.style.opacity = '0';
+      }
+      void clip.offsetHeight;
+      clip.style.transition = '';
+    }
+  }
+
+  if (!customElements.get('faq-accordion')) {
+    customElements.define('faq-accordion', FaqAccordion);
+  }
+</script>
+
+<style>
+  .faq {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    background: var(--page);
+    padding-block: 3.5rem 5rem;
+  }
+
+  .faq__container {
+    position: relative;
+    z-index: 1;
+    width: min(calc(100% - 2.5rem), 77.5rem);
+    margin-inline: auto;
+  }
+
+  .faq__background {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    background: url('/faq/union.svg') center / cover no-repeat;
+    pointer-events: none;
+  }
+
+  .faq__title {
+    font-family: 'Vetrino', Georgia, serif;
+    font-size: clamp(2rem, 9vw, 2.5rem);
+    font-weight: 400;
+    line-height: 1;
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  .faq__list {
+    display: grid;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .faq__item {
+    max-width: 100%;
+    border-radius: 0.75rem;
+    background: var(--surface-elevated);
+    box-shadow: inset 0 0 0 1px transparent;
+    transition: background-color 180ms ease, box-shadow 180ms ease;
+  }
+
+  .faq__item:hover {
+    box-shadow: inset 0 0 0 1px var(--accent-muted);
+  }
+
+  .faq__summary {
+    position: relative;
+    display: block;
+    min-height: 4.875rem;
+    cursor: pointer;
+    list-style: none;
+    border-radius: 0.75rem;
+    padding: 1.625rem 4.5rem 1.625rem 1.25rem;
+    transition: background-color 140ms ease, min-height 200ms ease,
+      padding-bottom 200ms ease;
+  }
+
+  .faq__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq__summary::marker {
+    content: '';
+  }
+
+  .faq__summary:active {
+    background: color-mix(in srgb, var(--accent-muted) 9%, transparent);
+  }
+
+  .faq__summary:focus-visible {
+    outline-color: var(--accent-muted);
+    outline-offset: 0.25rem;
+  }
+
+  faq-accordion:not([data-enhanced='true']) .faq__item[open] .faq__summary,
+  faq-accordion[data-enhanced='true'] .faq__item[data-expanded='true'] .faq__summary {
+    min-height: 0;
+    padding-bottom: 0;
+  }
+
+  .faq__question {
+    display: block;
+    overflow-wrap: anywhere;
+    font-family: 'Vetrino', Georgia, serif;
+    font-size: 1.375rem;
+    font-weight: 400;
+    line-height: 1.05;
+  }
+
+  .faq__brand-z {
+    font-family: 'Bergamasco', Georgia, serif;
+  }
+
+  .faq__icon {
+    position: absolute;
+    top: 1.1875rem;
+    right: 1.125rem;
+    display: grid;
+    width: 2.5rem;
+    height: 2.5rem;
+    place-items: center;
+    pointer-events: none;
+  }
+
+  .faq__icon img {
+    display: block;
+    width: 2rem;
+    height: 2rem;
+    transform: rotate(0deg);
+    transition: transform 200ms ease;
+  }
+
+  faq-accordion:not([data-enhanced='true']) .faq__item[open] .faq__icon img,
+  faq-accordion[data-enhanced='true'] .faq__item[data-expanded='true'] .faq__icon img {
+    transform: rotate(90deg);
+  }
+
+  .faq__answer-clip {
+    overflow: hidden;
+  }
+
+  faq-accordion[data-enhanced='true'] .faq__answer-clip {
+    block-size: 0;
+    opacity: 0;
+    transition: block-size 200ms ease, opacity 160ms ease;
+  }
+
+  faq-accordion[data-enhanced='true'] .faq__item[data-expanded='true'] .faq__answer-clip {
+    opacity: 1;
+  }
+
+  .faq__answer-panel {
+    padding: 0.875rem 1.25rem 1.25rem;
+  }
+
+  .faq__answer {
+    max-width: 68rem;
+    color: var(--text-muted);
+    font-size: 0.9375rem;
+    line-height: 1.4;
+  }
+
+  @media (min-width: 48rem) {
+    .faq__list {
+      gap: 1.25rem;
+    }
+
+    .faq__summary {
+      min-height: 5.625rem;
+      padding: 1.875rem 5.25rem 1.875rem 1.875rem;
+    }
+
+    faq-accordion:not([data-enhanced='true']) .faq__item[open] .faq__summary,
+    faq-accordion[data-enhanced='true'] .faq__item[data-expanded='true'] .faq__summary {
+      min-height: 0;
+      padding-bottom: 0;
+    }
+
+    .faq__question {
+      font-size: clamp(1.625rem, 2.5vw, 1.875rem);
+      line-height: 1;
+    }
+
+    .faq__icon {
+      top: 1.5625rem;
+      right: 1.5rem;
+    }
+
+    .faq__icon img {
+      width: 2.4375rem;
+      height: 2.4375rem;
+    }
+
+    .faq__answer-panel {
+      padding: 1.125rem 1.875rem 1.875rem;
+    }
+
+    .faq__answer {
+      font-size: 1rem;
+      line-height: 1;
+    }
+  }
+
+  @media (min-width: 80rem) {
+    .faq {
+      min-height: 49.25rem;
+      padding-block: 3.1875rem 5.8125rem;
+    }
+
+    .faq__background {
+      background-size: 100% 100%;
+    }
+
+    .faq__title {
+      font-size: 3rem;
+    }
+
+    .faq__summary {
+      padding-inline: 1.875rem 5.25rem;
+    }
+  }
+</style>
