@@ -60,8 +60,14 @@ const whatsappUrl = getWhatsAppUrl('selectionHelp');
 
   if (line && line.dataset.motionReady !== 'true') {
     line.dataset.motionReady = 'true';
+    const section = line.closest<HTMLElement>('.conversion-section');
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const path = line.querySelector<SVGPathElement>('path');
+    const setDessertsReady = (ready: boolean) => {
+      if (section) section.dataset.dessertsReady = String(ready);
+    };
+
+    setDessertsReady(false);
 
     line.closest<HTMLElement>('.conversion-section')?.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((link) => {
       link.addEventListener('click', () => {
@@ -74,6 +80,7 @@ const whatsappUrl = getWhatsAppUrl('selectionHelp');
 
     if (!path || reducedMotion.matches) {
       line.dataset.drawn = 'true';
+      setDessertsReady(true);
     } else {
       const length = path.getTotalLength();
       let started = false;
@@ -86,6 +93,7 @@ const whatsappUrl = getWhatsAppUrl('selectionHelp');
         path.style.strokeDashoffset = '0';
         line.dataset.drawn = 'true';
         delete line.dataset.drawing;
+        setDessertsReady(true);
       };
 
       const start = () => {
@@ -155,7 +163,7 @@ const whatsappUrl = getWhatsAppUrl('selectionHelp');
   }
 
   .conversion-section__line[data-drawing='true'] :global(path) {
-    transition: stroke-dashoffset 1600ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: stroke-dashoffset 3000ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .conversion-section__inner {
@@ -216,6 +224,15 @@ const whatsappUrl = getWhatsAppUrl('selectionHelp');
   .conversion-section__dessert {
     display: block;
     flex: 0 1 auto;
+  }
+
+  .conversion-section[data-desserts-ready] .conversion-section__dessert {
+    transition: opacity 600ms cubic-bezier(0.22, 1, 0.36, 1), transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .conversion-section[data-desserts-ready='false'] .conversion-section__dessert {
+    opacity: 0;
+    transform: translateY(1rem);
   }
 
   .conversion-section__dessert :global(img) {
@@ -295,6 +312,10 @@ const whatsappUrl = getWhatsAppUrl('selectionHelp');
 
   @media (prefers-reduced-motion: reduce) {
     .conversion-section__line[data-drawing='true'] :global(path) {
+      transition: none;
+    }
+
+    .conversion-section[data-desserts-ready] .conversion-section__dessert {
       transition: none;
     }
   }
