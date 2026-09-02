@@ -8,10 +8,6 @@ const whatsappUrl = getWhatsAppUrl('general');
   <h2 id="contacts-title" class="contact-section__title" data-footer-reveal-item>Контакты</h2>
   <div class="contact-section__card">
     <img class="contact-section__frame" src="/footer/frame-1050.svg" alt="" aria-hidden="true" />
-    <span class="contact-section__scallop contact-section__scallop--top" aria-hidden="true"></span>
-    <span class="contact-section__scallop contact-section__scallop--right" aria-hidden="true"></span>
-    <span class="contact-section__scallop contact-section__scallop--bottom" aria-hidden="true"></span>
-    <span class="contact-section__scallop contact-section__scallop--left" aria-hidden="true"></span>
     <div class="contact-section__content" data-footer-reveal-item>
       <div class="contact-section__item">
         <h3>Мы находимся по адресу</h3>
@@ -76,8 +72,21 @@ const whatsappUrl = getWhatsAppUrl('general');
   .contact-section__card {
     position: relative;
     margin: 0.9rem;
-    background: var(--surface);
-    border-radius: 1.5rem;
+    background: transparent;
+    border-radius: 0;
+  }
+
+  .contact-section__card::before {
+    position: absolute;
+    z-index: 0;
+    inset: -0.9rem;
+    border: 1.8rem solid transparent;
+    border-image-source: url('/footer/frame-adaptive.svg');
+    border-image-slice: 52 fill;
+    border-image-width: 1.8rem;
+    border-image-repeat: round;
+    content: '';
+    pointer-events: none;
   }
 
   .contact-section__frame {
@@ -94,8 +103,14 @@ const whatsappUrl = getWhatsAppUrl('general');
     position: relative;
     z-index: 1;
     display: grid;
+    min-width: 0;
     gap: 1.5rem;
     padding: 2.5rem 1.5rem;
+  }
+
+  .contact-section__item,
+  .contact-section__detail {
+    min-width: 0;
   }
 
   .contact-section__item h3 {
@@ -124,10 +139,17 @@ const whatsappUrl = getWhatsAppUrl('general');
   }
 
   .contact-section__detail a,
+  .contact-section__detail span,
   .contact-section__phones a {
+    min-width: 0;
     border-radius: 0.25rem;
     color: inherit;
     text-decoration: none;
+  }
+
+  .contact-section__detail a,
+  .contact-section__detail span {
+    overflow-wrap: anywhere;
   }
 
   .contact-section__detail a:hover,
@@ -172,52 +194,6 @@ const whatsappUrl = getWhatsAppUrl('general');
     height: 100%;
   }
 
-  .contact-section__scallop {
-    position: absolute;
-    z-index: 0;
-    display: block;
-    background: radial-gradient(circle, var(--surface) 66%, transparent 69%);
-    pointer-events: none;
-  }
-
-  .contact-section__scallop--top,
-  .contact-section__scallop--bottom {
-    right: 0;
-    left: 0;
-    height: 1.8rem;
-    background-size: 3.6rem 1.8rem;
-    background-repeat: repeat-x;
-  }
-
-  .contact-section__scallop--top {
-    top: -0.9rem;
-    background-position: center bottom;
-  }
-
-  .contact-section__scallop--bottom {
-    bottom: -0.9rem;
-    background-position: center top;
-  }
-
-  .contact-section__scallop--left,
-  .contact-section__scallop--right {
-    top: 0;
-    bottom: 0;
-    width: 1.8rem;
-    background-size: 1.8rem 3.6rem;
-    background-repeat: repeat-y;
-  }
-
-  .contact-section__scallop--left {
-    left: -0.9rem;
-    background-position: right center;
-  }
-
-  .contact-section__scallop--right {
-    right: -0.9rem;
-    background-position: left center;
-  }
-
   @media (min-width: 40rem) {
     .contact-section__card {
       width: min(100%, 41.375rem);
@@ -227,12 +203,12 @@ const whatsappUrl = getWhatsAppUrl('general');
       border-radius: 0;
     }
 
-    .contact-section__frame {
-      display: block;
+    .contact-section__card::before {
+      display: none;
     }
 
-    .contact-section__scallop {
-      display: none;
+    .contact-section__frame {
+      display: block;
     }
 
     .contact-section__title {

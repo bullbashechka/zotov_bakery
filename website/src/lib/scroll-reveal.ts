@@ -13,7 +13,11 @@ export const initScrollReveal = (root: ParentNode, selector = '[data-scroll-reve
   if (elements.length === 0) return () => {};
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  let observer: IntersectionObserver | undefined;
+  const clipElements = elements.filter((element) => element.dataset.scrollReveal === 'clip');
+  const fadeElements = elements.filter((element) => element.dataset.scrollReveal !== 'clip');
+  const clipTriggers = new Map<HTMLElement, ScrollRevealElement[]>();
+  let fadeObserver: IntersectionObserver | undefined;
+  let clipObserver: IntersectionObserver | undefined;
 
   const reveal = (element: ScrollRevealElement) => {
     element.dataset.revealRevealed = REVEALED;
@@ -35,24 +39,48 @@ export const initScrollReveal = (root: ParentNode, selector = '[data-scroll-reve
   if (reducedMotion.matches || !('IntersectionObserver' in window)) {
     revealAll();
   } else {
-    observer = new IntersectionObserver(
+    fadeObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
 
           reveal(entry.target as ScrollRevealElement);
-          observer?.unobserve(entry.target);
+          fadeObserver?.unobserve(entry.target);
         });
       },
       { rootMargin: '0px 0px -15% 0px', threshold: 0.15 },
     );
 
-    elements.forEach((element) => observer?.observe(element));
+    fadeElements.forEach((element) => fadeObserver?.observe(element));
+
+    clipElements.forEach((element) => {
+      const trigger = element.parentElement ?? element;
+      const targets = clipTriggers.get(trigger) ?? [];
+      targets.push(element);
+      clipTriggers.set(trigger, targets);
+    });
+
+    if (clipTriggers.size > 0) {
+      clipObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+
+            clipTriggers.get(entry.target as HTMLElement)?.forEach(reveal);
+            clipObserver?.unobserve(entry.target);
+          });
+        },
+        { rootMargin: '0px 0px -15% 0px', threshold: 0.01 },
+      );
+
+      clipTriggers.forEach((_, trigger) => clipObserver?.observe(trigger));
+    }
   }
 
   const handleMotionChange = (event: MediaQueryListEvent) => {
     if (event.matches) {
-      observer?.disconnect();
+      fadeObserver?.disconnect();
+      clipObserver?.disconnect();
       revealAll();
     }
   };
@@ -60,7 +88,8 @@ export const initScrollReveal = (root: ParentNode, selector = '[data-scroll-reve
   reducedMotion.addEventListener('change', handleMotionChange);
 
   return () => {
-    observer?.disconnect();
+    fadeObserver?.disconnect();
+    clipObserver?.disconnect();
     reducedMotion.removeEventListener('change', handleMotionChange);
   };
 };
