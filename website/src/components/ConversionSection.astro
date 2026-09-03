@@ -181,7 +181,7 @@ const whatsappUrl = getWhatsAppUrl('selectionHelp');
     position: relative;
     z-index: 1;
     width: min(calc(100% - 2rem), 77.5rem);
-    min-height: 25rem;
+    min-height: auto;
     margin-inline: auto;
   }
 
@@ -258,6 +258,12 @@ const whatsappUrl = getWhatsAppUrl('selectionHelp');
 
   .conversion-section__dessert--right {
     width: min(60vw, 18rem);
+  }
+
+  @media (max-width: 39.999rem) {
+    .conversion-section__desserts {
+      display: none;
+    }
   }
 
   @media (min-width: 40rem) {
