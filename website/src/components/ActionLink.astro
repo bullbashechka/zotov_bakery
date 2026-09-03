@@ -1,7 +1,7 @@
 ---
 interface Props {
   href: string;
-  variant: 'primary' | 'secondary';
+  variant: 'primary' | 'secondary' | 'surface';
   fullWidth?: boolean;
   target?: '_blank';
   rel?: string;
@@ -56,6 +56,19 @@ const { href, variant, fullWidth = false, target, rel } = Astro.props;
     background: var(--surface-elevated);
   }
 
+  .action-link[data-variant='surface'] {
+    min-height: 48px;
+    border-radius: 0.375rem;
+    background: var(--surface);
+    color: var(--text-primary);
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .action-link[data-variant='surface']:hover {
+    background: var(--surface-elevated);
+  }
+
   .action-link:active {
     transform: translateY(1px);
   }
@@ -73,6 +86,11 @@ const { href, variant, fullWidth = false, target, rel } = Astro.props;
 
     .action-link[data-variant='secondary'] {
       min-width: 20.1875rem;
+    }
+
+    .action-link[data-variant='surface'] {
+      min-height: 48px;
+      font-size: 16px;
     }
   }
 </style>

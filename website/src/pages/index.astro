@@ -8,6 +8,7 @@ import HeroAdvantagesFlow from '@/components/HeroAdvantagesFlow.astro';
 import PlaceholderSection from '@/components/PlaceholderSection.astro';
 import SiteHeader from '@/components/SiteHeader.astro';
 import SiteFooter from '@/components/SiteFooter.astro';
+import WhereToBuy from '@/components/WhereToBuy.astro';
 import { HOME_SECTION_IDS } from '@/lib/site';
 import '@/styles/global.css';
 
@@ -21,7 +22,6 @@ const canonicalUrl = publicWebsiteUrl
 const placeholderSections = [
   { id: HOME_SECTION_IDS.honeyCake, title: 'Медовик' },
   { id: HOME_SECTION_IDS.assortment, title: 'Ассортимент' },
-  { id: HOME_SECTION_IDS.whereToBuy, title: 'Где купить' },
   { id: HOME_SECTION_IDS.history, title: 'Наша история' },
 ];
 ---
@@ -37,6 +37,7 @@ const placeholderSections = [
   {placeholderSections.map((section) => (
     <PlaceholderSection id={section.id} title={section.title} />
   ))}
+  <WhereToBuy />
   <Faq />
   <ConversionSection />
 

@@ -34,6 +34,10 @@ export const CONTACTS = {
   instagramUrl: 'https://www.instagram.com/zotov.bakery/',
 } as const;
 
+export const PURCHASE_LINKS = {
+  aimerTwoGisUrl: 'https://2gis.kz/petropavlovsk/search/aimer',
+} as const;
+
 export const POLICY_LINKS = [
   { href: '/privacy/', label: 'Политика конфиденциальности' },
   { href: '/data-processing/', label: 'Политика обработки данных' },
