@@ -5,6 +5,7 @@ import ConversionSection from '@/components/ConversionSection.astro';
 import Faq from '@/components/Faq.astro';
 import Hero from '@/components/Hero.astro';
 import HeroAdvantagesFlow from '@/components/HeroAdvantagesFlow.astro';
+import HoneyCake from '@/components/HoneyCake.astro';
 import PlaceholderSection from '@/components/PlaceholderSection.astro';
 import SiteHeader from '@/components/SiteHeader.astro';
 import SiteFooter from '@/components/SiteFooter.astro';
@@ -19,11 +20,10 @@ const canonicalUrl = publicWebsiteUrl
   ? new URL(Astro.url.pathname, publicWebsiteUrl).toString()
   : undefined;
 
-const placeholderSections = [
-  { id: HOME_SECTION_IDS.honeyCake, title: 'Медовик' },
-  { id: HOME_SECTION_IDS.assortment, title: 'Ассортимент' },
-  { id: HOME_SECTION_IDS.history, title: 'Наша история' },
-];
+const placeholderSections = {
+  assortment: { id: HOME_SECTION_IDS.assortment, title: 'Ассортимент' },
+  history: { id: HOME_SECTION_IDS.history, title: 'Наша история' },
+};
 ---
 
 <BaseLayout {title} {description} {canonicalUrl}>
@@ -34,10 +34,10 @@ const placeholderSections = [
     <Advantages />
   </HeroAdvantagesFlow>
 
-  {placeholderSections.map((section) => (
-    <PlaceholderSection id={section.id} title={section.title} />
-  ))}
+  <HoneyCake />
+  <PlaceholderSection id={placeholderSections.assortment.id} title={placeholderSections.assortment.title} />
   <WhereToBuy />
+  <PlaceholderSection id={placeholderSections.history.id} title={placeholderSections.history.title} />
   <Faq />
   <ConversionSection />
 
