@@ -1,26 +1,16 @@
 # Repository Guidelines
 
-## Operating Principles
+## Architecture & Code Discovery
 
-Answer in the user's language. Inspect affected files before acting and verify uncertainty through code, docs, or command output. Work autonomously; ask only about open product choices or risky actions. Preserve unrelated changes and use the lightest workflow that proves the result.
+This is a Bun workspace with one Astro site in `website/`. Global styles and design tokens live in `website/src/styles/global.css`.
 
-Use `$code-scout` for non-trivial repository discovery to delegate broad code reading to a lower-cost subagent scout and keep irrelevant file contents out of the primary agent's context.
+Keep public, SEO-critical content in `.astro` files. Use React only for isolated client interactions. Follow the style of the existing code.
 
-## Project Structure & Module Organization
+Use `$code-scout` for non-trivial repository discovery: delegate code search and broad code reading to a GPT-5.3 Spark subagent to keep irrelevant file contents out of the primary agent's context.
 
-This is a Bun workspace with one Astro site in `website/`.
+## Commands & Verification
 
-- `website/src/pages/` holds routes; `index.astro` is the home page.
-- `website/src/layouts/` and `components/` hold document shells, reusable UI, and React islands.
-- `website/src/styles/global.css` owns Tailwind imports and design tokens.
-- `website/public/` contains static assets, `robots.txt`, and Cloudflare `_headers`.
-- `wrangler.jsonc` defines Cloudflare Pages output.
-
-Keep public, SEO-critical content in `.astro` files. Use React only for isolated client interactions.
-
-## Build, Test, and Development Commands
-
-Use Bun `1.3.14` as pinned in `.bun-version`.
+Run commands from the repository root using the Bun version pinned in `.bun-version`.
 
 ```bash
 bun install       # install dependencies
@@ -30,22 +20,22 @@ bun run build     # create website/dist
 bun run preview   # serve the production build
 ```
 
-After local edits and verification, stop any dev or preview process that was started and release its port.
+After code changes, run `bun run typecheck` and `bun run build`. Fix failures introduced by the changes; report pre-existing failures or environment blockers separately. Documentation-only changes do not require these checks. No test runner is configured.
 
-`bun run cf:dev` serves the build through Cloudflare Pages. Build before using a deploy command; never deploy without explicit approval.
+Validate visual changes in the browser at desktop and mobile widths; compare against Figma when a reference is provided. Include screenshots in PRs when they help review visual changes.
 
-## Coding Style & Naming Conventions
+Stop dev or preview processes you started for verification, unless the user requested that they remain running for review.
 
-Use two-space indentation, semicolons, and single quotes in script blocks. Name components in PascalCase (`ProductCard.astro`), routes in lowercase (`about.astro`), and CSS classes in kebab-case (`site-container`). Prefer Tailwind and existing dependencies. Fix the owning layer, keep diffs focused, and avoid premature abstractions. Request approval before adding a production dependency.
+## Change Boundaries & Configuration
 
-## Testing Guidelines
+Preserve unrelated changes and data. Removing obsolete files within the requested task is allowed. Never edit generated `website/dist/` or `website/.astro/`.
 
-No test runner is configured. Every code change must pass the smallest relevant checks, normally `bun run typecheck` and `bun run build`; a non-zero result means unfinished work. Add tests when behavior gains meaningful branches. Validate visual changes in the browser at desktop and mobile widths against Figma.
+Do not commit or print `.env` values, Cloudflare tokens, or private data.
 
-## Commit & Pull Request Guidelines
+Set the public canonical URL through `PUBLIC_WEBSITE_URL`; update `website/public/_headers` when adding third-party scripts or embeds.
 
-Use concise Conventional Commit-style subjects, for example `feat: add bakery hero section`. Pull requests should explain the visible change, link relevant issues, include desktop and mobile screenshots, and list checks run.
+## Actions Requiring Authorization
 
-## Safety & Configuration
+Require explicit user authorization before adding a production dependency, committing, pushing, deploying, switching branches, or discarding changes. Authorization already given for the task does not need to be requested again.
 
-Do not commit or print `.env` values, Cloudflare tokens, or private data. Never edit generated `website/dist/` or `website/.astro/`. Do not commit, push, deploy, switch branches, delete files, or discard changes unless requested. Before deployment, verify the branch, remote, and clean worktree. Set the public canonical URL through `PUBLIC_WEBSITE_URL`; update `_headers` for third-party scripts or embeds.
+Before deployment, verify the branch, remote, and clean worktree, then run the build. `wrangler.jsonc` defines Cloudflare Pages output; `bun run cf:dev` serves the build locally through Cloudflare Pages.
