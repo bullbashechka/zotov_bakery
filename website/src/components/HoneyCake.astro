@@ -50,12 +50,12 @@ const whatsappUrl = getWhatsAppUrl('general');
 <section id={HOME_SECTION_IDS.honeyCake} class="honey-cake" aria-labelledby="honey-cake-title">
   <div class="honey-cake__surface" aria-hidden="true"></div>
   <div class="honey-cake__container">
-    <h2 id="honey-cake-title" class="honey-cake__title" data-scroll-reveal="clip">
+    <h2 id="honey-cake-title" class="honey-cake__title" data-motion="heading">
       Медовик от <span class="honey-cake__brand-z">Z</span>OTOV bakery
     </h2>
 
     <div class="honey-cake__content">
-      <honey-cake-hotspots class="honey-cake__media" data-scroll-reveal="fade">
+      <honey-cake-hotspots class="honey-cake__media" data-motion="image">
         <Picture
           src={honeyCake}
           formats={['avif', 'webp']}
@@ -80,8 +80,10 @@ const whatsappUrl = getWhatsAppUrl('general');
                 <span class="honey-cake__hotspot-mark" aria-hidden="true">+</span>
               </summary>
               <div id={panelId} class="honey-cake__hotspot-panel" role="region" aria-labelledby={summaryId}>
-                <h3>{hotspot.title}</h3>
-                <p>{hotspot.body}</p>
+                <div class="honey-cake__hotspot-content">
+                  <h3>{hotspot.title}</h3>
+                  <p>{hotspot.body}</p>
+                </div>
               </div>
             </details>
           );
@@ -90,14 +92,14 @@ const whatsappUrl = getWhatsAppUrl('general');
 
       <p class="honey-cake__hint">Нажмите на «+», чтобы узнать подробнее.</p>
 
-      <div class="honey-cake__copy" data-scroll-reveal="fade" data-reveal-delay="100">
-        <h3>Описание</h3>
-        <p>
+      <div class="honey-cake__copy">
+        <h3 data-motion="heading">Описание</h3>
+        <p data-motion="copy">
           Мягкие, хорошо пропитанные медовые коржи напоминают тот самый домашний медовик из
           детства. Белковый воздушный крем сверху торта буквально тает во рту, а умеренная
           сладость делает десерт более нежным и легким.
         </p>
-        <p>
+        <p data-motion="copy">
           Этот медовик Светлана Зотова пекла для семьи и близких. Со временем домашний рецепт
           стал ассоциироваться с брендом.
         </p>
@@ -113,8 +115,6 @@ const whatsappUrl = getWhatsAppUrl('general');
 </section>
 
 <script>
-  import { initScrollReveal } from '@/lib/scroll-reveal';
-
   class HoneyCakeHotspots extends HTMLElement {
     private items: HTMLDetailsElement[] = [];
     private abortController: AbortController | null = null;
@@ -200,8 +200,6 @@ const whatsappUrl = getWhatsAppUrl('general');
     customElements.define('honey-cake-hotspots', HoneyCakeHotspots);
   }
 
-  const honeyCakeSection = document.querySelector<HTMLElement>('.honey-cake');
-  if (honeyCakeSection) initScrollReveal(honeyCakeSection);
 </script>
 
 <style>
@@ -314,7 +312,7 @@ const whatsappUrl = getWhatsAppUrl('general');
     font-size: 0.875rem;
     font-weight: 500;
     line-height: 1;
-    transition: background-color 160ms ease, transform 160ms ease;
+    transition: background-color 180ms ease, transform 180ms var(--motion-ease);
   }
 
   .honey-cake__hotspot > summary:hover .honey-cake__hotspot-mark,
@@ -340,7 +338,7 @@ const whatsappUrl = getWhatsAppUrl('general');
     padding: 0.75rem 0.875rem;
     color: var(--text-primary);
     box-shadow: 0 0.625rem 1.75rem rgb(59 38 39 / 16%);
-    animation: honey-cake-popover-in 200ms ease-in-out both;
+    animation: honey-cake-popover-in 180ms ease both;
   }
 
   .honey-cake__hotspot[data-placement='top'] .honey-cake__hotspot-panel {
@@ -439,6 +437,15 @@ const whatsappUrl = getWhatsAppUrl('general');
   .honey-cake__scallop--bottom {
     bottom: 0;
     transform: scaleY(-1);
+  }
+
+  .honey-cake__hotspot-content {
+    animation: honey-cake-content-in 240ms var(--motion-ease) both;
+  }
+
+  @keyframes honey-cake-content-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   @keyframes honey-cake-popover-in {

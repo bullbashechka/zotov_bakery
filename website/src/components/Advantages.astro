@@ -29,7 +29,7 @@ const advantages = [
   <div class="advantages__desktop-line" aria-hidden="true">
     <svg
       class="advantages__line advantages__line--tablet"
-      data-advantages-line
+      data-motion-line
       width="768"
       height="207"
       viewBox="0 0 768 207"
@@ -46,7 +46,7 @@ const advantages = [
 
     <svg
       class="advantages__line advantages__line--laptop"
-      data-advantages-line
+      data-motion-line
       width="1024"
       height="270"
       viewBox="0 0 1024 270"
@@ -63,7 +63,7 @@ const advantages = [
 
     <svg
       class="advantages__line advantages__line--desktop"
-      data-advantages-line
+      data-motion-line
       width="1440"
       height="366"
       viewBox="0 0 1440 366"
@@ -82,7 +82,7 @@ const advantages = [
   <div class="advantages__mobile-lines" aria-hidden="true">
     <svg
       class="advantages__mobile-line advantages__mobile-line--top"
-      data-advantages-line
+      data-motion-line
       width="390"
       height="119"
       viewBox="0 0 390 119"
@@ -100,7 +100,7 @@ const advantages = [
 
     <svg
       class="advantages__mobile-line advantages__mobile-line--middle"
-      data-advantages-line
+      data-motion-line
       width="390"
       height="747"
       viewBox="0 0 390 747"
@@ -109,7 +109,13 @@ const advantages = [
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        d="M113.5 146.509C161.965 106.795 230.81 2.40047 291 3.50876C366.237 4.89411 281 259.009 345 259.009C395 259.009 384 105.009 465.972 105.009M-59 463.508C11 463.508 -13.6373 576.008 37 576.008C98.1439 576.008 34 319.508 113.5 319.508C193 319.508 250.418 743.008 345 743.008C396.599 743.008 400 615.199 465.972 615.199"
+        d="M113.5 146.509C161.965 106.795 230.81 2.40047 291 3.50876C366.237 4.89411 281 259.009 345 259.009C395 259.009 384 105.009 465.972 105.009"
+        stroke="#D47212"
+        stroke-width="7"
+        vector-effect="non-scaling-stroke"
+      />
+      <path
+        d="M-59 463.508C11 463.508 -13.6373 576.008 37 576.008C98.1439 576.008 34 319.508 113.5 319.508C193 319.508 250.418 743.008 345 743.008C396.599 743.008 400 615.199 465.972 615.199"
         stroke="#D47212"
         stroke-width="7"
         vector-effect="non-scaling-stroke"
@@ -118,7 +124,7 @@ const advantages = [
 
     <svg
       class="advantages__mobile-line advantages__mobile-line--bottom"
-      data-advantages-line
+      data-motion-line
       width="390"
       height="669"
       viewBox="0 0 390 669"
@@ -136,9 +142,9 @@ const advantages = [
   </div>
 
   <div class="advantages__content">
-    <h2 id="advantages-title" class="advantages__title" data-scroll-reveal="clip">
-      <span>Секрет вкуса,</span>
-      <span>знакомого с детства</span>
+    <h2 id="advantages-title" class="advantages__title" data-motion="heading">
+      <span><span data-motion-copy>Секрет вкуса,</span></span>
+      <span><span data-motion-copy>знакомого с детства</span></span>
     </h2>
 
     <advantages-carousel aria-label="Преимущества ZOTOV bakery">
@@ -147,13 +153,12 @@ const advantages = [
           <article
             class="advantages__card"
             data-advantages-card
-            data-scroll-reveal="fade"
-            data-reveal-delay={index * 90}
+            data-motion="card"
             aria-label={`Преимущество ${index + 1} из ${advantages.length}`}
           >
             <h3 class="advantages__card-title">{advantage.title}</h3>
             <div class="advantages__art" aria-hidden="true">
-              <img src={advantage.image} width="213" height="171" alt="" loading="lazy" />
+              <img src={advantage.image} width="213" height="171" alt="" loading="lazy" data-motion-art />
             </div>
             <p class="advantages__description">{advantage.description}</p>
           </article>
@@ -166,8 +171,6 @@ const advantages = [
 </section>
 
 <script>
-  import { initScrollReveal } from '@/lib/scroll-reveal';
-
   class AdvantagesCarousel extends HTMLElement {
     private track: HTMLElement | null = null;
     private cards: HTMLElement[] = [];
@@ -299,67 +302,6 @@ const advantages = [
     customElements.define('advantages-carousel', AdvantagesCarousel);
   }
 
-  const advantagesSection = document.querySelector<HTMLElement>('.advantages');
-  const lineElements = advantagesSection
-    ? Array.from(advantagesSection.querySelectorAll<SVGSVGElement>('[data-advantages-line]'))
-    : [];
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  let lineObserver: IntersectionObserver | undefined;
-
-  const finishLine = (line: SVGSVGElement) => {
-    line.dataset.lineRevealed = 'true';
-    line.dataset.lineDrawing = 'true';
-    line.querySelectorAll<SVGPathElement>('path').forEach((path) => {
-      path.style.strokeDashoffset = '0';
-    });
-  };
-
-  const revealLine = (line: SVGSVGElement) => {
-    line.dataset.lineRevealed = 'true';
-    line.dataset.lineDrawing = 'true';
-    requestAnimationFrame(() => {
-      line.querySelectorAll<SVGPathElement>('path').forEach((path) => {
-        path.style.strokeDashoffset = '0';
-      });
-    });
-  };
-
-  if (lineElements.length > 0) {
-    lineElements.forEach((line) => {
-      line.querySelectorAll<SVGPathElement>('path').forEach((path) => {
-        const length = path.getTotalLength();
-        path.style.strokeDasharray = `${length}`;
-        path.style.strokeDashoffset = `${length}`;
-      });
-    });
-
-    if (reducedMotion.matches || !('IntersectionObserver' in window)) {
-      lineElements.forEach(finishLine);
-    } else {
-      lineObserver = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (!entry.isIntersecting) return;
-
-            revealLine(entry.target as SVGSVGElement);
-            lineObserver?.unobserve(entry.target);
-          });
-        },
-        { rootMargin: '0px 0px -12% 0px', threshold: 0.05 },
-      );
-
-      lineElements.forEach((line) => lineObserver?.observe(line));
-    }
-
-    reducedMotion.addEventListener('change', (event) => {
-      if (!event.matches) return;
-
-      lineObserver?.disconnect();
-      lineElements.forEach(finishLine);
-    });
-  }
-
-  if (advantagesSection) initScrollReveal(advantagesSection);
 </script>
 
 <style>
@@ -401,11 +343,6 @@ const advantages = [
     max-width: none;
   }
 
-  .advantages__line[data-line-drawing='true'] path,
-  .advantages__mobile-line[data-line-drawing='true'] path {
-    transition: stroke-dashoffset 1200ms cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
   .advantages__mobile-line--top {
     top: 0.4132%;
   }
@@ -441,15 +378,20 @@ const advantages = [
     text-align: center;
   }
 
-  .advantages__title span {
+  .advantages__title > span {
+    overflow: clip;
     min-height: 2.25rem;
     background: var(--text-primary);
     padding: 0.375rem 0.8125rem;
     white-space: nowrap;
   }
 
-  .advantages__title span:first-child {
+  .advantages__title > span:first-child {
     padding-inline: 0.875rem;
+  }
+
+  [data-motion-copy] {
+    display: block;
   }
 
   advantages-carousel {
@@ -591,13 +533,13 @@ const advantages = [
       white-space: nowrap;
     }
 
-    .advantages__title span {
+    .advantages__title > span {
       min-height: 0;
       background: transparent;
       padding: 0;
     }
 
-    .advantages__title span:first-child {
+    .advantages__title > span:first-child {
       margin-left: 0;
       padding-inline: 0;
     }

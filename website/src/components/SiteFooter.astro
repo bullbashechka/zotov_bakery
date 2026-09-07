@@ -3,66 +3,32 @@ import ContactSection from '@/components/ContactSection.astro';
 import { HOME_NAV_LINKS, POLICY_LINKS } from '@/lib/site';
 ---
 
-<div class="site-footer__surface" data-footer-reveal>
+<div class="site-footer__surface">
   <div class="site-footer__content">
-    <a class="site-footer__logo" data-footer-reveal-item href="/#hero" aria-label="ZOTOV bakery, в начало страницы">
-      <img src="/footer/zotov-footer-logo.svg" width="391" height="466" alt="ZOTOV bakery" />
+    <a class="site-footer__logo" href="/#hero" aria-label="ZOTOV bakery, в начало страницы">
+      <img data-motion="image" src="/footer/zotov-footer-logo.svg" width="391" height="466" alt="ZOTOV bakery" />
     </a>
 
     <ContactSection />
 
-    <nav class="site-footer__navigation" data-footer-reveal-item aria-label="Навигация в подвале">
+    <nav class="site-footer__navigation" aria-label="Навигация в подвале">
       {HOME_NAV_LINKS.map((link) => <a href={link.href}>{link.label}</a>)}
     </nav>
 
-    <nav class="site-footer__policies" data-footer-reveal-item aria-label="Юридическая информация">
+    <nav class="site-footer__policies" aria-label="Юридическая информация">
       {POLICY_LINKS.map((link) => <a href={link.href}>{link.label}</a>)}
     </nav>
 
-    <p class="site-footer__copyright" data-footer-reveal-item>
+    <p class="site-footer__copyright">
       © <time data-current-year>{new Date().getFullYear()}</time> ZOTOV bakery
     </p>
   </div>
 </div>
 
 <script>
-  const reveal = document.querySelector<HTMLElement>('[data-footer-reveal]');
-
-  if (reveal && reveal.dataset.revealReady !== 'true') {
-    reveal.dataset.revealReady = 'true';
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    let observer: IntersectionObserver | undefined;
-
-    const revealContent = () => {
-      observer?.disconnect();
-      reveal.inert = false;
-      reveal.dataset.revealed = 'true';
-      delete reveal.dataset.revealing;
-    };
-
-    if (!reducedMotion.matches) {
-      reveal.dataset.revealing = 'true';
-      reveal.inert = true;
-      observer = new IntersectionObserver(
-        ([entry]) => {
-          if (!entry.isIntersecting) return;
-          requestAnimationFrame(() => {
-            revealContent();
-          });
-        },
-        { rootMargin: '0px 0px -12% 0px' },
-      );
-      observer.observe(reveal);
-    }
-
-    reducedMotion.addEventListener('change', () => {
-      if (reducedMotion.matches) revealContent();
-    });
-
-    document.querySelectorAll<HTMLElement>('[data-current-year]').forEach((year) => {
-      year.textContent = String(new Date().getFullYear());
-    });
-  }
+  document.querySelectorAll<HTMLElement>('[data-current-year]').forEach((year) => {
+    year.textContent = String(new Date().getFullYear());
+  });
 </script>
 
 <style>
@@ -130,13 +96,15 @@ import { HOME_NAV_LINKS, POLICY_LINKS } from '@/lib/site';
     color: inherit;
     font-size: 0.9375rem;
     line-height: 1.15;
-    text-decoration: none;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 0.2em;
+    transition: text-decoration-color 180ms ease;
   }
 
-  .site-footer__navigation a:hover,
-  .site-footer__policies a:hover {
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
+  .site-footer__navigation a:is(:hover, :focus-visible),
+  .site-footer__policies a:is(:hover, :focus-visible) {
+    text-decoration-color: currentColor;
   }
 
   .site-footer__copyright {
@@ -147,14 +115,7 @@ import { HOME_NAV_LINKS, POLICY_LINKS } from '@/lib/site';
     font-size: 0.8125rem;
   }
 
-  [data-footer-reveal][data-revealing='true'] :global([data-footer-reveal-item]) {
-    opacity: 0;
-    transform: translateY(1rem);
-  }
 
-  [data-footer-reveal] :global([data-footer-reveal-item]) {
-    transition: opacity 420ms ease, transform 420ms ease;
-  }
 
   @media (min-width: 40rem) {
     .site-footer__surface {
@@ -225,11 +186,4 @@ import { HOME_NAV_LINKS, POLICY_LINKS } from '@/lib/site';
     }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    [data-footer-reveal] :global([data-footer-reveal-item]) {
-      opacity: 1;
-      transform: none;
-      transition: none;
-    }
-  }
 </style>

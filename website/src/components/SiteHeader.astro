@@ -179,8 +179,8 @@ const desktopRightLinks = HOME_NAV_LINKS.slice(3);
     box-shadow: none;
     color: var(--text-primary);
     pointer-events: auto;
-    transition: height 180ms ease, background-color 180ms ease, border-color 180ms ease,
-      box-shadow 180ms ease;
+    transition: height 220ms var(--motion-ease), background-color 220ms var(--motion-ease), border-color 220ms var(--motion-ease),
+      box-shadow 220ms var(--motion-ease);
   }
 
   site-header[data-compact],
@@ -226,7 +226,7 @@ const desktopRightLinks = HOME_NAV_LINKS.slice(3);
   .site-header__logo img {
     width: 10rem;
     height: auto;
-    transition: width 180ms ease;
+    transition: width 220ms var(--motion-ease);
   }
 
   site-header[data-compact] .site-header__logo img,
@@ -250,13 +250,16 @@ const desktopRightLinks = HOME_NAV_LINKS.slice(3);
 
   .site-header__desktop-nav a,
   .site-header__mobile-panel a {
+    text-decoration-line: underline;
+    text-decoration-color: transparent;
+    transition: text-decoration-color 180ms ease;
     text-decoration-thickness: 0.0625rem;
     text-underline-offset: 0.3em;
   }
 
-  .site-header__desktop-nav a:hover,
-  .site-header__mobile-panel a:hover {
-    text-decoration-line: underline;
+  .site-header__desktop-nav a:is(:hover, :focus-visible),
+  .site-header__mobile-panel a:is(:hover, :focus-visible) {
+    text-decoration-color: currentColor;
   }
 
   .site-header__menu-toggle {
@@ -280,7 +283,7 @@ const desktopRightLinks = HOME_NAV_LINKS.slice(3);
     height: 0.125rem;
     border-radius: 999px;
     background: currentColor;
-    transition: transform 180ms ease, opacity 180ms ease;
+    transition: transform 220ms var(--motion-ease), opacity 220ms var(--motion-ease);
   }
 
   .site-header__menu-icon {
@@ -357,7 +360,7 @@ const desktopRightLinks = HOME_NAV_LINKS.slice(3);
     background: rgb(36 23 25 / 14%);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 180ms ease;
+    transition: opacity 220ms var(--motion-ease);
   }
 
   site-header:defined .site-header__mobile-panel {
@@ -376,7 +379,7 @@ const desktopRightLinks = HOME_NAV_LINKS.slice(3);
     visibility: hidden;
     pointer-events: none;
     transform: translateY(-0.5rem);
-    transition: opacity 180ms ease, transform 180ms ease, visibility 180ms step-end;
+    transition: opacity 220ms var(--motion-ease), transform 220ms var(--motion-ease), visibility 220ms step-end;
   }
 
   site-header:defined[data-menu-open='true'] .site-header__backdrop {
@@ -389,7 +392,7 @@ const desktopRightLinks = HOME_NAV_LINKS.slice(3);
     visibility: visible;
     pointer-events: auto;
     transform: translateY(0);
-    transition: opacity 180ms ease, transform 180ms ease;
+    transition: opacity 220ms var(--motion-ease), transform 220ms var(--motion-ease);
   }
 
   .site-header__mobile-panel-content {
@@ -450,7 +453,7 @@ const desktopRightLinks = HOME_NAV_LINKS.slice(3);
     .site-header__logo img {
       width: 20.6875rem;
       height: 7.9375rem;
-      transition: width 180ms ease, height 180ms ease;
+      transition: width 220ms var(--motion-ease), height 220ms var(--motion-ease);
     }
 
     site-header[data-compact] .site-header__logo img {

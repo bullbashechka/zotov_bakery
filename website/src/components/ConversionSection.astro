@@ -9,16 +9,16 @@ import { getWhatsAppUrl, HOME_SECTION_IDS } from '@/lib/site';
 const whatsappUrl = getWhatsAppUrl('selectionHelp');
 ---
 
-<section id={HOME_SECTION_IDS.conversion} class="conversion-section" aria-labelledby="conversion-title">
-  <div class="conversion-section__line" data-conversion-line aria-hidden="true" set:html={selectionFlow}></div>
+<section id={HOME_SECTION_IDS.conversion} class="conversion-section" data-motion-group aria-labelledby="conversion-title">
+  <div class="conversion-section__line" data-motion-line aria-hidden="true" set:html={selectionFlow}></div>
 
   <div class="conversion-section__inner">
-    <div class="conversion-section__copy">
-      <h2 id="conversion-title" class="conversion-section__title" data-scroll-reveal="clip">Не знаете что выбрать?</h2>
-      <p class="conversion-section__description" data-scroll-reveal="fade" data-reveal-delay="120">
+    <div class="conversion-section__copy" data-motion-trigger>
+      <h2 id="conversion-title" class="conversion-section__title" data-motion="heading">Не знаете что выбрать?</h2>
+      <p class="conversion-section__description" data-motion="copy">
         Напишите нам в WhatsApp. Подскажем, какие десерты есть в наличии и где их удобнее купить.
       </p>
-      <div class="conversion-section__actions" data-scroll-reveal="fade" data-reveal-delay="220">
+      <div class="conversion-section__actions">
         <ActionLink
           variant="primary"
           href={whatsappUrl}
@@ -37,6 +37,7 @@ const whatsappUrl = getWhatsAppUrl('selectionHelp');
     <div class="conversion-section__desserts" aria-hidden="true">
       <Picture
         class="conversion-section__dessert conversion-section__dessert--left"
+        data-motion="dessert-left"
         src={dessertLeft}
         formats={['avif', 'webp']}
         widths={[240, 320, 392, 480, 640, 784]}
@@ -45,6 +46,7 @@ const whatsappUrl = getWhatsAppUrl('selectionHelp');
       />
       <Picture
         class="conversion-section__dessert conversion-section__dessert--right"
+        data-motion="dessert-right"
         src={dessertRight}
         formats={['avif', 'webp']}
         widths={[260, 360, 459, 560, 720, 918]}
@@ -56,97 +58,23 @@ const whatsappUrl = getWhatsAppUrl('selectionHelp');
 </section>
 
 <script>
-  import { initScrollReveal } from '@/lib/scroll-reveal';
-
-  const line = document.querySelector<HTMLElement>('[data-conversion-line]');
-
-  if (line && line.dataset.motionReady !== 'true') {
-    line.dataset.motionReady = 'true';
-    const section = line.closest<HTMLElement>('.conversion-section');
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const path = line.querySelector<SVGPathElement>('path');
-    const setDessertsReady = (ready: boolean) => {
-      if (section) section.dataset.dessertsReady = String(ready);
-    };
-
-    setDessertsReady(false);
-
-    line.closest<HTMLElement>('.conversion-section')?.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((link) => {
-      link.addEventListener('click', () => {
-        window.setTimeout(() => {
-          const target = document.querySelector<HTMLElement>(link.getAttribute('href') ?? '');
-          target?.focus({ preventScroll: true });
-        }, 0);
-      });
+  document.querySelectorAll<HTMLAnchorElement>('.conversion-section a[href^="#"]').forEach((link) => {
+    link.addEventListener('click', () => {
+      const target = document.getElementById((link.getAttribute('href') ?? '').slice(1));
+      const heading = target?.querySelector<HTMLElement>('h1, h2, h3');
+      if (!heading) return;
+      heading.setAttribute('tabindex', '-1');
+      heading.focus({ preventScroll: true });
     });
-
-    if (!path || reducedMotion.matches) {
-      line.dataset.drawn = 'true';
-      setDessertsReady(true);
-    } else {
-      const length = path.getTotalLength();
-      let started = false;
-      let observer: IntersectionObserver | undefined;
-      let dessertsTimer = 0;
-
-      path.style.strokeDasharray = `${length}`;
-      path.style.strokeDashoffset = `${-length}`;
-
-      const finish = () => {
-        path.style.strokeDashoffset = '0';
-        line.dataset.drawn = 'true';
-        delete line.dataset.drawing;
-        window.clearTimeout(dessertsTimer);
-        if (reducedMotion.matches) {
-          setDessertsReady(true);
-        } else {
-          dessertsTimer = window.setTimeout(() => setDessertsReady(true), 120);
-        }
-      };
-
-      const start = () => {
-        if (started || reducedMotion.matches) return;
-        started = true;
-        line.dataset.drawing = 'true';
-        requestAnimationFrame(() => {
-          path.style.strokeDashoffset = '0';
-        });
-      };
-
-      path.addEventListener('transitionend', (event) => {
-        if (event.propertyName === 'stroke-dashoffset') finish();
-      });
-
-      observer = new IntersectionObserver(
-        ([entry]) => {
-          if (!entry.isIntersecting) return;
-          start();
-          observer?.disconnect();
-        },
-        { rootMargin: '0px 0px 20% 0px' },
-      );
-
-      reducedMotion.addEventListener('change', () => {
-        if (reducedMotion.matches) {
-          observer?.disconnect();
-          finish();
-        }
-      });
-
-      observer.observe(line);
-    };
-  }
-
-  const conversionSection = document.querySelector<HTMLElement>('.conversion-section');
-  if (conversionSection) initScrollReveal(conversionSection);
+  });
 </script>
 
 <style>
   .conversion-section {
     position: relative;
     isolation: isolate;
-    overflow: visible;
-    clip-path: inset(-100vmax 0);
+    overflow-x: clip;
+    overflow-y: visible;
     background: transparent;
     padding-block: clamp(4.5rem, 8vw, 7.5rem) clamp(4.5rem, 7vw, 6.5rem);
   }
@@ -173,9 +101,6 @@ const whatsappUrl = getWhatsAppUrl('selectionHelp');
     transform: translate(-50%, 2.375rem);
   }
 
-  .conversion-section__line[data-drawing='true'] :global(path) {
-    transition: stroke-dashoffset 1200ms cubic-bezier(0.22, 1, 0.36, 1);
-  }
 
   .conversion-section__inner {
     position: relative;
@@ -237,14 +162,7 @@ const whatsappUrl = getWhatsAppUrl('selectionHelp');
     flex: 0 1 auto;
   }
 
-  .conversion-section[data-desserts-ready] .conversion-section__dessert {
-    transition: opacity 600ms cubic-bezier(0.22, 1, 0.36, 1), transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
-  }
 
-  .conversion-section[data-desserts-ready='false'] .conversion-section__dessert {
-    opacity: 0;
-    transform: translateY(1rem);
-  }
 
   .conversion-section__dessert :global(img) {
     display: block;
@@ -327,13 +245,4 @@ const whatsappUrl = getWhatsAppUrl('selectionHelp');
     }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .conversion-section__line[data-drawing='true'] :global(path) {
-      transition: none;
-    }
-
-    .conversion-section[data-desserts-ready] .conversion-section__dessert {
-      transition: none;
-    }
-  }
 </style>

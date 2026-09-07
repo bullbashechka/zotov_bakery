@@ -8,14 +8,16 @@ import { HOME_SECTION_IDS } from '@/lib/site';
 <section id={HOME_SECTION_IDS.hero} class="hero">
   <div class="hero__media" data-hero-media aria-hidden="true">
     <div class="hero__cake">
-      <Picture
-        src={heroCake}
-        formats={['avif', 'webp']}
-        widths={[320, 480, 640, 768, 872]}
-        sizes="(max-width: 639px) min(75vw, 19rem), (max-width: 899px) min(53vw, 28rem), (max-width: 1199px) min(47vw, 34rem), min(44vw, 43rem)"
-        alt=""
-        priority
-      />
+      <div class="hero__cake-motion">
+        <Picture
+          src={heroCake}
+          formats={['avif', 'webp']}
+          widths={[320, 480, 640, 768, 872]}
+          sizes="(max-width: 639px) min(75vw, 19rem), (max-width: 899px) min(53vw, 28rem), (max-width: 1199px) min(47vw, 34rem), min(44vw, 43rem)"
+          alt=""
+          priority
+        />
+      </div>
     </div>
   </div>
 
@@ -52,18 +54,30 @@ import { HOME_SECTION_IDS } from '@/lib/site';
 </section>
 
 <script is:inline>
+  // Prepare before paint; if fonts or the animation bundle are late, show the
+  // original content. With JavaScript disabled no preparation styles are applied.
+  {
+    const hero = document.querySelector('.hero');
+    if (hero && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      && !location.hash && window.scrollY < 20 && performance.now() < 1000) {
+      hero.dataset.heroEntrance = 'pending';
+      const showPending = () => {
+        if (hero.dataset.heroEntrance === 'pending') hero.dataset.heroEntrance = 'complete';
+      };
+      window.setTimeout(showPending, 1200);
+      hero.addEventListener('focusin', showPending, { once: true });
+      hero.addEventListener('pointerdown', showPending, { once: true });
+    }
+  }
+
   const media = document.querySelector('[data-hero-media]');
   const image = media?.querySelector('img');
 
   if (media && image && !image.complete) {
-    media.dataset.loading = 'true';
-    const reveal = () => delete media.dataset.loading;
     const fallback = () => {
-      delete media.dataset.loading;
       media.dataset.error = 'true';
       image.hidden = true;
     };
-    image.addEventListener('load', reveal, { once: true });
     image.addEventListener('error', fallback, { once: true });
   } else if (media && image && image.complete && image.naturalWidth === 0) {
     media.dataset.error = 'true';
@@ -115,7 +129,6 @@ import { HOME_SECTION_IDS } from '@/lib/site';
     width: clamp(16.5rem, 75vw, 19rem);
     transform: translateX(-50%);
     opacity: 1;
-    transition: opacity 240ms ease;
   }
 
   .hero__cake::before {
@@ -143,9 +156,40 @@ import { HOME_SECTION_IDS } from '@/lib/site';
     filter: drop-shadow(0 0.5rem 0.625rem rgb(75 55 48 / 11%));
   }
 
-  .hero__media[data-loading='true'] .hero__cake,
   .hero__media[data-error='true'] .hero__cake {
     opacity: 0;
+  }
+
+  .hero__cake-motion {
+    transform-origin: 50% 65%;
+  }
+
+  .hero[data-hero-entrance='pending'] .hero__title,
+  .hero[data-hero-entrance='pending'] .hero__intro {
+    opacity: 0;
+  }
+
+  .hero[data-hero-entrance='pending'] .hero__cake-motion {
+    opacity: 0.25;
+  }
+
+  .hero[data-hero-entrance='pending'] .hero__actions {
+    opacity: 0.4;
+  }
+
+  .hero__title :global(.hero__text-line-mask) {
+    /* Keep glyph overhangs visible without adding height to the split heading. */
+    overflow: clip;
+    overflow-clip-margin: 0.12em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero[data-hero-entrance='pending'] .hero__title,
+    .hero[data-hero-entrance='pending'] .hero__intro,
+    .hero[data-hero-entrance='pending'] .hero__cake-motion,
+    .hero[data-hero-entrance='pending'] .hero__actions {
+      opacity: 1;
+    }
   }
 
   .hero__inner {

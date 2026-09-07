@@ -43,3 +43,15 @@ const placeholderSections = {
 
   <SiteFooter slot="footer" />
 </BaseLayout>
+
+<script>
+  import { initPageMotion } from '@/lib/motion';
+  import { initHeroMotion } from '@/lib/hero-motion';
+
+  const cleanupHero = initHeroMotion(document);
+  const cleanup = initPageMotion(document);
+  if (import.meta.hot) import.meta.hot.dispose(() => {
+    cleanupHero();
+    cleanup();
+  });
+</script>

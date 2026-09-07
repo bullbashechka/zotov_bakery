@@ -38,13 +38,13 @@ const purchaseOptions = [
 
 <section id={HOME_SECTION_IDS.whereToBuy} class="where-to-buy" aria-labelledby="where-to-buy-title">
   <div class="where-to-buy__inner">
-    <h2 id="where-to-buy-title" class="where-to-buy__title" data-scroll-reveal="clip">
+    <h2 id="where-to-buy-title" class="where-to-buy__title" data-motion="heading">
       Где купить торты и десерты от ZOTOV bakery
     </h2>
 
     <div class="where-to-buy__track" tabindex="0" aria-label="Способы покупки тортов и десертов ZOTOV bakery">
-      {purchaseOptions.map((option, index) => (
-        <article class="where-to-buy__card" data-scroll-reveal="fade" data-reveal-delay={index * 90}>
+      {purchaseOptions.map((option) => (
+        <article class="where-to-buy__card" data-motion="card">
           <div class="where-to-buy__image-wrap" aria-hidden="true">
             <img
               class:list={['where-to-buy__image', option.imageClass]}
@@ -68,12 +68,6 @@ const purchaseOptions = [
   </div>
 </section>
 
-<script>
-  import { initScrollReveal } from '@/lib/scroll-reveal';
-
-  const whereToBuySection = document.querySelector<HTMLElement>('.where-to-buy');
-  if (whereToBuySection) initScrollReveal(whereToBuySection);
-</script>
 
 <style>
   .where-to-buy {
@@ -164,6 +158,13 @@ const purchaseOptions = [
   .where-to-buy__card :global(.action-link) {
     width: calc(100% - 1.25rem);
     margin: auto 0.625rem 0.625rem;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .where-to-buy__image { transition: transform 420ms var(--motion-ease); }
+    .where-to-buy__card:hover .where-to-buy__image:not(.where-to-buy__image--logo) {
+      transform: scale(1.025);
+    }
   }
 
   @media (min-width: 40rem) and (max-width: 74.999rem) {

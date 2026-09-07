@@ -28,8 +28,10 @@ const { href, variant, fullWidth = false, target, rel } = Astro.props;
     font-size: 0.875rem;
     font-weight: 500;
     line-height: 1.25;
-    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease,
-      transform 120ms ease;
+    transition: background-color var(--motion-interaction-duration) ease,
+      border-color var(--motion-interaction-duration) ease,
+      color var(--motion-interaction-duration) ease,
+      transform var(--motion-interaction-duration) var(--motion-ease);
   }
 
   .action-link[data-variant='primary'] {
@@ -42,8 +44,10 @@ const { href, variant, fullWidth = false, target, rel } = Astro.props;
     width: 100%;
   }
 
-  .action-link[data-variant='primary']:hover {
-    background: var(--accent-muted);
+  @media (hover: hover) and (pointer: fine) {
+    .action-link[data-variant='primary']:hover {
+      background: var(--accent-muted);
+    }
   }
 
   .action-link[data-variant='secondary'] {
@@ -52,8 +56,10 @@ const { href, variant, fullWidth = false, target, rel } = Astro.props;
     color: var(--text-primary);
   }
 
-  .action-link[data-variant='secondary']:hover {
-    background: var(--surface-elevated);
+  @media (hover: hover) and (pointer: fine) {
+    .action-link[data-variant='secondary']:hover {
+      background: var(--surface-elevated);
+    }
   }
 
   .action-link[data-variant='surface'] {
@@ -65,12 +71,14 @@ const { href, variant, fullWidth = false, target, rel } = Astro.props;
     font-weight: 600;
   }
 
-  .action-link[data-variant='surface']:hover {
-    background: var(--surface-elevated);
+  @media (hover: hover) and (pointer: fine) {
+    .action-link[data-variant='surface']:hover {
+      background: var(--surface-elevated);
+    }
   }
 
   .action-link:active {
-    transform: translateY(1px);
+    transform: scale(0.98);
   }
 
   @media (min-width: 40rem) {
