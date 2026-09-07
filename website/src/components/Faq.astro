@@ -66,8 +66,7 @@ const faqs: ReadonlyArray<{
                 )}
               </span>
               <span class="faq__icon" aria-hidden="true">
-                <span class="faq__icon-bar"></span>
-                <span class="faq__icon-bar faq__icon-bar--vertical"></span>
+                <img class="faq__icon-image" src="/faq/toggle-icon.svg" alt="" />
               </span>
             </summary>
 
@@ -407,21 +406,16 @@ const faqs: ReadonlyArray<{
     pointer-events: none;
   }
 
-  .faq__icon-bar {
-    position: absolute;
-    width: 1.375rem;
-    height: 2px;
-    border-radius: 2px;
-    background: var(--accent-muted);
-    transition: transform 240ms var(--motion-ease), opacity 180ms ease;
+  .faq__icon-image {
+    display: block;
+    width: 1.9375rem;
+    height: 1.9375rem;
+    transition: transform 240ms var(--motion-ease);
   }
 
-  .faq__icon-bar--vertical { transform: rotate(90deg); }
-
-  faq-accordion:not([data-enhanced='true']) .faq__item[open] .faq__icon-bar--vertical,
-  faq-accordion[data-enhanced='true'] .faq__item[data-expanded='true'] .faq__icon-bar--vertical {
-    transform: rotate(0deg);
-    opacity: 0;
+  faq-accordion:not([data-enhanced='true']) .faq__item[open] .faq__icon-image,
+  faq-accordion[data-enhanced='true'] .faq__item[data-expanded='true'] .faq__icon-image {
+    transform: rotate(90deg);
   }
 
   faq-accordion:not([data-enhanced='true']) .faq__item[open],
@@ -478,10 +472,6 @@ const faqs: ReadonlyArray<{
     .faq__icon {
       top: 1.5625rem;
       right: 1.5rem;
-    }
-
-    .faq__icon-bar {
-      width: 1.625rem;
     }
 
     .faq__answer-panel {
