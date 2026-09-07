@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+@media (min-width: 75rem) and (hover: hover) and (pointer: fine) {
+  :is(a[href], button, summary, [role='button'], input[type='submit'], input[type='button'], input[type='reset']):not(:disabled):not([aria-disabled='true']),
+  :is(a[href], button, summary, [role='button'], input[type='submit'], input[type='button'], input[type='reset']):not(:disabled):not([aria-disabled='true']) * {
+    cursor: url('/cake-cursor.svg') 2 3, pointer;
+  }
+}
+
 @font-face {
   font-family: 'Montserrat';
   font-style: normal;

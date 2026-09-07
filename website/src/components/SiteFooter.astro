@@ -5,9 +5,13 @@ import { HOME_NAV_LINKS, POLICY_LINKS } from '@/lib/site';
 
 <div class="site-footer__surface">
   <div class="site-footer__content">
-    <a class="site-footer__logo" href="/#hero" aria-label="ZOTOV bakery, в начало страницы">
-      <img data-motion="image" src="/footer/zotov-footer-logo.svg" width="391" height="466" alt="ZOTOV bakery" />
-    </a>
+    <footer-logo-tilt class="site-footer__logo">
+      <a class="site-footer__logo-link" href="/#hero" aria-label="ZOTOV bakery, в начало страницы">
+        <span class="site-footer__logo-tilt">
+          <img data-motion="image" src="/footer/zotov-footer-logo.svg" width="391" height="466" alt="ZOTOV bakery" />
+        </span>
+      </a>
+    </footer-logo-tilt>
 
     <ContactSection />
 
@@ -26,6 +30,50 @@ import { HOME_NAV_LINKS, POLICY_LINKS } from '@/lib/site';
 </div>
 
 <script>
+  import { gsap } from 'gsap';
+
+  class FooterLogoTilt extends HTMLElement {
+    private media?: ReturnType<typeof gsap.matchMedia>;
+
+    connectedCallback() {
+      if (this.media) return;
+      const tilt = this.querySelector<HTMLElement>('.site-footer__logo-tilt');
+      if (!tilt) return;
+
+      this.media = gsap.matchMedia();
+      this.media.add('(min-width: 40rem) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)', () => {
+        const events = new AbortController();
+        gsap.set(tilt, { transformPerspective: 1000, rotationX: 0, rotationY: 0 });
+        const rotateX = gsap.quickTo(tilt, 'rotationX', { duration: 0.4, ease: 'power3.out' });
+        const rotateY = gsap.quickTo(tilt, 'rotationY', { duration: 0.4, ease: 'power3.out' });
+        const reset = () => { rotateX(0); rotateY(0); };
+
+        this.addEventListener('pointermove', (event) => {
+          if (event.pointerType === 'touch') return;
+          // Measure the stationary area so the tilt cannot feed back into pointer coordinates.
+          const bounds = this.getBoundingClientRect();
+          if (!bounds.width || !bounds.height) return;
+          const x = gsap.utils.clamp(-1, 1, (event.clientX - bounds.left) / bounds.width * 2 - 1);
+          const y = gsap.utils.clamp(-1, 1, (event.clientY - bounds.top) / bounds.height * 2 - 1);
+          rotateX(-y * 5);
+          rotateY(x * 8);
+        }, { signal: events.signal });
+        this.addEventListener('pointerleave', reset, { signal: events.signal });
+        this.addEventListener('pointercancel', reset, { signal: events.signal });
+        window.addEventListener('blur', reset, { signal: events.signal });
+        window.addEventListener('scroll', reset, { passive: true, signal: events.signal });
+        return () => events.abort();
+      });
+    }
+
+    disconnectedCallback() {
+      this.media?.revert();
+      this.media = undefined;
+    }
+  }
+
+  if (!customElements.get('footer-logo-tilt')) customElements.define('footer-logo-tilt', FooterLogoTilt);
+
   document.querySelectorAll<HTMLElement>('[data-current-year]').forEach((year) => {
     year.textContent = String(new Date().getFullYear());
   });
@@ -67,6 +115,18 @@ import { HOME_NAV_LINKS, POLICY_LINKS } from '@/lib/site';
     display: block;
     width: 100%;
     height: auto;
+  }
+
+  .site-footer__logo-link {
+    display: block;
+    padding: 1rem;
+    margin: -1rem;
+    border-radius: inherit;
+  }
+
+  .site-footer__logo-tilt {
+    display: block;
+    pointer-events: none;
   }
 
   .site-footer__navigation,

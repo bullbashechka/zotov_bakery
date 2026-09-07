@@ -1,5 +1,6 @@
 ---
 import { CONTACTS, HOME_NAV_LINKS } from '@/lib/site';
+import HeaderMascot from '@/components/HeaderMascot.astro';
 
 const desktopLeftLinks = HOME_NAV_LINKS.slice(0, 3);
 const desktopRightLinks = HOME_NAV_LINKS.slice(3);
@@ -8,7 +9,7 @@ const desktopRightLinks = HOME_NAV_LINKS.slice(3);
 <site-header id="site-top" data-menu-open="false">
   <div class="site-header__content">
     <a class="site-header__logo" href="#main-content" aria-label="ZOTOV bakery, в начало страницы">
-      <img src="/zotov-logo.svg" width="331" height="127" alt="ZOTOV bakery" />
+      <HeaderMascot />
     </a>
 
     <nav class="site-header__desktop-nav" aria-label="Основная навигация">
@@ -218,21 +219,6 @@ const desktopRightLinks = HOME_NAV_LINKS.slice(3);
     flex: none;
   }
 
-  .site-header__logo picture,
-  .site-header__logo img {
-    display: block;
-  }
-
-  .site-header__logo img {
-    width: 10rem;
-    height: auto;
-    transition: width 220ms var(--motion-ease);
-  }
-
-  site-header[data-compact] .site-header__logo img,
-  site-header[data-menu-open='true'] .site-header__logo img {
-    width: 7.5rem;
-  }
 
   .site-header__desktop-nav,
   .site-header__desktop-actions {
@@ -450,16 +436,6 @@ const desktopRightLinks = HOME_NAV_LINKS.slice(3);
       transform: translate(-50%, -50%);
     }
 
-    .site-header__logo img {
-      width: 20.6875rem;
-      height: 7.9375rem;
-      transition: width 220ms var(--motion-ease), height 220ms var(--motion-ease);
-    }
-
-    site-header[data-compact] .site-header__logo img {
-      width: 14.75rem;
-      height: 5.65625rem;
-    }
 
     .site-header__desktop-nav {
       display: grid;
