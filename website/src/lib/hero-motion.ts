@@ -56,13 +56,16 @@ export function initHeroMotion(root: ParentNode): () => void {
           timeline.fromTo(self.lines,
             { yPercent: 110 },
             { yPercent: 0, duration: 1.05, stagger: 0.13, ease: 'power4.out' },
-            0.08,
+            0.2,
           );
           timeline.fromTo('.hero__cake-motion',
-            { x: mobile ? 0 : 32, y: mobile ? 24 : 0, scale: 1.06, opacity: 0.25 },
-            { x: 0, y: 0, scale: 1, opacity: 1, duration: 1.35 },
+            { y: mobile ? 14 : 28, rotation: mobile ? -2 : -4, scale: 0.96, opacity: 0.25 },
+            { y: 0, rotation: 0, scale: 1, opacity: 1, duration: 1, ease: 'back.out(1.2)' },
             0,
           );
+          timeline.fromTo('[data-hero-crumb]',
+            { y: mobile ? -8 : -16, rotation: -20, opacity: 0 },
+            { y: 0, rotation: 0, opacity: 0.8, duration: 0.6, stagger: 0.07 }, 0.25);
           timeline.fromTo('.hero__intro',
             { y: mobile ? 12 : 20, opacity: 0 },
             { y: 0, opacity: 1, duration: 0.75 },

@@ -10,7 +10,7 @@ const whatsappUrl = getWhatsAppUrl('selectionHelp');
 ---
 
 <section id={HOME_SECTION_IDS.conversion} class="conversion-section" data-motion-group aria-labelledby="conversion-title">
-  <div class="conversion-section__line" data-motion-line aria-hidden="true" set:html={selectionFlow}></div>
+  <div class="conversion-section__line" data-selection-line aria-hidden="true" set:html={selectionFlow}></div>
 
   <div class="conversion-section__inner">
     <div class="conversion-section__copy" data-motion-trigger>
@@ -37,7 +37,7 @@ const whatsappUrl = getWhatsAppUrl('selectionHelp');
     <div class="conversion-section__desserts" aria-hidden="true">
       <Picture
         class="conversion-section__dessert conversion-section__dessert--left"
-        data-motion="dessert-left"
+        data-selection-dessert="left"
         src={dessertLeft}
         formats={['avif', 'webp']}
         widths={[240, 320, 392, 480, 640, 784]}
@@ -46,7 +46,7 @@ const whatsappUrl = getWhatsAppUrl('selectionHelp');
       />
       <Picture
         class="conversion-section__dessert conversion-section__dessert--right"
-        data-motion="dessert-right"
+        data-selection-dessert="right"
         src={dessertRight}
         formats={['avif', 'webp']}
         widths={[260, 360, 459, 560, 720, 918]}

@@ -9,6 +9,7 @@ import { HOME_SECTION_IDS } from '@/lib/site';
   <div class="hero__media" data-hero-media aria-hidden="true">
     <div class="hero__cake">
       <div class="hero__cake-motion">
+        <div class="hero__cake-parallax">
         <Picture
           src={heroCake}
           formats={['avif', 'webp']}
@@ -17,6 +18,12 @@ import { HOME_SECTION_IDS } from '@/lib/site';
           alt=""
           priority
         />
+        </div>
+        {[0, 1, 2, 3].map((index) => (
+          <span class="hero__crumb" data-hero-crumb style={`--crumb-index: ${index}`}>
+            <svg viewBox="0 0 16 16" width="16" height="16"><path d="M3 2 12 3 15 9 9 14 2 11Z" fill="currentColor" /></svg>
+          </span>
+        ))}
       </div>
     </div>
   </div>
@@ -103,6 +110,14 @@ import { HOME_SECTION_IDS } from '@/lib/site';
 </script>
 
 <style>
+  .hero__cake-parallax { position: relative; }
+  .hero__crumb { position: absolute; pointer-events: none; color: #d47212; opacity: 0.8; }
+  .hero[data-hero-entrance='pending'] .hero__crumb { opacity: 0; }
+  @media (prefers-reduced-motion: reduce) { .hero__crumb { display: none; } }
+  .hero__crumb:nth-of-type(1) { left: 8%; top: 30%; }
+  .hero__crumb:nth-of-type(2) { right: 6%; top: 22%; }
+  .hero__crumb:nth-of-type(3) { left: 16%; bottom: 18%; }
+  .hero__crumb:nth-of-type(4) { right: 10%; bottom: 12%; }
   .hero {
     position: relative;
     z-index: 4;

@@ -148,7 +148,7 @@ export function initPageMotion(root: ParentNode): () => void {
               clearProps: 'transform,opacity,clipPath' },
           );
           const art = target.querySelector('[data-motion-art]');
-          if (art) timeline.fromTo(art, { scale: 0.92 }, {
+          if (art && !target.hasAttribute('data-advantages-card')) timeline.fromTo(art, { scale: 0.92 }, {
             scale: 1, duration: 1, clearProps: 'transform',
           }, 0.15);
         } else {

@@ -30,8 +30,7 @@ const { href, variant, fullWidth = false, target, rel } = Astro.props;
     line-height: 1.25;
     transition: background-color var(--motion-interaction-duration) ease,
       border-color var(--motion-interaction-duration) ease,
-      color var(--motion-interaction-duration) ease,
-      transform var(--motion-interaction-duration) var(--motion-ease);
+      color var(--motion-interaction-duration) ease;
   }
 
   .action-link[data-variant='primary'] {
@@ -77,7 +76,7 @@ const { href, variant, fullWidth = false, target, rel } = Astro.props;
     }
   }
 
-  .action-link:active {
+  .action-link:not([data-interactive-motion]):active {
     transform: scale(0.98);
   }
 

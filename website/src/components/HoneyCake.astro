@@ -79,6 +79,7 @@ const whatsappUrl = getWhatsAppUrl('general');
                 <span class="sr-only">Подробнее: {hotspot.title}</span>
                 <span class="honey-cake__hotspot-mark" aria-hidden="true">+</span>
               </summary>
+              <svg class="honey-cake__connector" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" /></svg>
               <div id={panelId} class="honey-cake__hotspot-panel" role="region" aria-labelledby={summaryId}>
                 <div class="honey-cake__hotspot-content">
                   <h3>{hotspot.title}</h3>
@@ -115,9 +116,14 @@ const whatsappUrl = getWhatsAppUrl('general');
 </section>
 
 <script>
+  import { gsap } from 'gsap';
+
   class HoneyCakeHotspots extends HTMLElement {
     private items: HTMLDetailsElement[] = [];
     private abortController: AbortController | null = null;
+    private scenes = new Map<HTMLDetailsElement, gsap.core.Timeline>();
+    private reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    private frame = 0;
 
     connectedCallback() {
       if (this.abortController) return;
@@ -132,23 +138,48 @@ const whatsappUrl = getWhatsAppUrl('general');
       document.addEventListener('pointerdown', this.handlePointerDown, { signal });
       document.addEventListener('keydown', this.handleKeydown, { signal });
       window.addEventListener('resize', this.handleResize, { signal });
+      this.reduced.addEventListener('change', () => {
+        if (this.reduced.matches) this.scenes.forEach((scene) => scene.progress(1).kill());
+      }, { signal });
     }
 
     disconnectedCallback() {
       this.abortController?.abort();
       this.abortController = null;
+      cancelAnimationFrame(this.frame);
+      this.scenes.forEach((scene) => scene.revert());
+      this.scenes.clear();
       this.items = [];
     }
 
     private handleToggle = (event: Event) => {
       const current = event.currentTarget as HTMLDetailsElement;
       current.dataset.expanded = String(current.open);
+      this.scenes.get(current)?.revert();
+      this.scenes.delete(current);
       if (!current.open) return;
 
       this.items.forEach((item) => {
-        if (item !== current) item.open = false;
+        if (item !== current) {
+          this.scenes.get(item)?.revert();
+          this.scenes.delete(item);
+          item.open = false;
+        }
       });
-      requestAnimationFrame(() => this.positionMobilePanel(current));
+      cancelAnimationFrame(this.frame);
+      this.positionMobilePanel(current);
+      this.drawConnector(current);
+      if (this.reduced.matches) return;
+      const content = current.querySelector('.honey-cake__hotspot-content');
+      const mark = current.querySelector('.honey-cake__hotspot-mark');
+      const path = current.querySelector('path');
+      if (!content || !mark || !path) return;
+      const length = path.getTotalLength();
+      const scene = gsap.timeline()
+        .fromTo(mark, { rotation: 0 }, { rotation: 45, duration: 0.22 }, 0)
+        .fromTo(path, { strokeDasharray: length, strokeDashoffset: length }, { strokeDashoffset: 0, duration: 0.18 }, 0)
+        .fromTo(content, { y: 8, opacity: 0 }, { y: 0, opacity: 1, duration: 0.24, ease: 'power2.out' }, 0.1);
+      this.scenes.set(current, scene);
     };
 
     private handlePointerDown = (event: PointerEvent) => {
@@ -175,8 +206,28 @@ const whatsappUrl = getWhatsAppUrl('general');
 
     private handleResize = () => {
       const active = this.items.find((item) => item.open);
-      if (active) this.positionMobilePanel(active);
+      if (active) {
+        this.scenes.get(active)?.progress(1);
+        cancelAnimationFrame(this.frame);
+        this.frame = requestAnimationFrame(() => {
+          this.positionMobilePanel(active);
+          this.drawConnector(active);
+        });
+      }
     };
+
+    private drawConnector(item: HTMLDetailsElement) {
+      const panel = item.querySelector<HTMLElement>('.honey-cake__hotspot-panel');
+      const path = item.querySelector('path');
+      if (!panel || !path) return;
+      const origin = item.getBoundingClientRect();
+      const box = panel.getBoundingClientRect();
+      const x = Math.max(box.left + 12, Math.min(origin.left, box.right - 12)) - origin.left;
+      const y = (box.bottom < origin.top ? box.bottom : box.top) - origin.top;
+      path.setAttribute('d', `M0 0 Q0 ${y / 2} ${x} ${y}`);
+      path.style.removeProperty('stroke-dasharray');
+      path.style.removeProperty('stroke-dashoffset');
+    }
 
     private positionMobilePanel(item: HTMLDetailsElement) {
       const panel = item.querySelector<HTMLElement>('.honey-cake__hotspot-panel');
@@ -186,6 +237,8 @@ const whatsappUrl = getWhatsAppUrl('general');
         panel.style.removeProperty('left');
         panel.style.removeProperty('right');
         panel.style.removeProperty('transform');
+        panel.style.removeProperty('top');
+        panel.style.removeProperty('bottom');
         return;
       }
 
@@ -193,6 +246,9 @@ const whatsappUrl = getWhatsAppUrl('general');
       panel.style.left = `${gutter - item.getBoundingClientRect().left}px`;
       panel.style.right = 'auto';
       panel.style.transform = 'none';
+      const lowestPoint = Math.max(...this.items.map((point) => point.getBoundingClientRect().top));
+      panel.style.top = `${lowestPoint - item.getBoundingClientRect().top + 28}px`;
+      panel.style.bottom = 'auto';
     }
   }
 
@@ -203,6 +259,8 @@ const whatsappUrl = getWhatsAppUrl('general');
 </script>
 
 <style>
+  .honey-cake__connector { position: absolute; width: 1px; height: 1px; overflow: visible; color: var(--accent-muted); pointer-events: none; }
+  .honey-cake__hotspot[open] .honey-cake__hotspot-mark { transform: rotate(45deg) scale(1.1); }
   .honey-cake {
     --honey-cake-scallop-height: 1.15625rem;
     --honey-cake-scallop-width: 2.0625rem;
@@ -312,13 +370,11 @@ const whatsappUrl = getWhatsAppUrl('general');
     font-size: 0.875rem;
     font-weight: 500;
     line-height: 1;
-    transition: background-color 180ms ease, transform 180ms var(--motion-ease);
+    transition: background-color 180ms ease;
   }
 
-  .honey-cake__hotspot > summary:hover .honey-cake__hotspot-mark,
-  .honey-cake__hotspot[open] .honey-cake__hotspot-mark {
+  .honey-cake__hotspot > summary:hover .honey-cake__hotspot-mark {
     background: var(--accent-muted);
-    transform: scale(1.1);
   }
 
   .honey-cake__hotspot > summary:focus-visible {
@@ -338,7 +394,6 @@ const whatsappUrl = getWhatsAppUrl('general');
     padding: 0.75rem 0.875rem;
     color: var(--text-primary);
     box-shadow: 0 0.625rem 1.75rem rgb(59 38 39 / 16%);
-    animation: honey-cake-popover-in 180ms ease both;
   }
 
   .honey-cake__hotspot[data-placement='top'] .honey-cake__hotspot-panel {
@@ -437,25 +492,6 @@ const whatsappUrl = getWhatsAppUrl('general');
   .honey-cake__scallop--bottom {
     bottom: 0;
     transform: scaleY(-1);
-  }
-
-  .honey-cake__hotspot-content {
-    animation: honey-cake-content-in 240ms var(--motion-ease) both;
-  }
-
-  @keyframes honey-cake-content-in {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes honey-cake-popover-in {
-    from {
-      opacity: 0;
-    }
-
-    to {
-      opacity: 1;
-    }
   }
 
   @media (min-width: 40rem) {

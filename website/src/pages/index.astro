@@ -47,11 +47,14 @@ const placeholderSections = {
 <script>
   import { initPageMotion } from '@/lib/motion';
   import { initHeroMotion } from '@/lib/hero-motion';
+  import { initExpressiveMotion } from '@/lib/expressive-motion';
 
   const cleanupHero = initHeroMotion(document);
   const cleanup = initPageMotion(document);
+  const cleanupExpressive = initExpressiveMotion(document);
   if (import.meta.hot) import.meta.hot.dispose(() => {
     cleanupHero();
     cleanup();
+    cleanupExpressive();
   });
 </script>
