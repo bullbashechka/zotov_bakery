@@ -2,22 +2,12 @@
 import { Image } from 'astro:assets';
 import ActionLink from '@/components/ActionLink.astro';
 import { ASSORTMENT } from '@/lib/assortment';
-import { CONTACTS, getProductWhatsAppUrl, getWhatsAppUrl, HOME_SECTION_IDS } from '@/lib/site';
+import { getProductWhatsAppUrl, HOME_SECTION_IDS } from '@/lib/site';
 ---
 
 <section id={HOME_SECTION_IDS.assortment} class="assortment" aria-labelledby="assortment-title">
   <cake-carousel class="assortment__carousel" aria-labelledby="assortment-title">
     <h2 id="assortment-title" class="assortment__title">Торты и десерты</h2>
-
-    <div class="assortment__controls" data-controls hidden>
-      <button type="button" class="assortment__play" data-play aria-label="Приостановить автосмену">
-        <span data-play-icon aria-hidden="true">Ⅱ</span>
-        <span data-play-label>Пауза</span>
-      </button>
-      <button type="button" data-previous aria-label="Предыдущий десерт" aria-controls="assortment-products">←</button>
-      <span class="assortment__counter" data-counter aria-hidden="true">1 / {ASSORTMENT.length}</span>
-      <button type="button" data-next aria-label="Следующий десерт" aria-controls="assortment-products">→</button>
-    </div>
 
     <div id="assortment-products" class="assortment__products">
       {ASSORTMENT.map((product, index) => (
@@ -51,10 +41,6 @@ import { CONTACTS, getProductWhatsAppUrl, getWhatsAppUrl, HOME_SECTION_IDS } fro
       ))}
     </div>
 
-    <div class="assortment__footer">
-      <p>Актуальные цены и наличие уточняйте в WhatsApp или по телефону <a href={CONTACTS.mobile.href}>{CONTACTS.mobile.display}</a>.</p>
-      <ActionLink variant="secondary" href={getWhatsAppUrl('general')} target="_blank" rel="noopener noreferrer">Написать в WhatsApp</ActionLink>
-    </div>
     <p class="sr-only" data-announcement aria-live="polite" aria-atomic="true"></p>
   </cake-carousel>
 </section>
@@ -83,31 +69,19 @@ import { CONTACTS, getProductWhatsAppUrl, getWhatsAppUrl, HOME_SECTION_IDS } fro
   .assortment__ingredients p { padding-top: 0.5rem; }
   .assortment__panel .assortment__highlight { width: fit-content; max-width: 100%; border: 1px solid currentColor; border-radius: 0.5rem; padding: 0.5rem 0.625rem; font-size: 0.875rem; line-height: 1.4; }
   .assortment__panel :global(.action-link) { min-height: 3.125rem; margin-top: auto; }
-  .assortment__controls[hidden] { display: none; }
-  .assortment__controls { display: flex; align-items: center; justify-content: center; gap: 0.625rem; }
-  .assortment__controls button { display: inline-flex; align-items: center; justify-content: center; min-width: 2.75rem; min-height: 2.75rem; border: 1px solid var(--text-primary); border-radius: 50%; background: transparent; font-size: 1.25rem; transition: background-color 180ms, color 180ms; }
-  .assortment__controls .assortment__play { gap: 0.5rem; min-width: 7.5rem; padding-inline: 0.75rem; border-radius: 2rem; font-size: 0.8125rem; }
-  .assortment__controls button:active { background: var(--text-primary); color: white; }
-  .assortment__counter { min-width: 2.5rem; text-align: center; font-size: 0.875rem; font-variant-numeric: tabular-nums; }
-  .assortment__footer { display: flex; flex-direction: column; align-items: flex-start; gap: 1.25rem; margin-top: 2rem; }
-  .assortment__footer p { max-width: 33rem; margin: 0; color: var(--text-muted); font-size: 0.875rem; line-height: 1.5; }
-  .assortment__footer p a { white-space: nowrap; text-decoration: underline; text-underline-offset: 0.2em; }
   .assortment__carousel[data-enhanced] { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: 1.5rem; }
   [data-enhanced] .assortment__title { grid-area: 1 / 1; margin: 0; justify-self: center; }
   [data-enhanced] .assortment__products, [data-enhanced] .assortment__product { display: contents; }
   [data-enhanced] .assortment__photo { grid-area: 2 / 1; width: min(70%, 24rem); position: relative; margin: 0; justify-self: center; align-self: center; touch-action: pan-y pinch-zoom; will-change: transform; cursor: grab; }
   [data-enhanced] .assortment__photo[data-position='0'] { z-index: 3; }
   [data-enhanced] .assortment__photo:active { cursor: grabbing; }
-  [data-enhanced] .assortment__controls { grid-area: 3 / 1; z-index: 4; }
   [data-enhanced] .assortment__panel { grid-area: 4 / 1; visibility: hidden; pointer-events: none; }
   [data-enhanced] .assortment__panel[data-active] { visibility: visible; pointer-events: auto; }
-  [data-enhanced] .assortment__footer { grid-area: 5 / 1; margin-top: 0.5rem; }
   @media (hover: hover) {
-    .assortment__controls button:hover { background: var(--text-primary); color: white; }
     .assortment__ingredients summary:hover { color: var(--focus); }
   }
   @media (max-width: 39.999rem) {
-    .assortment__panel :global(.action-link), .assortment__footer :global(.action-link) { width: 100%; }
+    .assortment__panel :global(.action-link) { width: 100%; }
     .assortment__ingredients { border-block: 1px solid rgb(59 38 39 / 20%); padding-block: 0.25rem; }
     .assortment__ingredients[open] { padding-bottom: 1rem; }
   }
@@ -117,8 +91,6 @@ import { CONTACTS, getProductWhatsAppUrl, getWhatsAppUrl, HOME_SECTION_IDS } fro
     [data-enhanced] .assortment__title { justify-self: start; align-self: start; white-space: nowrap; }
     [data-enhanced] .assortment__photo { grid-area: 1 / 2 / 3 / 3; width: 65%; max-width: 24.8125rem; }
     [data-enhanced] .assortment__panel { grid-area: 2 / 1; }
-    [data-enhanced] .assortment__controls { grid-area: 3 / 2; }
-    [data-enhanced] .assortment__footer { grid-area: 3 / 1 / 5 / 2; }
     .assortment__ingredients summary { font-size: 1.875rem; }
     [data-enhanced] .assortment__ingredients summary { pointer-events: none; }
     [data-enhanced] .assortment__ingredients summary span { display: none; }

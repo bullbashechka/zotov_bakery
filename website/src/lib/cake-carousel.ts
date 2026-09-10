@@ -33,7 +33,6 @@ export class CakeCarousel extends HTMLElement {
     this.setAttribute('role', 'group');
     this.setAttribute('aria-roledescription', 'карусель');
     this.dataset.enhanced = '';
-    this.querySelector<HTMLElement>('[data-controls]')!.hidden = false;
     this.photos.forEach((photo, index) => {
       photo.setAttribute('role', 'button');
       photo.tabIndex = 0;
@@ -109,9 +108,6 @@ export class CakeCarousel extends HTMLElement {
   }
 
   private updatePlayback() {
-    this.querySelector('[data-play]')!.setAttribute('aria-label', this.paused ? 'Продолжить автосмену' : 'Приостановить автосмену');
-    this.querySelector('[data-play-label]')!.textContent = this.paused ? 'Продолжить' : 'Пауза';
-    this.querySelector('[data-play-icon]')!.textContent = this.paused ? '▷' : 'Ⅱ';
     this.schedule();
   }
 
@@ -144,18 +140,12 @@ export class CakeCarousel extends HTMLElement {
       panel.inert = index !== this.active;
       panel.setAttribute('aria-hidden', String(index !== this.active));
     });
-    this.querySelector('[data-counter]')!.textContent = `${this.active + 1} / ${this.products.length}`;
     this.updatePlayback();
   }
 
   private onClick = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
-    if (target.closest('[data-play]')) {
-      this.paused = !this.paused;
-      this.updatePlayback();
-    } else if (target.closest('[data-previous]')) this.select(this.active - 1);
-    else if (target.closest('[data-next]')) this.select(this.active + 1);
-    else if (target.closest('summary')) {
+    if (target.closest('summary')) {
       if (this.desktop.matches) event.preventDefault();
       else this.pause();
     } else if (target.closest('[data-photo]')) {

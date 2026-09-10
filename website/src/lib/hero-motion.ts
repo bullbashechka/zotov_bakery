@@ -1,7 +1,7 @@
 import { gsap } from 'gsap';
 import { SplitText } from 'gsap/SplitText';
 
-/** A single entrance composition, with real responsive line masks. */
+/** Hero copy entrance composition; the cake intentionally stays static. */
 export function initHeroMotion(root: ParentNode): () => void {
   const hero = root.querySelector<HTMLElement>('[data-hero-entrance]');
   const title = hero?.querySelector<HTMLElement>('.hero__title');
@@ -58,20 +58,11 @@ export function initHeroMotion(root: ParentNode): () => void {
             { yPercent: 0, duration: 1.05, stagger: 0.13, ease: 'power4.out' },
             0.2,
           );
-          timeline.fromTo('.hero__cake-motion',
-            { y: mobile ? 14 : 28, rotation: mobile ? -2 : -4, scale: 0.96, opacity: 0.25 },
-            { y: 0, rotation: 0, scale: 1, opacity: 1, duration: 1, ease: 'back.out(1.2)' },
-            0,
-          );
-          timeline.fromTo('[data-hero-crumb]',
-            { y: mobile ? -8 : -16, rotation: -20, opacity: 0 },
-            { y: 0, rotation: 0, opacity: 0.8, duration: 0.6, stagger: 0.07 }, 0.25);
           timeline.fromTo('.hero__intro',
             { y: mobile ? 12 : 20, opacity: 0 },
             { y: 0, opacity: 1, duration: 0.75 },
             0.45,
           );
-          // The buttons never move away from their clickable area or become inert.
           timeline.fromTo('.hero__actions',
             { opacity: 0.4 },
             { opacity: 1, duration: 0.55 },

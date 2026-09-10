@@ -112,35 +112,6 @@ export function initExpressiveMotion(root: ParentNode): () => void {
       });
     }
 
-    const hero = root.querySelector<HTMLElement>('.hero');
-    if (hero && fine) {
-      const cake = hero.querySelector('.hero__cake-parallax');
-      const crumbs = hero.querySelectorAll('[data-hero-crumb]');
-      const cakeX = cake ? gsap.quickTo(cake, 'x', { duration: 0.45, ease: 'power3.out' }) : undefined;
-      const cakeY = cake ? gsap.quickTo(cake, 'y', { duration: 0.45, ease: 'power3.out' }) : undefined;
-      const crumbMoves = Array.from(crumbs, (crumb) => ({
-        x: gsap.quickTo(crumb, 'x', { duration: 0.6, ease: 'power3.out' }),
-        y: gsap.quickTo(crumb, 'y', { duration: 0.6, ease: 'power3.out' }),
-      }));
-      let visible = false;
-      const reset = () => {
-        cakeX?.(0); cakeY?.(0);
-        crumbMoves.forEach((move) => { move.x(0); move.y(0); });
-      };
-      const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; if (!visible) reset(); });
-      observer.observe(hero);
-      observers.push(observer);
-      hero.addEventListener('pointermove', (event) => {
-        if (!visible || document.hidden || event.pointerType === 'touch' || hero.dataset.heroEntrance === 'active' || hero.dataset.heroEntrance === 'pending') return;
-        const box = hero.getBoundingClientRect();
-        const x = gsap.utils.clamp(-1, 1, (event.clientX - box.left) / box.width * 2 - 1);
-        const y = gsap.utils.clamp(-1, 1, (event.clientY - box.top) / box.height * 2 - 1);
-        cakeX?.(x * 6); cakeY?.(y * 6);
-        crumbMoves.forEach((move) => { move.x(x * 12); move.y(y * 12); });
-      }, { signal });
-      hero.addEventListener('pointerleave', reset, { signal });
-      document.addEventListener('visibilitychange', () => { if (document.hidden) reset(); }, { signal });
-    }
     return () => {
       events.abort();
       observers.forEach((observer) => observer.disconnect());

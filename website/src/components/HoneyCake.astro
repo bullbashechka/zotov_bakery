@@ -79,7 +79,6 @@ const whatsappUrl = getWhatsAppUrl('general');
                 <span class="sr-only">Подробнее: {hotspot.title}</span>
                 <span class="honey-cake__hotspot-mark" aria-hidden="true">+</span>
               </summary>
-              <svg class="honey-cake__connector" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" /></svg>
               <div id={panelId} class="honey-cake__hotspot-panel" role="region" aria-labelledby={summaryId}>
                 <div class="honey-cake__hotspot-content">
                   <h3>{hotspot.title}</h3>
@@ -168,16 +167,12 @@ const whatsappUrl = getWhatsAppUrl('general');
       });
       cancelAnimationFrame(this.frame);
       this.positionMobilePanel(current);
-      this.drawConnector(current);
       if (this.reduced.matches) return;
       const content = current.querySelector('.honey-cake__hotspot-content');
       const mark = current.querySelector('.honey-cake__hotspot-mark');
-      const path = current.querySelector('path');
-      if (!content || !mark || !path) return;
-      const length = path.getTotalLength();
+      if (!content || !mark) return;
       const scene = gsap.timeline()
         .fromTo(mark, { rotation: 0 }, { rotation: 45, duration: 0.22 }, 0)
-        .fromTo(path, { strokeDasharray: length, strokeDashoffset: length }, { strokeDashoffset: 0, duration: 0.18 }, 0)
         .fromTo(content, { y: 8, opacity: 0 }, { y: 0, opacity: 1, duration: 0.24, ease: 'power2.out' }, 0.1);
       this.scenes.set(current, scene);
     };
@@ -211,23 +206,9 @@ const whatsappUrl = getWhatsAppUrl('general');
         cancelAnimationFrame(this.frame);
         this.frame = requestAnimationFrame(() => {
           this.positionMobilePanel(active);
-          this.drawConnector(active);
         });
       }
     };
-
-    private drawConnector(item: HTMLDetailsElement) {
-      const panel = item.querySelector<HTMLElement>('.honey-cake__hotspot-panel');
-      const path = item.querySelector('path');
-      if (!panel || !path) return;
-      const origin = item.getBoundingClientRect();
-      const box = panel.getBoundingClientRect();
-      const x = Math.max(box.left + 12, Math.min(origin.left, box.right - 12)) - origin.left;
-      const y = (box.bottom < origin.top ? box.bottom : box.top) - origin.top;
-      path.setAttribute('d', `M0 0 Q0 ${y / 2} ${x} ${y}`);
-      path.style.removeProperty('stroke-dasharray');
-      path.style.removeProperty('stroke-dashoffset');
-    }
 
     private positionMobilePanel(item: HTMLDetailsElement) {
       const panel = item.querySelector<HTMLElement>('.honey-cake__hotspot-panel');
@@ -259,7 +240,6 @@ const whatsappUrl = getWhatsAppUrl('general');
 </script>
 
 <style>
-  .honey-cake__connector { position: absolute; width: 1px; height: 1px; overflow: visible; color: var(--accent-muted); pointer-events: none; }
   .honey-cake__hotspot[open] .honey-cake__hotspot-mark { transform: rotate(45deg) scale(1.1); }
   .honey-cake {
     --honey-cake-scallop-height: 1.15625rem;
