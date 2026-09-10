@@ -59,3 +59,8 @@ export function getWhatsAppUrl(context: WhatsAppContext): string {
 
   return `https://wa.me/${CONTACTS.whatsappNumber}?text=${message}`;
 }
+
+export function getProductWhatsAppUrl(productName: string): string {
+  const message = encodeURIComponent(`Здравствуйте! Подскажите цену и наличие: ${productName}.`);
+  return `https://wa.me/${CONTACTS.whatsappNumber}?text=${message}`;
+}

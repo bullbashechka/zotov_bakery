@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Advantages from '@/components/Advantages.astro';
+import Assortment from '@/components/Assortment.astro';
 import ConversionSection from '@/components/ConversionSection.astro';
 import Faq from '@/components/Faq.astro';
 import Hero from '@/components/Hero.astro';
@@ -21,7 +22,6 @@ const canonicalUrl = publicWebsiteUrl
   : undefined;
 
 const placeholderSections = {
-  assortment: { id: HOME_SECTION_IDS.assortment, title: 'Ассортимент' },
   history: { id: HOME_SECTION_IDS.history, title: 'Наша история' },
 };
 ---
@@ -35,7 +35,7 @@ const placeholderSections = {
   </HeroAdvantagesFlow>
 
   <HoneyCake />
-  <PlaceholderSection id={placeholderSections.assortment.id} title={placeholderSections.assortment.title} />
+  <Assortment />
   <WhereToBuy />
   <PlaceholderSection id={placeholderSections.history.id} title={placeholderSections.history.title} />
   <Faq />
