@@ -1,0 +1,244 @@
+---
+import HoneyCakeIllustration from './HoneyCakeIllustration.astro';
+import Wrapper from './Wrapper.astro';
+import ActionLink from '@/components/ActionLink.astro';
+import { getWhatsAppUrl, HOME_SECTION_IDS } from '@/lib/site';
+
+const whatsappUrl = getWhatsAppUrl('general');
+---
+
+<section id={HOME_SECTION_IDS.honeyCake} class="honey-cake" aria-labelledby="honey-cake-title">
+  <div class="honey-cake__surface" aria-hidden="true"></div>
+  <div class="honey-cake__container">
+    <h2 id="honey-cake-title" class="honey-cake__title" data-motion="heading">
+      Медовик от <span class="honey-cake__brand-z">Z</span>OTOV bakery
+    </h2>
+
+    <div class="honey-cake__content">
+      <Wrapper
+        width="min(100%, 42rem)"
+        margin="0 auto"
+        at={{
+          large: { column: '1', row: '1', width: 'min(100%, 43rem)', margin: '0' },
+          cinema: { width: '43rem' },
+        }}
+      >
+        <HoneyCakeIllustration />
+      </Wrapper>
+
+      <p class="honey-cake__hint">Нажмите на «+», чтобы узнать подробнее.</p>
+
+      <div class="honey-cake__copy">
+        <h3 data-motion="heading">Описание</h3>
+        <p data-motion="copy">
+          Мягкие, хорошо пропитанные медовые коржи напоминают тот самый домашний медовик из детства.
+          Белковый воздушный крем сверху торта буквально тает во рту, а умеренная сладость делает
+          десерт более нежным и легким.
+        </p>
+        <p data-motion="copy">
+          Этот медовик Светлана Зотова пекла для семьи и близких. Со временем домашний рецепт стал
+          ассоциироваться с брендом.
+        </p>
+        <Wrapper margin="1.5rem 0 0" at={{ large: { margin: '2.25rem 0 0' } }}>
+          <ActionLink variant="primary" href={whatsappUrl} fullWidth external>
+            Узнать цену и наличие
+          </ActionLink>
+        </Wrapper>
+      </div>
+    </div>
+  </div>
+
+  <div class="honey-cake__scallop honey-cake__scallop--top" aria-hidden="true"></div>
+  <div class="honey-cake__scallop honey-cake__scallop--bottom" aria-hidden="true"></div>
+</section>
+
+<style>
+  .honey-cake {
+    --honey-cake-scallop-height: 1.15625rem;
+    --honey-cake-scallop-width: 2.0625rem;
+    --honey-cake-scallop-tile-height: 2.3125rem;
+    --honey-cake-surface-start: 11rem;
+
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    background: var(--page);
+    padding-block: 4.25rem 5rem;
+  }
+
+  .honey-cake__surface {
+    position: absolute;
+    z-index: -2;
+    inset: calc(var(--honey-cake-surface-start) + var(--honey-cake-scallop-height)) 0
+      var(--honey-cake-scallop-height);
+    background: #f8f4f0;
+  }
+
+  .honey-cake__container {
+    width: min(calc(100% - 2.5rem), 77.5rem);
+    margin-inline: auto;
+  }
+
+  .honey-cake__title {
+    font-family: 'Vetrino', Georgia, serif;
+    font-size: clamp(2.25rem, 5vw, 3rem);
+    font-weight: 400;
+    line-height: 1;
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  .honey-cake__brand-z {
+    font-family: 'Bergamasco', Georgia, serif;
+  }
+
+  .honey-cake__content {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: center;
+    gap: 1.25rem;
+    margin-top: 2rem;
+  }
+
+  .honey-cake__hint {
+    order: 2;
+    margin: 0;
+    color: color-mix(in srgb, var(--text-primary) 50%, transparent);
+    font-size: 0.875rem;
+    font-style: italic;
+    font-weight: 500;
+    line-height: 1.3;
+    text-align: center;
+  }
+
+  .honey-cake__copy {
+    min-width: 0;
+  }
+
+  .honey-cake__copy h3 {
+    margin: 0;
+    font-family: 'Vetrino', Georgia, serif;
+    font-size: 1.875rem;
+    font-weight: 400;
+    line-height: 1;
+  }
+
+  .honey-cake__copy p {
+    margin: 1rem 0 0;
+    font-size: 0.9375rem;
+    line-height: 1.35;
+  }
+
+  .honey-cake__copy p + p {
+    margin-top: 0.875rem;
+  }
+
+  .honey-cake__scallop {
+    position: absolute;
+    z-index: -1;
+    right: 0;
+    left: 0;
+    height: var(--honey-cake-scallop-height);
+    background: #f8f4f0;
+    -webkit-mask: url('/hero/scallop-tile.svg') center top / var(--honey-cake-scallop-width)
+      var(--honey-cake-scallop-tile-height) repeat-x;
+    mask: url('/hero/scallop-tile.svg') center top / var(--honey-cake-scallop-width)
+      var(--honey-cake-scallop-tile-height) repeat-x;
+    pointer-events: none;
+  }
+
+  .honey-cake__scallop--top {
+    top: var(--honey-cake-surface-start);
+  }
+
+  .honey-cake__scallop--bottom {
+    bottom: 0;
+    transform: scaleY(-1);
+  }
+
+  @media (min-width: 40rem) {
+    .honey-cake {
+      --honey-cake-surface-start: 12.25rem;
+
+      padding-block: 5.5rem 6rem;
+    }
+
+    .honey-cake__content {
+      gap: 1.5rem;
+      margin-top: 2.75rem;
+    }
+
+    .honey-cake__hint {
+      font-size: 1rem;
+    }
+
+    .honey-cake__copy h3 {
+      font-size: 2rem;
+    }
+
+    .honey-cake__copy p {
+      font-size: 1rem;
+      line-height: 1.21;
+    }
+  }
+
+  @media (min-width: 56.25rem) {
+    .honey-cake {
+      --honey-cake-scallop-height: 1.44625rem;
+      --honey-cake-scallop-width: 2.5625rem;
+      --honey-cake-scallop-tile-height: 2.8925rem;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .honey-cake {
+      --honey-cake-surface-start: 12.3125rem;
+
+      min-height: 48.5625rem;
+      padding-block: 7.4375rem 2.25rem;
+    }
+
+    .honey-cake__title {
+      font-size: 3rem;
+    }
+
+    .honey-cake__content {
+      grid-template-columns: minmax(0, 1fr) 24.1875rem;
+      column-gap: clamp(2rem, 6vw, 6.25rem);
+      row-gap: 0;
+      margin-top: 6.625rem;
+    }
+
+    .honey-cake__hint {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      margin-top: 1.25rem;
+    }
+
+    .honey-cake__copy {
+      grid-column: 2;
+      grid-row: 1;
+      align-self: center;
+    }
+
+    .honey-cake__copy h3 {
+      font-size: 1.875rem;
+    }
+  }
+
+  @media (min-width: 75rem) {
+    .honey-cake {
+      --honey-cake-scallop-height: 2.03125rem;
+      --honey-cake-scallop-width: 3.6rem;
+      --honey-cake-scallop-tile-height: 4.0625rem;
+    }
+  }
+
+  @media (min-width: 90rem) {
+    .honey-cake__content {
+      grid-template-columns: 43rem 24.1875rem;
+      justify-content: center;
+      column-gap: 4.5rem;
+    }
+  }
+</style>

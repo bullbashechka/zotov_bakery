@@ -34,6 +34,10 @@ export const CONTACTS = {
   instagramUrl: 'https://www.instagram.com/zotov.bakery/',
 } as const;
 
+export const PURCHASE_LINKS = {
+  aimerTwoGisUrl: 'https://2gis.kz/petropavlovsk/search/aimer',
+} as const;
+
 export const POLICY_LINKS = [
   { href: '/privacy/', label: 'Политика конфиденциальности' },
   { href: '/data-processing/', label: 'Политика обработки данных' },
@@ -53,5 +57,10 @@ export type WhatsAppContext = keyof typeof WHATSAPP_MESSAGES;
 export function getWhatsAppUrl(context: WhatsAppContext): string {
   const message = encodeURIComponent(WHATSAPP_MESSAGES[context]);
 
+  return `https://wa.me/${CONTACTS.whatsappNumber}?text=${message}`;
+}
+
+export function getProductWhatsAppUrl(productName: string): string {
+  const message = encodeURIComponent(`Здравствуйте! Подскажите цену и наличие: ${productName}.`);
   return `https://wa.me/${CONTACTS.whatsappNumber}?text=${message}`;
 }

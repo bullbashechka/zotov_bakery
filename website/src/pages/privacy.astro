@@ -1,4 +1,5 @@
 ---
+import BaseLayout from '@/layouts/BaseLayout.astro';
 import LegalPlaceholder from '@/components/LegalPlaceholder.astro';
 
 const publicWebsiteUrl = import.meta.env.PUBLIC_WEBSITE_URL;
@@ -7,8 +8,11 @@ const canonicalUrl = publicWebsiteUrl
   : undefined;
 ---
 
-<LegalPlaceholder
+<BaseLayout
   title="Политика конфиденциальности"
   description="Временная страница политики конфиденциальности ZOTOV bakery."
   {canonicalUrl}
-/>
+  robots="noindex,follow"
+>
+  <LegalPlaceholder title="Политика конфиденциальности" />
+</BaseLayout>

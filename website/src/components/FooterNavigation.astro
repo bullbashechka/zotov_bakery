@@ -1,0 +1,78 @@
+---
+import { HOME_NAV_LINKS, POLICY_LINKS } from '@/lib/site';
+interface Props {
+  variant: 'primary' | 'legal';
+}
+const { variant } = Astro.props;
+const links = variant === 'primary' ? HOME_NAV_LINKS : POLICY_LINKS;
+---
+
+<nav
+  class="footer-navigation"
+  data-variant={variant}
+  aria-label={variant === 'primary' ? 'Навигация в подвале' : 'Юридическая информация'}
+>
+  {links.map((link) => <a href={link.href}>{link.label}</a>)}
+</nav>
+
+<style>
+  .footer-navigation[data-variant='primary'],
+  .footer-navigation[data-variant='legal'] {
+    display: grid;
+    align-content: start;
+    gap: 0.25rem;
+  }
+
+  .footer-navigation[data-variant='primary'] {
+  }
+
+  .footer-navigation[data-variant='legal'] {
+  }
+
+  .footer-navigation[data-variant='primary'] a,
+  .footer-navigation[data-variant='legal'] a {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    border-radius: 0.25rem;
+    color: inherit;
+    font-size: 0.9375rem;
+    line-height: 1.15;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 0.2em;
+    transition: text-decoration-color 180ms ease;
+  }
+
+  .footer-navigation[data-variant='primary'] a:is(:hover, :focus-visible),
+  .footer-navigation[data-variant='legal'] a:is(:hover, :focus-visible) {
+    text-decoration-color: currentColor;
+  }
+
+  @media (min-width: 40rem) {
+    .footer-navigation[data-variant='primary'],
+    .footer-navigation[data-variant='legal'] {
+      grid-auto-flow: column;
+      justify-content: start;
+      gap: 1.25rem;
+    }
+
+    .footer-navigation[data-variant='legal'] {
+      gap: 2rem;
+    }
+  }
+
+  @media (min-width: 75rem) {
+    .footer-navigation[data-variant='primary'] {
+    }
+
+    .footer-navigation[data-variant='legal'] {
+    }
+
+    .footer-navigation[data-variant='primary'] a,
+    .footer-navigation[data-variant='legal'] a {
+      min-height: 2rem;
+      font-size: 1rem;
+    }
+  }
+</style>

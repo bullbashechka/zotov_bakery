@@ -1,0 +1,59 @@
+---
+import FaqItem from './FaqItem.astro';
+interface Props {
+  items: ReadonlyArray<{ question: string; answer: string }>;
+  id?: string;
+}
+const { items, id = 'zotov-faq' } = Astro.props;
+---
+
+<faq-accordion class="faq__list">
+  {
+    items.map((item, index) => (
+      <FaqItem
+        id={`${id}-${index + 1}`}
+        question={item.question}
+        answer={item.answer}
+        open={index === 0}
+        group={id}
+      />
+    ))
+  }
+</faq-accordion>
+<script>
+  class FaqAccordion extends HTMLElement {
+    private events?: AbortController;
+    connectedCallback() {
+      if (this.events) return;
+      this.events = new AbortController();
+      this.addEventListener(
+        'faq-request-open',
+        (event) => {
+          this.querySelectorAll<HTMLElement & { close?: () => void }>('faq-item').forEach(
+            (item) => {
+              if (item !== event.target) item.close?.();
+            },
+          );
+        },
+        { signal: this.events.signal },
+      );
+    }
+    disconnectedCallback() {
+      this.events?.abort();
+      this.events = undefined;
+    }
+  }
+  if (!customElements.get('faq-accordion')) customElements.define('faq-accordion', FaqAccordion);
+</script>
+<style>
+  .faq__list {
+    display: grid;
+    gap: 1rem;
+  }
+
+  @media (min-width: 48rem) {
+    .faq__list {
+      gap: 1.25rem;
+    }
+  }
+</style>

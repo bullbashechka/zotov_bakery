@@ -1,0 +1,120 @@
+---
+import PurchaseCard from './PurchaseCard.astro';
+import Wrapper from './Wrapper.astro';
+import { PURCHASE_OPTIONS } from '@/lib/purchase';
+import { HOME_SECTION_IDS } from '@/lib/site';
+---
+
+<section id={HOME_SECTION_IDS.whereToBuy} class="where-to-buy" aria-labelledby="where-to-buy-title">
+  <div class="where-to-buy__inner">
+    <h2 id="where-to-buy-title" class="where-to-buy__title" data-motion="heading">
+      Где купить торты и десерты от ZOTOV bakery
+    </h2>
+
+    <div
+      class="where-to-buy__track"
+      tabindex="0"
+      aria-label="Способы покупки тортов и десертов ZOTOV bakery"
+    >
+      {
+        PURCHASE_OPTIONS.map((option, index) => (
+          <Wrapper
+            at={{
+              tablet: {
+                flex: '0 0 25rem',
+                alignSelf: 'start',
+                snap: 'start',
+                margin: `${index * 2.6875}rem 0 0`,
+              },
+              desktop: { flex: '0 1 auto' },
+            }}
+          >
+            <PurchaseCard option={option} />
+          </Wrapper>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .where-to-buy {
+    overflow: hidden;
+    background: var(--page);
+    padding-block: clamp(4.5rem, 8vw, 5.9375rem) clamp(4.5rem, 8vw, 7.5625rem);
+  }
+
+  .where-to-buy__inner {
+    width: min(100%, 77.5rem);
+    margin-inline: auto;
+  }
+
+  .where-to-buy__title {
+    width: min(calc(100% - 2rem), 72.125rem);
+    margin-inline: auto;
+    color: var(--text-primary);
+    font-family: 'Vetrino', Georgia, serif;
+    font-size: clamp(30px, 7vw, 48px);
+    font-weight: 400;
+    line-height: 1;
+    text-align: center;
+  }
+
+  .where-to-buy__track {
+    display: grid;
+    gap: 1.25rem;
+    width: min(calc(100% - 2rem), 25rem);
+    margin: 2.5rem auto 0;
+    outline-offset: 0.5rem;
+  }
+
+  @media (min-width: 40rem) and (max-width: 74.999rem) {
+    .where-to-buy {
+      overflow: hidden;
+    }
+
+    .where-to-buy__title {
+      font-size: clamp(40px, 5vw, 48px);
+    }
+
+    .where-to-buy__track {
+      display: flex;
+      width: 100%;
+      min-height: 35.75rem;
+      margin-top: 2.5rem;
+      overflow-x: auto;
+      overflow-y: visible;
+      padding: 0 2rem 1rem;
+      scroll-padding-inline: 2rem;
+      scroll-snap-type: x proximity;
+      scrollbar-color: var(--accent) transparent;
+      scrollbar-width: thin;
+    }
+
+    .where-to-buy__track::-webkit-scrollbar {
+      height: 0.5rem;
+    }
+
+    .where-to-buy__track::-webkit-scrollbar-thumb {
+      border-radius: 999px;
+      background: var(--accent);
+    }
+  }
+
+  @media (min-width: 75rem) {
+    .where-to-buy {
+      padding-block: 95px 120px;
+    }
+
+    .where-to-buy__inner {
+      width: min(calc(100% - 2rem), 1240px);
+    }
+
+    .where-to-buy__track {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      width: 100%;
+      gap: 20px;
+      margin-top: 39px;
+    }
+  }
+</style>

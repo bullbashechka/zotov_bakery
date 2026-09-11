@@ -1,0 +1,167 @@
+---
+import { createHash } from 'node:crypto';
+import type { CSSProperties } from 'react';
+
+interface Layout {
+  display?: CSSProperties['display'];
+  dir?: 'row' | 'column';
+  gap?: CSSProperties['gap'];
+  padding?: CSSProperties['padding'];
+  margin?: CSSProperties['margin'];
+  width?: CSSProperties['width'];
+  maxWidth?: CSSProperties['maxWidth'];
+  minWidth?: CSSProperties['minWidth'];
+  height?: CSSProperties['height'];
+  minHeight?: CSSProperties['minHeight'];
+  flex?: CSSProperties['flex'];
+  grid?: CSSProperties['gridTemplateColumns'];
+  rows?: CSSProperties['gridTemplateRows'];
+  column?: CSSProperties['gridColumn'];
+  row?: CSSProperties['gridRow'];
+  order?: CSSProperties['order'];
+  align?: CSSProperties['alignItems'];
+  justify?: CSSProperties['justifyContent'];
+  alignSelf?: CSSProperties['alignSelf'];
+  justifySelf?: CSSProperties['justifySelf'];
+  position?: CSSProperties['position'];
+  inset?: CSSProperties['inset'];
+  zIndex?: CSSProperties['zIndex'];
+  wrap?: CSSProperties['flexWrap'];
+  overflow?: CSSProperties['overflow'];
+  snap?: CSSProperties['scrollSnapAlign'];
+}
+interface Props extends Layout {
+  at?: Partial<
+    Record<
+      'small' | 'tablet' | 'medium' | 'laptop' | 'large' | 'desktop' | 'wide' | 'cinema',
+      Layout
+    >
+  >;
+}
+
+const properties = {
+  display: 'display',
+  dir: 'flex-direction',
+  gap: 'gap',
+  padding: 'padding',
+  margin: 'margin',
+  width: 'width',
+  maxWidth: 'max-width',
+  minWidth: 'min-width',
+  height: 'height',
+  minHeight: 'min-height',
+  flex: 'flex',
+  grid: 'grid-template-columns',
+  rows: 'grid-template-rows',
+  column: 'grid-column',
+  row: 'grid-row',
+  order: 'order',
+  align: 'align-items',
+  justify: 'justify-content',
+  alignSelf: 'align-self',
+  justifySelf: 'justify-self',
+  position: 'position',
+  inset: 'inset',
+  zIndex: 'z-index',
+  wrap: 'flex-wrap',
+  overflow: 'overflow',
+  snap: 'scroll-snap-align',
+} as const;
+const defaults: Layout = {
+  display: 'block',
+  dir: 'column',
+  gap: '0',
+  padding: '0',
+  margin: '0',
+  width: 'auto',
+  maxWidth: 'none',
+  minWidth: '0',
+  height: 'auto',
+  minHeight: '0',
+  flex: '0 1 auto',
+  grid: 'none',
+  rows: 'none',
+  column: 'auto',
+  row: 'auto',
+  order: '0',
+  align: 'normal',
+  justify: 'normal',
+  alignSelf: 'auto',
+  justifySelf: 'auto',
+  position: 'static',
+  inset: 'auto',
+  zIndex: 'auto',
+  wrap: 'nowrap',
+  overflow: 'visible',
+  snap: 'none',
+};
+const breakpoints = {
+  small: '30rem',
+  tablet: '40rem',
+  medium: '48rem',
+  laptop: '56.25rem',
+  large: '64rem',
+  desktop: '75rem',
+  wide: '80rem',
+  cinema: '90rem',
+} as const;
+const lengths = new Set([
+  'gap',
+  'padding',
+  'margin',
+  'width',
+  'maxWidth',
+  'minWidth',
+  'height',
+  'minHeight',
+  'inset',
+]);
+const { at = {} } = Astro.props;
+
+function declarations(layout: Layout): string {
+  const values: Layout = { ...layout };
+  if (values.display === undefined) {
+    if (values.grid) values.display = 'grid';
+    else if (values.dir) values.display = 'flex';
+  }
+  return Object.entries(properties)
+    .flatMap(([key, property]) => {
+      const value = values[key as keyof Layout];
+      if (value === undefined) return [];
+      const css = typeof value === 'number' && lengths.has(key) ? `${value}px` : String(value);
+      // Values may contain CSS calculations, but never additional declarations or markup.
+      if (/[;{}<>\\]/.test(css)) throw new Error(`Invalid Wrapper ${key}`);
+      return `${property}:${css};`;
+    })
+    .join('');
+}
+
+const base = declarations({
+  ...defaults,
+  ...Object.fromEntries(
+    Object.keys(properties).flatMap((key) => {
+      const value = Astro.props[key as keyof Layout];
+      return value === undefined ? [] : [[key, value]];
+    }),
+  ),
+  display: Astro.props.display ?? (Astro.props.grid ? 'grid' : Astro.props.dir ? 'flex' : 'block'),
+});
+const responsive = Object.entries(breakpoints).flatMap(([name, width]) => {
+  const layout = at[name as keyof typeof breakpoints];
+  return layout ? [{ width, rules: declarations(layout) }] : [];
+});
+// Same layout shares a deterministic selector; nested wrappers cannot inherit its rules.
+const key = createHash('sha256')
+  .update(JSON.stringify([base, responsive]))
+  .digest('hex')
+  .slice(0, 16);
+const selector = `[data-wrapper="${key}"]`;
+const css =
+  `${selector}{${base}}` +
+  responsive
+    .map(({ width, rules }) => `@media(min-width:${width}){${selector}{${rules}}}`)
+    .join('');
+---
+
+<div data-wrapper={key}><slot /></div>
+<style is:inline set:html={css}></style>

@@ -12,3 +12,8 @@ artifacts/
 !.env.example
 .DS_Store
 *.log
+
+# Component workshop output
+website/.storybook/fixtures/
+website/.catalog-cache/
+website/storybook-static/

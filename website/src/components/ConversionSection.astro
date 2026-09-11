@@ -9,23 +9,29 @@ import { getWhatsAppUrl, HOME_SECTION_IDS } from '@/lib/site';
 const whatsappUrl = getWhatsAppUrl('selectionHelp');
 ---
 
-<section id={HOME_SECTION_IDS.conversion} class="conversion-section" aria-labelledby="conversion-title">
-  <div class="conversion-section__line" data-conversion-line aria-hidden="true" set:html={selectionFlow}></div>
+<section
+  id={HOME_SECTION_IDS.conversion}
+  class="conversion-section"
+  data-motion-group
+  aria-labelledby="conversion-title"
+>
+  <div
+    class="conversion-section__line"
+    data-selection-line
+    aria-hidden="true"
+    set:html={selectionFlow}
+  />
 
   <div class="conversion-section__inner">
-    <div class="conversion-section__copy">
-      <h2 id="conversion-title" class="conversion-section__title">Не знаете что выбрать?</h2>
-      <p class="conversion-section__description">
+    <div class="conversion-section__copy" data-motion-trigger>
+      <h2 id="conversion-title" class="conversion-section__title" data-motion="heading">
+        Не знаете что выбрать?
+      </h2>
+      <p class="conversion-section__description" data-motion="copy">
         Напишите нам в WhatsApp. Подскажем, какие десерты есть в наличии и где их удобнее купить.
       </p>
       <div class="conversion-section__actions">
-        <ActionLink
-          variant="primary"
-          href={whatsappUrl}
-          fullWidth
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <ActionLink variant="primary" href={whatsappUrl} fullWidth external>
           Написать в WhatsApp
         </ActionLink>
         <ActionLink variant="secondary" href={`#${HOME_SECTION_IDS.assortment}`} fullWidth>
@@ -35,99 +41,107 @@ const whatsappUrl = getWhatsAppUrl('selectionHelp');
     </div>
 
     <div class="conversion-section__desserts" aria-hidden="true">
-      <Picture
+      <div
         class="conversion-section__dessert conversion-section__dessert--left"
-        src={dessertLeft}
-        formats={['avif', 'webp']}
-        widths={[240, 320, 392, 480, 640, 784]}
-        sizes="(max-width: 39.999rem) 56vw, (max-width: 74.999rem) 31vw, 31rem"
-        alt=""
-      />
-      <Picture
+        data-selection-dessert="left"
+      >
+        <Picture
+          src={dessertLeft}
+          formats={['avif', 'webp']}
+          widths={[240, 320, 392, 480, 640, 784]}
+          sizes="(max-width: 39.999rem) 56vw, (max-width: 74.999rem) 31vw, 31rem"
+          alt=""
+        />
+      </div>
+      <div
         class="conversion-section__dessert conversion-section__dessert--right"
-        src={dessertRight}
-        formats={['avif', 'webp']}
-        widths={[260, 360, 459, 560, 720, 918]}
-        sizes="(max-width: 39.999rem) 60vw, (max-width: 74.999rem) 34vw, 35rem"
-        alt=""
-      />
+        data-selection-dessert="right"
+      >
+        <Picture
+          src={dessertRight}
+          formats={['avif', 'webp']}
+          widths={[260, 360, 459, 560, 720, 918]}
+          sizes="(max-width: 39.999rem) 60vw, (max-width: 74.999rem) 34vw, 35rem"
+          alt=""
+        />
+      </div>
     </div>
   </div>
 </section>
 
 <script>
-  const line = document.querySelector<HTMLElement>('[data-conversion-line]');
+  import { gsap } from 'gsap';
+  import { animate, svg } from 'animejs';
+  import { mountMotion } from '@/lib/motion-lifecycle';
+  const cleanup = mountMotion(
+    '.conversion-section',
+    ({ element: selection, onceVisible, track, onCleanup }) => {
+      const path = selection.querySelector<SVGPathElement>('[data-selection-line] path');
+      if (path) {
+        const crumb = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        crumb.setAttribute('r', '9');
+        crumb.setAttribute('fill', '#6b3e22');
+        crumb.style.opacity = '0';
+        path.parentElement?.append(crumb);
+        onCleanup(() => crumb.remove());
+        onceVisible(() => {
+          const drawing = animate(svg.createDrawable(path), {
+            draw: ['0 0', '0 1'],
+            duration: 1200,
+            ease: 'inOutQuad',
+          });
+          track(drawing);
+          crumb.style.opacity = '1';
+          track(
+            animate(crumb, {
+              ...svg.createMotionPath(path),
+              duration: 1200,
+              ease: 'inOutQuad',
+              onComplete: () => {
+                crumb.style.opacity = '0';
+              },
+            }),
+          );
+          const desserts = selection.querySelectorAll('[data-selection-dessert]');
+          gsap.fromTo(
+            desserts,
+            { y: innerWidth < 768 ? 12 : 24, opacity: 0, rotation: (i: number) => (i ? 3 : -3) },
+            {
+              y: 0,
+              opacity: 1,
+              rotation: 0,
+              duration: 1,
+              ease: 'back.out(1.1)',
+              clearProps: 'transform,opacity',
+            },
+          );
+          const button = selection.querySelector('.action-link');
+          button?.dispatchEvent(new Event('action-emphasis'));
+        });
+      }
+    },
+  );
+  if (import.meta.hot) import.meta.hot.dispose(cleanup);
 
-  if (line && line.dataset.motionReady !== 'true') {
-    line.dataset.motionReady = 'true';
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const path = line.querySelector<SVGPathElement>('path');
-
-    line.closest<HTMLElement>('.conversion-section')?.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((link) => {
+  document
+    .querySelectorAll<HTMLAnchorElement>('.conversion-section a[href^="#"]')
+    .forEach((link) => {
       link.addEventListener('click', () => {
-        window.setTimeout(() => {
-          const target = document.querySelector<HTMLElement>(link.getAttribute('href') ?? '');
-          target?.focus({ preventScroll: true });
-        }, 0);
+        const target = document.getElementById((link.getAttribute('href') ?? '').slice(1));
+        const heading = target?.querySelector<HTMLElement>('h1, h2, h3');
+        if (!heading) return;
+        heading.setAttribute('tabindex', '-1');
+        heading.focus({ preventScroll: true });
       });
     });
-
-    if (!path || reducedMotion.matches) {
-      line.dataset.drawn = 'true';
-    } else {
-      const length = path.getTotalLength();
-      let started = false;
-      let observer: IntersectionObserver | undefined;
-
-      path.style.strokeDasharray = `${length}`;
-      path.style.strokeDashoffset = `${-length}`;
-
-      const finish = () => {
-        path.style.strokeDashoffset = '0';
-        line.dataset.drawn = 'true';
-        delete line.dataset.drawing;
-      };
-
-      const start = () => {
-        if (started || reducedMotion.matches) return;
-        started = true;
-        line.dataset.drawing = 'true';
-        requestAnimationFrame(() => {
-          path.style.strokeDashoffset = '0';
-        });
-      };
-
-      path.addEventListener('transitionend', (event) => {
-        if (event.propertyName === 'stroke-dashoffset') finish();
-      });
-
-      observer = new IntersectionObserver(
-        ([entry]) => {
-          if (!entry.isIntersecting) return;
-          start();
-          observer?.disconnect();
-        },
-        { rootMargin: '0px 0px 20% 0px' },
-      );
-
-      reducedMotion.addEventListener('change', () => {
-        if (reducedMotion.matches) {
-          observer?.disconnect();
-          finish();
-        }
-      });
-
-      observer.observe(line);
-    };
-  }
 </script>
 
 <style>
   .conversion-section {
     position: relative;
     isolation: isolate;
-    overflow: visible;
-    clip-path: inset(-100vmax 0);
+    overflow-x: clip;
+    overflow-y: visible;
     background: transparent;
     padding-block: clamp(4.5rem, 8vw, 7.5rem) clamp(4.5rem, 7vw, 6.5rem);
   }
@@ -137,7 +151,7 @@ const whatsappUrl = getWhatsAppUrl('selectionHelp');
     z-index: 0;
     top: 3rem;
     left: 0;
-    width: 100vw;
+    width: 100%;
     height: max(17.65625rem, 41.475vw);
     overflow: clip;
     pointer-events: none;
@@ -154,15 +168,11 @@ const whatsappUrl = getWhatsAppUrl('selectionHelp');
     transform: translate(-50%, 2.375rem);
   }
 
-  .conversion-section__line[data-drawing='true'] :global(path) {
-    transition: stroke-dashoffset 1600ms cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
   .conversion-section__inner {
     position: relative;
     z-index: 1;
     width: min(calc(100% - 2rem), 77.5rem);
-    min-height: 25rem;
+    min-height: auto;
     margin-inline: auto;
   }
 
@@ -232,6 +242,12 @@ const whatsappUrl = getWhatsAppUrl('selectionHelp');
     width: min(60vw, 18rem);
   }
 
+  @media (max-width: 39.999rem) {
+    .conversion-section__desserts {
+      display: none;
+    }
+  }
+
   @media (min-width: 40rem) {
     .conversion-section__inner {
       min-height: 27rem;
@@ -290,12 +306,6 @@ const whatsappUrl = getWhatsAppUrl('selectionHelp');
 
     .conversion-section__dessert--right {
       top: 2.25rem;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .conversion-section__line[data-drawing='true'] :global(path) {
-      transition: none;
     }
   }
 </style>

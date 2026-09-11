@@ -1,5 +1,6 @@
 ---
 import { CONTACTS, HOME_NAV_LINKS } from '@/lib/site';
+import HeaderMascot from '@/components/HeaderMascot.astro';
 
 const desktopLeftLinks = HOME_NAV_LINKS.slice(0, 3);
 const desktopRightLinks = HOME_NAV_LINKS.slice(3);
@@ -7,8 +8,8 @@ const desktopRightLinks = HOME_NAV_LINKS.slice(3);
 
 <site-header id="site-top" data-menu-open="false">
   <div class="site-header__content">
-    <a class="site-header__logo" href="#site-top" aria-label="ZOTOV bakery, в начало страницы">
-      <img src="/zotov-logo.svg" width="331" height="127" alt="ZOTOV bakery" />
+    <a class="site-header__logo" href="#main-content" aria-label="ZOTOV bakery, в начало страницы">
+      <HeaderMascot />
     </a>
 
     <nav class="site-header__desktop-nav" aria-label="Основная навигация">
@@ -95,12 +96,13 @@ const desktopRightLinks = HOME_NAV_LINKS.slice(3);
         if (nextCompact !== this.compact) {
           this.compact = nextCompact;
           this.toggleAttribute('data-compact', nextCompact);
+          this.syncMascot();
         }
 
         if (
-          !this.desktopQuery.matches
-          && this.dataset.menuOpen === 'true'
-          && Math.abs(scrollY - this.menuScrollStart) >= 8
+          !this.desktopQuery.matches &&
+          this.dataset.menuOpen === 'true' &&
+          Math.abs(scrollY - this.menuScrollStart) >= 8
         ) {
           this.setMenuOpen(false, { restoreFocus: this.panel.contains(document.activeElement) });
         }
@@ -111,7 +113,9 @@ const desktopRightLinks = HOME_NAV_LINKS.slice(3);
       };
 
       this.toggle.addEventListener('click', this.handleToggle);
-      this.backdrop.addEventListener('click', () => this.setMenuOpen(false, { restoreFocus: true }));
+      this.backdrop.addEventListener('click', () =>
+        this.setMenuOpen(false, { restoreFocus: true }),
+      );
       this.addEventListener('focusout', this.handleFocusOut);
       window.addEventListener('keydown', this.handleEscape);
       window.addEventListener('scroll', this.handleScroll, { passive: true });
@@ -149,11 +153,19 @@ const desktopRightLinks = HOME_NAV_LINKS.slice(3);
       this.desktopQuery.removeEventListener('change', this.handleBreakpoint);
     }
 
+    syncMascot() {
+      const mascot = this.querySelector('header-mascot');
+      if (mascot)
+        mascot.dataset.state =
+          this.compact || this.dataset.menuOpen === 'true' ? 'compact' : 'expanded';
+    }
+
     setMenuOpen(open, options = {}) {
       const { restoreFocus = false } = options;
       const isOpen = open && !this.desktopQuery.matches;
 
       this.dataset.menuOpen = String(isOpen);
+      this.syncMascot();
       this.toggle.setAttribute('aria-expanded', String(isOpen));
       this.toggle.querySelector('.sr-only').textContent = isOpen ? 'Закрыть меню' : 'Открыть меню';
 
@@ -179,8 +191,11 @@ const desktopRightLinks = HOME_NAV_LINKS.slice(3);
     box-shadow: none;
     color: var(--text-primary);
     pointer-events: auto;
-    transition: height 180ms ease, background-color 180ms ease, border-color 180ms ease,
-      box-shadow 180ms ease;
+    transition:
+      height 220ms var(--motion-ease),
+      background-color 220ms var(--motion-ease),
+      border-color 220ms var(--motion-ease),
+      box-shadow 220ms var(--motion-ease);
   }
 
   site-header[data-compact],
@@ -218,22 +233,6 @@ const desktopRightLinks = HOME_NAV_LINKS.slice(3);
     flex: none;
   }
 
-  .site-header__logo picture,
-  .site-header__logo img {
-    display: block;
-  }
-
-  .site-header__logo img {
-    width: 10rem;
-    height: auto;
-    transition: width 180ms ease;
-  }
-
-  site-header[data-compact] .site-header__logo img,
-  site-header[data-menu-open='true'] .site-header__logo img {
-    width: 7.5rem;
-  }
-
   .site-header__desktop-nav,
   .site-header__desktop-actions {
     display: none;
@@ -250,13 +249,16 @@ const desktopRightLinks = HOME_NAV_LINKS.slice(3);
 
   .site-header__desktop-nav a,
   .site-header__mobile-panel a {
+    text-decoration-line: underline;
+    text-decoration-color: transparent;
+    transition: text-decoration-color 180ms ease;
     text-decoration-thickness: 0.0625rem;
     text-underline-offset: 0.3em;
   }
 
-  .site-header__desktop-nav a:hover,
-  .site-header__mobile-panel a:hover {
-    text-decoration-line: underline;
+  .site-header__desktop-nav a:is(:hover, :focus-visible),
+  .site-header__mobile-panel a:is(:hover, :focus-visible) {
+    text-decoration-color: currentColor;
   }
 
   .site-header__menu-toggle {
@@ -280,7 +282,9 @@ const desktopRightLinks = HOME_NAV_LINKS.slice(3);
     height: 0.125rem;
     border-radius: 999px;
     background: currentColor;
-    transition: transform 180ms ease, opacity 180ms ease;
+    transition:
+      transform 220ms var(--motion-ease),
+      opacity 220ms var(--motion-ease);
   }
 
   .site-header__menu-icon {
@@ -357,7 +361,7 @@ const desktopRightLinks = HOME_NAV_LINKS.slice(3);
     background: rgb(36 23 25 / 14%);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 180ms ease;
+    transition: opacity 220ms var(--motion-ease);
   }
 
   site-header:defined .site-header__mobile-panel {
@@ -376,7 +380,10 @@ const desktopRightLinks = HOME_NAV_LINKS.slice(3);
     visibility: hidden;
     pointer-events: none;
     transform: translateY(-0.5rem);
-    transition: opacity 180ms ease, transform 180ms ease, visibility 180ms step-end;
+    transition:
+      opacity 220ms var(--motion-ease),
+      transform 220ms var(--motion-ease),
+      visibility 220ms step-end;
   }
 
   site-header:defined[data-menu-open='true'] .site-header__backdrop {
@@ -389,7 +396,9 @@ const desktopRightLinks = HOME_NAV_LINKS.slice(3);
     visibility: visible;
     pointer-events: auto;
     transform: translateY(0);
-    transition: opacity 180ms ease, transform 180ms ease;
+    transition:
+      opacity 220ms var(--motion-ease),
+      transform 220ms var(--motion-ease);
   }
 
   .site-header__mobile-panel-content {
@@ -445,17 +454,6 @@ const desktopRightLinks = HOME_NAV_LINKS.slice(3);
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-    }
-
-    .site-header__logo img {
-      width: 20.6875rem;
-      height: 7.9375rem;
-      transition: width 180ms ease, height 180ms ease;
-    }
-
-    site-header[data-compact] .site-header__logo img {
-      width: 14.75rem;
-      height: 5.65625rem;
     }
 
     .site-header__desktop-nav {

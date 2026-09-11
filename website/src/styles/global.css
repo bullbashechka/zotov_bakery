@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+@media (min-width: 75rem) and (hover: hover) and (pointer: fine) {
+  :is(a[href], button, summary, [role='button'], input[type='submit'], input[type='button'], input[type='reset']):not(:disabled):not([aria-disabled='true']),
+  :is(a[href], button, summary, [role='button'], input[type='submit'], input[type='button'], input[type='reset']):not(:disabled):not([aria-disabled='true']) * {
+    cursor: url('/cake-cursor.svg') 2 3, pointer;
+  }
+}
+
 @font-face {
   font-family: 'Montserrat';
   font-style: normal;
@@ -107,6 +114,11 @@
 }
 
 @layer base {
+  :root {
+    --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --motion-interaction-duration: 180ms;
+  }
+
   html {
     scroll-behavior: smooth;
   }
@@ -129,6 +141,12 @@
     outline: 3px solid var(--focus);
     outline-offset: 3px;
   }
+
+  .motion-line-mask {
+    overflow: clip;
+    overflow-clip-margin: 0.12em;
+  }
+
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -144,4 +162,5 @@
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
+
 }
