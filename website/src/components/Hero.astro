@@ -528,8 +528,8 @@ import { HOME_SECTION_IDS } from '@/lib/site';
       right: max(1.5rem, calc((100% - 77.5rem) / 2 - 3.75rem));
       bottom: 1.5rem;
       left: auto;
-      width: clamp(37rem, 44vw, 43rem);
-      transform: translateX(clamp(6.25rem, calc(38vw - 30.4rem), 20rem));
+      width: clamp(37rem, calc(var(--layout-viewport) * 0.44), 43rem);
+      transform: translateX(clamp(6.25rem, calc(var(--layout-viewport) * 0.38 - 30.4rem), 20rem));
     }
 
     .hero__cake::before {

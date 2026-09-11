@@ -76,6 +76,8 @@
   --header-offset: 4.75rem;
   --header-shadow: rgb(59 38 39 / 8%);
   --hero-background: #efedeb;
+  /* Preserve the 1920px composition while allowing browser zoom to shrink it. */
+  --layout-viewport: min(100vw, 1920px);
 }
 
 @media (min-width: 40rem) and (max-width: 74.999rem) {
@@ -96,7 +98,7 @@
 
 @media (min-width: 87.5rem) {
   :root {
-    font-size: calc(100vw / 87.5);
+    font-size: calc(var(--layout-viewport) / 87.5);
   }
 }
 
