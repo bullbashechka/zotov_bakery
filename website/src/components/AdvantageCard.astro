@@ -39,8 +39,8 @@ const { advantage, itemNumber, total } = Astro.props;
         const frames = [
           [{ rotate: -3 }, { rotate: 3 }, { rotate: 0 }],
           [{ rotate: -3 }, { rotate: 1 }, { rotate: 0 }],
-          [{ scale: 0.94 }, { scale: 1.02 }, { scale: 1 }],
-          [{ y: innerWidth < 768 ? -4 : -8 }, { y: 0 }],
+          [{ rotate: -3 }, { rotate: 3 }, { rotate: 0 }],
+          [{ rotate: -3 }, { rotate: 1 }, { rotate: 0 }],
         ][index % 4];
         const animation = animate(art, {
           keyframes: frames,
