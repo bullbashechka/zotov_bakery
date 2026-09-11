@@ -1,83 +1,48 @@
 ---
 import ContactSection from '@/components/ContactSection.astro';
-import { HOME_NAV_LINKS, POLICY_LINKS } from '@/lib/site';
+import FooterLogo from './FooterLogo.astro';
+import FooterNavigation from './FooterNavigation.astro';
+import Copyright from './Copyright.astro';
+import Wrapper from './Wrapper.astro';
 ---
 
 <div class="site-footer__surface">
   <div class="site-footer__content">
-    <footer-logo-tilt class="site-footer__logo">
-      <a class="site-footer__logo-link" href="/#hero" aria-label="ZOTOV bakery, в начало страницы">
-        <span class="site-footer__logo-tilt">
-          <img data-motion="image" src="/footer/zotov-footer-logo.svg" width="391" height="466" alt="ZOTOV bakery" />
-        </span>
-      </a>
-    </footer-logo-tilt>
+    <Wrapper
+      column="1"
+      order={2}
+      alignSelf="end"
+      width="clamp(6.875rem, 31vw, 8.5rem)"
+      at={{ desktop: { row: '1 / span 3', alignSelf: 'center', width: 'min(100%, 24.5rem)' } }}
+    >
+      <FooterLogo />
+    </Wrapper>
 
-    <ContactSection />
+    <Wrapper column="1 / -1" order={1} at={{ desktop: { column: '2', row: '1' } }}>
+      <ContactSection />
+    </Wrapper>
 
-    <nav class="site-footer__navigation" aria-label="Навигация в подвале">
-      {HOME_NAV_LINKS.map((link) => <a href={link.href}>{link.label}</a>)}
-    </nav>
-
-    <nav class="site-footer__policies" aria-label="Юридическая информация">
-      {POLICY_LINKS.map((link) => <a href={link.href}>{link.label}</a>)}
-    </nav>
-
-    <p class="site-footer__copyright">
-      © <time data-current-year>{new Date().getFullYear()}</time> ZOTOV bakery
-    </p>
+    <Wrapper column="2" order={3} at={{ desktop: { row: '2', margin: '0.5rem 0 0' } }}>
+      <FooterNavigation variant="primary" />
+    </Wrapper>
+    <Wrapper
+      column="1 / -1"
+      order={4}
+      margin="0.5rem 0 0"
+      at={{ desktop: { column: '2', row: '3', margin: '0' } }}
+    >
+      <FooterNavigation variant="legal" />
+    </Wrapper>
+    <Wrapper
+      column="1 / -1"
+      order={5}
+      margin="0.25rem 0 0"
+      at={{ desktop: { column: '2', row: '4' } }}
+    >
+      <Copyright />
+    </Wrapper>
   </div>
 </div>
-
-<script>
-  import { gsap } from 'gsap';
-
-  class FooterLogoTilt extends HTMLElement {
-    private media?: ReturnType<typeof gsap.matchMedia>;
-
-    connectedCallback() {
-      if (this.media) return;
-      const tilt = this.querySelector<HTMLElement>('.site-footer__logo-tilt');
-      if (!tilt) return;
-
-      this.media = gsap.matchMedia();
-      this.media.add('(min-width: 40rem) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)', () => {
-        const events = new AbortController();
-        gsap.set(tilt, { transformPerspective: 1000, rotationX: 0, rotationY: 0 });
-        const rotateX = gsap.quickTo(tilt, 'rotationX', { duration: 0.4, ease: 'power3.out' });
-        const rotateY = gsap.quickTo(tilt, 'rotationY', { duration: 0.4, ease: 'power3.out' });
-        const reset = () => { rotateX(0); rotateY(0); };
-
-        this.addEventListener('pointermove', (event) => {
-          if (event.pointerType === 'touch') return;
-          // Measure the stationary area so the tilt cannot feed back into pointer coordinates.
-          const bounds = this.getBoundingClientRect();
-          if (!bounds.width || !bounds.height) return;
-          const x = gsap.utils.clamp(-1, 1, (event.clientX - bounds.left) / bounds.width * 2 - 1);
-          const y = gsap.utils.clamp(-1, 1, (event.clientY - bounds.top) / bounds.height * 2 - 1);
-          rotateX(-y * 5);
-          rotateY(x * 8);
-        }, { signal: events.signal });
-        this.addEventListener('pointerleave', reset, { signal: events.signal });
-        this.addEventListener('pointercancel', reset, { signal: events.signal });
-        window.addEventListener('blur', reset, { signal: events.signal });
-        window.addEventListener('scroll', reset, { passive: true, signal: events.signal });
-        return () => events.abort();
-      });
-    }
-
-    disconnectedCallback() {
-      this.media?.revert();
-      this.media = undefined;
-    }
-  }
-
-  if (!customElements.get('footer-logo-tilt')) customElements.define('footer-logo-tilt', FooterLogoTilt);
-
-  document.querySelectorAll<HTMLElement>('[data-current-year]').forEach((year) => {
-    year.textContent = String(new Date().getFullYear());
-  });
-</script>
 
 <style>
   .site-footer__surface {
@@ -97,86 +62,6 @@ import { HOME_NAV_LINKS, POLICY_LINKS } from '@/lib/site';
     margin-inline: auto;
   }
 
-  .site-footer__content > :global(.contact-section) {
-    grid-column: 1 / -1;
-    order: 1;
-  }
-
-  .site-footer__logo {
-    display: block;
-    align-self: end;
-    grid-column: 1;
-    order: 2;
-    width: clamp(6.875rem, 31vw, 8.5rem);
-    border-radius: 0.5rem;
-  }
-
-  .site-footer__logo img {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
-
-  .site-footer__logo-link {
-    display: block;
-    padding: 1rem;
-    margin: -1rem;
-    border-radius: inherit;
-  }
-
-  .site-footer__logo-tilt {
-    display: block;
-    pointer-events: none;
-  }
-
-  .site-footer__navigation,
-  .site-footer__policies {
-    display: grid;
-    align-content: start;
-    gap: 0.25rem;
-  }
-
-  .site-footer__navigation {
-    grid-column: 2;
-    order: 3;
-  }
-
-  .site-footer__policies {
-    grid-column: 1 / -1;
-    order: 4;
-    margin-top: 0.5rem;
-  }
-
-  .site-footer__navigation a,
-  .site-footer__policies a {
-    display: inline-flex;
-    min-height: 2.75rem;
-    align-items: center;
-    border-radius: 0.25rem;
-    color: inherit;
-    font-size: 0.9375rem;
-    line-height: 1.15;
-    text-decoration: underline;
-    text-decoration-color: transparent;
-    text-underline-offset: 0.2em;
-    transition: text-decoration-color 180ms ease;
-  }
-
-  .site-footer__navigation a:is(:hover, :focus-visible),
-  .site-footer__policies a:is(:hover, :focus-visible) {
-    text-decoration-color: currentColor;
-  }
-
-  .site-footer__copyright {
-    grid-column: 1 / -1;
-    order: 5;
-    margin-top: 0.25rem;
-    color: var(--text-muted);
-    font-size: 0.8125rem;
-  }
-
-
-
   @media (min-width: 40rem) {
     .site-footer__surface {
       padding-bottom: 3.5rem;
@@ -185,17 +70,6 @@ import { HOME_NAV_LINKS, POLICY_LINKS } from '@/lib/site';
     .site-footer__content {
       grid-template-columns: minmax(13rem, 0.9fr) minmax(0, 1.1fr);
       gap: 1.5rem 2.5rem;
-    }
-
-    .site-footer__navigation,
-    .site-footer__policies {
-      grid-auto-flow: column;
-      justify-content: start;
-      gap: 1.25rem;
-    }
-
-    .site-footer__policies {
-      gap: 2rem;
     }
   }
 
@@ -209,41 +83,5 @@ import { HOME_NAV_LINKS, POLICY_LINKS } from '@/lib/site';
       grid-template-columns: minmax(20rem, 0.8fr) minmax(0, 1.2fr);
       gap: 1.25rem 3rem;
     }
-
-    .site-footer__content > :global(.contact-section) {
-      grid-column: 2;
-      grid-row: 1;
-    }
-
-    .site-footer__logo {
-      align-self: center;
-      grid-column: 1;
-      grid-row: 1 / span 3;
-      width: min(100%, 24.5rem);
-    }
-
-    .site-footer__navigation {
-      grid-column: 2;
-      grid-row: 2;
-      margin-top: 0.5rem;
-    }
-
-    .site-footer__policies {
-      grid-column: 2;
-      grid-row: 3;
-      margin-top: 0;
-    }
-
-    .site-footer__copyright {
-      grid-column: 2;
-      grid-row: 4;
-    }
-
-    .site-footer__navigation a,
-    .site-footer__policies a {
-      min-height: 2rem;
-      font-size: 1rem;
-    }
   }
-
 </style>

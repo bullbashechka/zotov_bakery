@@ -1,4 +1,9 @@
 ---
+interface Props {
+  state?: 'expanded' | 'compact';
+}
+const { state = 'expanded' } = Astro.props;
+
 import logo from '../../public/zotov-logo.svg?raw';
 
 // The original artwork keeps the neck, head and eyes in consecutive paths.
@@ -8,7 +13,7 @@ const artwork = logo
   .replace('<path d="M96.8225', '</g><path d="M96.8225');
 ---
 
-<header-mascot class="header-mascot" set:html={artwork} />
+<header-mascot class="header-mascot" data-state={state} set:html={artwork} />
 
 <script>
   import { gsap } from 'gsap';
@@ -21,32 +26,50 @@ const artwork = logo
       const head = this.querySelector<SVGGElement>('[data-mascot-head]');
       if (!head) return;
       this.media = gsap.matchMedia();
-      this.media.add('(min-width: 75rem) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)', () => {
-        const events = new AbortController();
-        gsap.set(head, { svgOrigin: '76 49' });
-        const turn = gsap.quickTo(head, 'rotation', { duration: 0.45, ease: 'power3.out' });
-        let nod: gsap.core.Timeline | undefined;
-        this.addEventListener('pointerenter', () => {
-          if (nod?.isActive()) return;
-          turn.tween.pause();
-          nod = gsap.timeline().to(head, { rotation: 4, duration: 0.2, ease: 'power2.out' })
-            .to(head, { rotation: 0, duration: 0.25, ease: 'power2.inOut' });
-        }, { signal: events.signal });
-        const reset = () => turn(0);
-        document.addEventListener('pointermove', (event) => {
-          if (event.pointerType === 'touch' || document.hidden || nod?.isActive()) return;
-          const bounds = this.getBoundingClientRect();
-          const x = bounds.left + bounds.width * 80 / 331;
-          const y = bounds.top + bounds.height * 35 / 127;
-          // A restrained turn around the neck; never flip the brand artwork.
-          const horizontal = (event.clientX - x) / (innerWidth / 2);
-          const vertical = (event.clientY - y) / (innerHeight / 2);
-          turn(gsap.utils.clamp(-10, 10, horizontal * 6 + vertical * 4));
-        }, { signal: events.signal });
-        document.documentElement.addEventListener('pointerleave', reset, { signal: events.signal });
-        window.addEventListener('blur', reset, { signal: events.signal });
-        return () => { events.abort(); nod?.kill(); };
-      });
+      this.media.add(
+        '(min-width: 75rem) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)',
+        () => {
+          const events = new AbortController();
+          gsap.set(head, { svgOrigin: '76 49' });
+          const turn = gsap.quickTo(head, 'rotation', { duration: 0.45, ease: 'power3.out' });
+          let nod: gsap.core.Timeline | undefined;
+          this.addEventListener(
+            'pointerenter',
+            () => {
+              if (nod?.isActive()) return;
+              turn.tween.pause();
+              nod = gsap
+                .timeline()
+                .to(head, { rotation: 4, duration: 0.2, ease: 'power2.out' })
+                .to(head, { rotation: 0, duration: 0.25, ease: 'power2.inOut' });
+            },
+            { signal: events.signal },
+          );
+          const reset = () => turn(0);
+          document.addEventListener(
+            'pointermove',
+            (event) => {
+              if (event.pointerType === 'touch' || document.hidden || nod?.isActive()) return;
+              const bounds = this.getBoundingClientRect();
+              const x = bounds.left + (bounds.width * 80) / 331;
+              const y = bounds.top + (bounds.height * 35) / 127;
+              // A restrained turn around the neck; never flip the brand artwork.
+              const horizontal = (event.clientX - x) / (innerWidth / 2);
+              const vertical = (event.clientY - y) / (innerHeight / 2);
+              turn(gsap.utils.clamp(-10, 10, horizontal * 6 + vertical * 4));
+            },
+            { signal: events.signal },
+          );
+          document.documentElement.addEventListener('pointerleave', reset, {
+            signal: events.signal,
+          });
+          window.addEventListener('blur', reset, { signal: events.signal });
+          return () => {
+            events.abort();
+            nod?.kill();
+          };
+        },
+      );
     }
 
     disconnectedCallback() {
@@ -72,17 +95,22 @@ const artwork = logo
     overflow: visible;
   }
 
-  :global(site-header[data-compact]) .header-mascot,
-  :global(site-header[data-menu-open='true']) .header-mascot {
+  .header-mascot[data-state='compact'] {
     width: 7.5rem;
   }
 
   @media (min-width: 75rem) {
-    .header-mascot { width: 20.6875rem; }
-    :global(site-header[data-compact]) .header-mascot { width: 14.75rem; }
+    .header-mascot {
+      width: 20.6875rem;
+    }
+    .header-mascot[data-state='compact'] {
+      width: 14.75rem;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .header-mascot { transition: none; }
+    .header-mascot {
+      transition: none;
+    }
   }
 </style>

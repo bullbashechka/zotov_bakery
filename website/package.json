@@ -9,8 +9,13 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "typecheck": "astro check",
-    "preview": "astro preview"
+    "typecheck": "node scripts/check-ui.mjs && astro check",
+    "preview": "astro preview",
+    "catalog:build": "astro build --config astro.catalog.config.mjs",
+    "storybook": "node scripts/storybook-dev.mjs",
+    "build:storybook": "bun run catalog:build && storybook build && node scripts/finalize-storybook.mjs",
+    "catalog:dev": "astro dev --config astro.catalog.config.mjs --host 127.0.0.1 --port 4322",
+    "check:ui": "node scripts/check-ui.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^6.0.2",
@@ -26,6 +31,12 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@astrojs/compiler": "2.13.1",
+    "@storybook/addon-docs": "^10.5.10",
+    "@storybook/html-vite": "^10.5.10",
+    "prettier": "^3.9.6",
+    "prettier-plugin-astro": "^0.14.1",
+    "storybook": "^10.5.10",
     "typescript": "~6.0.3",
     "vite": "^8.2.0"
   }

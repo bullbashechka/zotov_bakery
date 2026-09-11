@@ -1,3 +1,16 @@
+import type { ImageMetadata } from 'astro';
+
+export interface Product {
+  id: string;
+  name: string;
+  image: ImageMetadata;
+  alt: string;
+  description: string;
+  highlight: string;
+  ingredients: string | null;
+  draft: boolean;
+}
+
 import tenderness from '@/assets/assortment/tenderness.png';
 import celebration from '@/assets/assortment/celebration.png';
 import caramel from '@/assets/assortment/caramel.png';
@@ -36,4 +49,4 @@ export const ASSORTMENT = [
     ingredients: null,
     draft: true,
   },
-] as const;
+] as const satisfies readonly Product[];

@@ -18,7 +18,10 @@
     "preview": "bun run --cwd website preview",
     "cf:dev": "bunx wrangler pages dev website/dist",
     "cf:deploy": "bunx wrangler pages deploy website/dist",
-    "cf:deploy:preview": "bunx wrangler pages deploy website/dist --branch=preview"
+    "cf:deploy:preview": "bunx wrangler pages deploy website/dist --branch=preview",
+    "storybook": "bun run --cwd website storybook",
+    "build:storybook": "bun run --cwd website build:storybook",
+    "check:ui": "bun run --cwd website check:ui"
   },
   "devDependencies": {
     "wrangler": "^4.70.0"

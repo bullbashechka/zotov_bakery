@@ -1,10 +1,12 @@
-<div class="hero-advantages-flow">
-  <slot />
-</div>
+---
+import Hero from './Hero.astro';
+import Advantages from './Advantages.astro';
+import Wrapper from './Wrapper.astro';
+---
 
-<style>
-  .hero-advantages-flow {
-    position: relative;
-    overflow: clip;
-  }
-</style>
+<Wrapper position="relative" overflow="clip">
+  <Hero />
+  <Wrapper at={{ wide: { margin: '-2.75rem 0 0' } }}>
+    <Advantages />
+  </Wrapper>
+</Wrapper>

@@ -7,17 +7,27 @@ const whatsappUrl = getWhatsAppUrl('general');
 <section id="contacts" class="contact-section" aria-labelledby="contacts-title">
   <h2 id="contacts-title" class="contact-section__title" data-motion="heading">Контакты</h2>
   <div class="contact-section__card">
-    <img class="contact-section__frame" data-motion="image" src="/footer/frame-1050.svg" alt="" aria-hidden="true" />
+    <img
+      class="contact-section__frame"
+      data-motion="image"
+      src="/footer/frame-1050.svg"
+      alt=""
+      aria-hidden="true"
+    />
     <div class="contact-section__content">
       <div class="contact-section__item">
         <h3>Мы находимся по адресу</h3>
         <p class="contact-section__detail">
           <img src="/footer/location.svg" width="16" height="21" alt="" />
-          {CONTACTS.twoGisUrl ? (
-            <a href={CONTACTS.twoGisUrl} target="_blank" rel="noopener noreferrer">{CONTACTS.address}</a>
-          ) : (
-            <span>{CONTACTS.address}</span>
-          )}
+          {
+            CONTACTS.twoGisUrl ? (
+              <a href={CONTACTS.twoGisUrl} target="_blank" rel="noopener noreferrer">
+                {CONTACTS.address}
+              </a>
+            ) : (
+              <span>{CONTACTS.address}</span>
+            )
+          }
         </p>
       </div>
 
@@ -39,10 +49,20 @@ const whatsappUrl = getWhatsAppUrl('general');
       </div>
 
       <div class="contact-section__socials">
-        <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" aria-label="Написать в WhatsApp">
+        <a
+          href={whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Написать в WhatsApp"
+        >
           <img src="/footer/whatsapp.svg" width="50" height="50" alt="" />
         </a>
-        <a href={CONTACTS.instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="Открыть Instagram ZOTOV bakery">
+        <a
+          href={CONTACTS.instagramUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Открыть Instagram ZOTOV bakery"
+        >
           <img src="/footer/instagram.svg" width="51" height="51" alt="" />
         </a>
       </div>

@@ -1,145 +1,13 @@
 ---
+import AdvantageCard from './AdvantageCard.astro';
+import AdvantagesDecoration from './AdvantagesDecoration.astro';
+import Wrapper from './Wrapper.astro';
+import { ADVANTAGES } from '@/lib/advantages';
 import { HOME_SECTION_IDS } from '@/lib/site';
-
-const advantages = [
-  {
-    title: 'Семейные рецепты',
-    description: 'Сохраняем семейные рецепты и знакомый вкус любимых десертов.',
-    image: '/advantages/family-recipes.svg',
-  },
-  {
-    title: 'Печём торты и десерты с 1992 года',
-    description: 'Сохраняем проверенные рецептуры и совершенствуем производство более 30 лет.',
-    image: '/advantages/baking-since-1992.svg',
-  },
-  {
-    title: 'Собственное производство',
-    description: 'Контролируем каждый этап – от выбора ингредиентов до упаковки готового десерта.',
-    image: '/advantages/own-production.svg',
-  },
-  {
-    title: 'Натуральные ингредиенты',
-    description: 'Используем натуральный мёд, сливочное масло и другие проверенные ингредиенты.',
-    image: '/advantages/natural-ingredients.svg',
-  },
-] as const;
 ---
 
 <section id={HOME_SECTION_IDS.advantages} class="advantages" aria-labelledby="advantages-title">
-  <div class="advantages__desktop-line" aria-hidden="true">
-    <svg
-      class="advantages__line advantages__line--tablet"
-      data-motion-line
-      width="768"
-      height="207"
-      viewBox="0 0 768 207"
-      fill="none"
-      preserveAspectRatio="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M-31 152.633C-7.99328 103.255 7.64134 38.9998 69.50014 38.9998C146.82314 38.9998 144.66514 202.5 206.94314 202.5C242.412 202.5 243.228 78.2264 316.14 78.2264C389.053 78.2264 456.367 222.051 541.516 122.63C634.795 13.7171 625.801 169.826 705.459 169.826C785.118 169.826 751.575 13.7171 818 13.7171"
-        stroke="#D47212"
-        stroke-width="9"
-      />
-    </svg>
-
-    <svg
-      class="advantages__line advantages__line--laptop"
-      data-motion-line
-      width="1024"
-      height="270"
-      viewBox="0 0 1024 270"
-      fill="none"
-      preserveAspectRatio="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M-31 203.258C-0.134678 137.172 82.343 5 165.331 5C269.067 5 204.668 270 288.22 270C335.803 270 336.899 103.674 434.716 103.674C532.534 103.674 622.842 296.166 737.076 163.103C862.216 17.3361 850.15 226.269 957.018 226.269C1063.89 226.269 1018.89 17.3361 1108 17.3361"
-        stroke="#D47212"
-        stroke-width="10"
-      />
-    </svg>
-
-    <svg
-      class="advantages__line advantages__line--desktop"
-      data-motion-line
-      width="1440"
-      height="366"
-      viewBox="0 0 1440 366"
-      fill="none"
-      preserveAspectRatio="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M-33 270.717C8.1899 182.312 118.257 5.5 229.005 5.5C367.44 5.5 281.5 360 393 360C456.5 360 457.962 137.5 588.5 137.5C719.038 137.5 839.554 395.003 992 217C1159 22.0024 1142.9 301.5 1285.51 301.5C1428.13 301.5 1368.08 22.0024 1487 22.0024"
-        stroke="#D47212"
-        stroke-width="11"
-      />
-    </svg>
-  </div>
-
-  <div class="advantages__mobile-lines" aria-hidden="true">
-    <svg
-      class="advantages__mobile-line advantages__mobile-line--top"
-      data-motion-line
-      width="390"
-      height="119"
-      viewBox="0 0 390 119"
-      fill="none"
-      preserveAspectRatio="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M-59 87.2922C-46.0198 59.3615 -11.3342 3.5 23.566 3.5C67.1913 3.5 40.1089 115.5 75.246 115.5C95.2569 115.5 95.7177 45.2038 136.854 45.2038C177.991 45.2038 215.969 126.559 264.01 70.3209C316.637 8.71374 311.562 97.0176 356.505 97.0176C401.448 97.0176 382.523 8.71374 420 8.71374"
-        stroke="#D47212"
-        stroke-width="7"
-        vector-effect="non-scaling-stroke"
-      />
-    </svg>
-
-    <svg
-      class="advantages__mobile-line advantages__mobile-line--middle"
-      data-motion-line
-      width="390"
-      height="747"
-      viewBox="0 0 390 747"
-      fill="none"
-      preserveAspectRatio="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M113.5 146.509C161.965 106.795 230.81 2.40047 291 3.50876C366.237 4.89411 281 259.009 345 259.009C395 259.009 384 105.009 465.972 105.009"
-        stroke="#D47212"
-        stroke-width="7"
-        vector-effect="non-scaling-stroke"
-      />
-      <path
-        d="M-59 463.508C11 463.508 -13.6373 576.008 37 576.008C98.1439 576.008 34 319.508 113.5 319.508C193 319.508 250.418 743.008 345 743.008C396.599 743.008 400 615.199 465.972 615.199"
-        stroke="#D47212"
-        stroke-width="7"
-        vector-effect="non-scaling-stroke"
-      />
-    </svg>
-
-    <svg
-      class="advantages__mobile-line advantages__mobile-line--bottom"
-      data-motion-line
-      width="390"
-      height="669"
-      viewBox="0 0 390 669"
-      fill="none"
-      preserveAspectRatio="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M528 76.6268C517.404 105.979 483.595 164.682 433.13 164.682C370.049 164.682 393.891 3.5 340.744 3.5C266.736 3.5 286.107 552.457 194.715 552.457C103.322 552.457 110.276 372.814 49.6782 372.814C-10.9191 372.814 19.3795 668.5 -74 668.5"
-        stroke="#D47212"
-        stroke-width="7"
-        vector-effect="non-scaling-stroke"
-      />
-    </svg>
-  </div>
+  <AdvantagesDecoration />
 
   <div class="advantages__content">
     <h2 id="advantages-title" class="advantages__title" data-motion="heading">
@@ -149,20 +17,25 @@ const advantages = [
 
     <advantages-carousel aria-label="Преимущества ZOTOV bakery">
       <div class="advantages__track" data-advantages-track aria-label="Преимущества ZOTOV bakery">
-        {advantages.map((advantage, index) => (
-          <article
-            class="advantages__card"
-            data-advantages-card
-            data-motion="card"
-            aria-label={`Преимущество ${index + 1} из ${advantages.length}`}
-          >
-            <h3 class="advantages__card-title">{advantage.title}</h3>
-            <div class="advantages__art" aria-hidden="true">
-              <img src={advantage.image} width="213" height="171" alt="" loading="lazy" data-motion-art />
-            </div>
-            <p class="advantages__description">{advantage.description}</p>
-          </article>
-        ))}
+        {
+          ADVANTAGES.map((advantage, index) => (
+            <Wrapper
+              width="17.25rem"
+              margin={index % 2 === 0 ? '0 0 0 1rem' : '0 1rem 0 auto'}
+              at={{
+                small: { flex: '0 0 17.25rem', margin: '0' },
+                laptop: { flex: '0 0 18.4375rem', width: '18.4375rem' },
+                wide: { width: 'auto', flex: '0 1 auto' },
+              }}
+            >
+              <AdvantageCard
+                advantage={advantage}
+                itemNumber={index + 1}
+                total={ADVANTAGES.length}
+              />
+            </Wrapper>
+          ))
+        }
       </div>
 
       <p class="sr-only" data-advantages-status role="status" aria-live="polite">Карточка 1 из 4</p>
@@ -243,7 +116,8 @@ const advantages = [
       } else if (this.track.scrollLeft >= maxScrollLeft - 1) {
         closestIndex = this.cards.length - 1;
       } else {
-        const scrollPadding = Number.parseFloat(getComputedStyle(this.track).scrollPaddingLeft) || 0;
+        const scrollPadding =
+          Number.parseFloat(getComputedStyle(this.track).scrollPaddingLeft) || 0;
         const snapPosition = this.track.scrollLeft + scrollPadding;
 
         this.cards.forEach((card, index) => {
@@ -301,7 +175,6 @@ const advantages = [
   if (!customElements.get('advantages-carousel')) {
     customElements.define('advantages-carousel', AdvantagesCarousel);
   }
-
 </script>
 
 <style>
@@ -311,49 +184,6 @@ const advantages = [
     min-height: 102.1875rem;
     overflow: visible;
     background: var(--page);
-  }
-
-  .advantages__desktop-line {
-    display: none;
-  }
-
-  .advantages__mobile-lines {
-    position: absolute;
-    z-index: 1;
-    top: -3.9375rem;
-    left: 0;
-    width: max(100%, 24.375rem);
-    height: auto;
-    aspect-ratio: 390 / 1694;
-    pointer-events: none;
-  }
-
-  .advantages__mobile-line {
-    position: absolute;
-    left: 0;
-    display: block;
-    width: 100%;
-    height: auto;
-    max-width: none;
-  }
-
-  .advantages__line {
-    display: none;
-    height: auto;
-    max-width: none;
-  }
-
-  .advantages__mobile-line--top {
-    top: 0.4132%;
-  }
-
-  .advantages__mobile-line--middle {
-    top: 11.6883%;
-  }
-
-  .advantages__mobile-line--bottom {
-    top: 60.7438%;
-    left: max(0px, calc(100vw - 24.375rem));
   }
 
   .advantages__content {
@@ -406,112 +236,9 @@ const advantages = [
     overflow: visible;
   }
 
-  .advantages__card {
-    display: grid;
-    width: 17.25rem;
-    min-height: 21.9375rem;
-    grid-template-rows: minmax(2.5rem, auto) minmax(9.6875rem, 1fr) auto;
-    border-radius: 0.75rem;
-    background: var(--surface);
-    padding: 1.25rem;
-  }
-
-  .advantages__card:nth-child(odd) {
-    margin-left: 1rem;
-  }
-
-  .advantages__card:nth-child(even) {
-    margin-right: 1rem;
-    margin-left: auto;
-  }
-
-  .advantages__card:nth-child(2) {
-    height: 22rem;
-    min-height: 22rem;
-  }
-
-  .advantages__card-title {
-    max-width: 14.75rem;
-    font-family: 'Vetrino', Georgia, serif;
-    font-size: 1.25rem;
-    font-weight: 400;
-    line-height: 1;
-  }
-
-  .advantages__art {
-    display: grid;
-    min-height: 9.6875rem;
-    align-items: center;
-    justify-items: center;
-  }
-
-  .advantages__art img {
-    display: block;
-    width: min(100%, 12.875rem);
-    max-height: 10rem;
-    object-fit: contain;
-  }
-
-  .advantages__description {
-    color: var(--text-primary);
-    font-size: 1rem;
-    line-height: 1;
-  }
-
-  @media (min-width: 24.4375rem) and (max-width: 29.999rem) {
-    .advantages__mobile-lines {
-      left: 0;
-      width: 100%;
-      height: 105.875rem;
-      aspect-ratio: auto;
-      transform: none;
-    }
-
-    .advantages__mobile-line--top {
-      height: 7.4375rem;
-    }
-
-    .advantages__mobile-line--middle {
-      height: 46.6875rem;
-    }
-
-    .advantages__mobile-line--bottom {
-      left: 0;
-      height: 41.8125rem;
-    }
-  }
-
   @media (min-width: 30rem) {
     .advantages {
       min-height: 27.375rem;
-    }
-
-    .advantages__mobile-lines {
-      display: none;
-    }
-
-    .advantages__desktop-line {
-      position: absolute;
-      z-index: 1;
-      top: -5.625rem;
-      left: 0;
-      display: block;
-      width: 100%;
-      height: 12.9375rem;
-      overflow: clip;
-      pointer-events: none;
-    }
-
-    .advantages__line {
-      display: block;
-      width: max(48rem, 100%);
-      margin-left: 50%;
-      transform: translateX(-50%);
-    }
-
-    .advantages__line--laptop,
-    .advantages__line--desktop {
-      display: none;
     }
 
     .advantages__content {
@@ -565,14 +292,6 @@ const advantages = [
     .advantages__track::-webkit-scrollbar {
       display: none;
     }
-
-    .advantages__card:nth-child(n) {
-      flex: 0 0 17.25rem;
-      width: 17.25rem;
-      min-height: 22rem;
-      scroll-snap-align: start;
-      margin: 0;
-    }
   }
 
   @media (min-width: 40rem) {
@@ -590,21 +309,6 @@ const advantages = [
   @media (min-width: 56.25rem) {
     .advantages {
       min-height: 34.25rem;
-    }
-
-    .advantages__desktop-line {
-      top: -5.3125rem;
-      height: 16.875rem;
-    }
-
-    .advantages__line--laptop {
-      display: block;
-      width: max(64rem, 100%);
-    }
-
-    .advantages__line--tablet,
-    .advantages__line--desktop {
-      display: none;
     }
 
     .advantages__content {
@@ -627,62 +331,14 @@ const advantages = [
       padding-inline: 4.375rem;
       scroll-padding-inline: 4.375rem;
     }
-
-    .advantages__card:nth-child(n) {
-      flex-basis: 18.4375rem;
-      width: 18.4375rem;
-      height: 25rem;
-      min-height: 25rem;
-      grid-template-rows: minmax(3.75rem, auto) minmax(10.75rem, 1fr) auto;
-      padding: 1.875rem;
-    }
-
-    .advantages__card-title {
-      max-width: none;
-      font-size: 1.625rem;
-    }
-
-    .advantages__art {
-      min-height: 10.75rem;
-      padding-block: 0.625rem;
-    }
-
-    .advantages__art img {
-      width: min(100%, 13.3125rem);
-      max-height: 10.75rem;
-    }
-
-    .advantages__description {
-      color: var(--text-primary);
-      line-height: 1;
-    }
   }
 
   @media (min-width: 80rem) {
     .advantages {
       z-index: 5;
       min-height: 37.875rem;
-      margin-top: -2.75rem;
       overflow: visible;
       background: transparent;
-    }
-
-    .advantages__desktop-line {
-      top: -5.5625rem;
-      left: 0;
-      width: 100%;
-      height: 22.875rem;
-      overflow: clip;
-    }
-
-    .advantages__line--desktop {
-      display: block;
-      width: max(90rem, 100%);
-    }
-
-    .advantages__line--tablet,
-    .advantages__line--laptop {
-      display: none;
     }
 
     .advantages__content {
@@ -712,26 +368,6 @@ const advantages = [
       padding-inline: 0;
       scroll-padding-inline: 0;
       scroll-snap-type: none;
-    }
-
-    .advantages__card:nth-child(n) {
-      width: auto;
-      min-width: 0;
-      height: 25rem;
-      min-height: 25rem;
-      margin: 0;
-      padding: 1.875rem;
-    }
-
-    .advantages__card-title {
-      font-size: 1.875rem;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .advantages__line path,
-    .advantages__mobile-line path {
-      transition: none;
     }
   }
 </style>

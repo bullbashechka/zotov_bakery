@@ -2,17 +2,79 @@
 interface Props {
   href: string;
   variant: 'primary' | 'secondary' | 'surface';
-  fullWidth?: boolean;
-  target?: '_blank';
-  rel?: string;
+  size?: 'regular' | 'compact';
+  fullWidth?: boolean | 'mobile';
+  external?: boolean;
 }
 
-const { href, variant, fullWidth = false, target, rel } = Astro.props;
+const { href, variant, fullWidth = false, size = 'regular', external = false } = Astro.props;
 ---
 
-<a class="action-link" data-variant={variant} data-full-width={fullWidth} {href} {target} {rel}>
+<a
+  class="action-link"
+  data-variant={variant}
+  data-size={size}
+  data-full-width={fullWidth}
+  {href}
+  target={external ? '_blank' : undefined}
+  rel={external ? 'noopener noreferrer' : undefined}
+>
   <slot />
 </a>
+
+<script>
+  import { gsap } from 'gsap';
+  import { mountMotion } from '@/lib/motion-lifecycle';
+  const cleanup = mountMotion(
+    '.action-link',
+    ({ element: button, fine, signal, context, onCleanup }) => {
+      const tween = (target: gsap.TweenTarget, vars: gsap.TweenVars) =>
+        context.add(() => gsap.to(target, { duration: 0.22, overwrite: 'auto', ...vars }));
+      button.dataset.interactiveMotion = 'true';
+      let down = false;
+      const restore = () => {
+        down = false;
+        tween(button, { scale: 1, ease: 'back.out(1.6)' });
+      };
+      button.addEventListener(
+        'pointerdown',
+        () => {
+          down = true;
+          tween(button, { scale: 0.97, duration: 0.12 });
+        },
+        { signal },
+      );
+      window.addEventListener(
+        'pointerup',
+        () => {
+          if (down) restore();
+        },
+        { signal },
+      );
+      button.addEventListener('pointercancel', restore, { signal });
+      button.addEventListener(
+        'keydown',
+        (event) => {
+          if (event.key === 'Enter') tween(button, { scale: 0.97 });
+        },
+        { signal },
+      );
+      button.addEventListener('keyup', restore, { signal });
+      button.addEventListener('blur', restore, { signal });
+      if (fine) {
+        button.addEventListener('pointerenter', () => tween(button, { y: -2 }), { signal });
+        button.addEventListener('pointerleave', () => tween(button, { y: 0 }), { signal });
+      }
+      onCleanup(() => button.removeAttribute('data-interactive-motion'));
+      button.addEventListener(
+        'action-emphasis',
+        () => tween(button, { scale: 1.02, delay: 1.2, duration: 0.2, yoyo: true, repeat: 1 }),
+        { signal },
+      );
+    },
+  );
+  if (import.meta.hot) import.meta.hot.dispose(cleanup);
+</script>
 
 <style>
   .action-link {
@@ -28,7 +90,8 @@ const { href, variant, fullWidth = false, target, rel } = Astro.props;
     font-size: 0.875rem;
     font-weight: 500;
     line-height: 1.25;
-    transition: background-color var(--motion-interaction-duration) ease,
+    transition:
+      background-color var(--motion-interaction-duration) ease,
       border-color var(--motion-interaction-duration) ease,
       color var(--motion-interaction-duration) ease;
   }
@@ -98,6 +161,20 @@ const { href, variant, fullWidth = false, target, rel } = Astro.props;
     .action-link[data-variant='surface'] {
       min-height: 48px;
       font-size: 16px;
+    }
+  }
+  .action-link[data-size='compact'] {
+    min-height: 3.125rem;
+  }
+  @media (max-width: 39.999rem) {
+    .action-link[data-full-width='mobile'] {
+      width: 100%;
+    }
+  }
+  @media (min-width: 64rem) {
+    .action-link[data-size='compact'] {
+      padding: 0.75rem 1.75rem;
+      font-size: 0.875rem;
     }
   }
 </style>

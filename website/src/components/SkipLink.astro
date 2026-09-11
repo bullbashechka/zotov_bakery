@@ -1,0 +1,20 @@
+<a class="skip-link" href="#main-content">Перейти к содержанию</a>
+
+<style>
+  .skip-link {
+    position: fixed;
+    z-index: 50;
+    top: 1rem;
+    left: 1rem;
+    transform: translateY(-200%);
+    border-radius: 0.5rem;
+    background: var(--advantages-heading-bg);
+    color: var(--advantages-heading-text);
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+  }
+
+  .skip-link:focus-visible {
+    transform: translateY(0);
+  }
+</style>

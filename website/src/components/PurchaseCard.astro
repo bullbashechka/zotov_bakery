@@ -1,0 +1,173 @@
+---
+import ActionLink from './ActionLink.astro';
+import Wrapper from './Wrapper.astro';
+import type { PurchaseOption } from '@/lib/purchase';
+interface Props {
+  option: PurchaseOption;
+}
+const { option } = Astro.props;
+---
+
+<article class="where-to-buy__card" data-motion="card">
+  <div class="where-to-buy__image-wrap" aria-hidden="true">
+    <img
+      class="where-to-buy__image"
+      data-kind={option.kind}
+      src={option.image}
+      width="400"
+      height="280"
+      alt={option.imageAlt}
+      loading="lazy"
+    />
+  </div>
+  <div class="where-to-buy__content">
+    <h3>{option.title}</h3>
+    <p>{option.description}</p>
+  </div>
+  <Wrapper margin="auto 0.625rem 0.625rem" at={{ tablet: { margin: '0 0.75rem 0.75rem' } }}>
+    <ActionLink variant="surface" href={option.href} fullWidth external>{option.action}</ActionLink>
+  </Wrapper>
+</article>
+
+<script>
+  import { gsap } from 'gsap';
+  import { mountMotion } from '@/lib/motion-lifecycle';
+  const cleanup = mountMotion('.where-to-buy__card', ({ element: card, fine, signal, context }) => {
+    const tween = (target: gsap.TweenTarget, vars: gsap.TweenVars) =>
+      context.add(() => gsap.to(target, { duration: 0.22, overwrite: 'auto', ...vars }));
+    const image = card.querySelector('img');
+    let hovering = false;
+    const update = () => {
+      const active = hovering || card.contains(document.activeElement);
+      // Individual translate does not compete with the entrance transform.
+      tween(card, { translate: active ? '0px -4px' : '0px 0px' });
+      if (image) tween(image, { scale: active ? 1.025 : 1 });
+    };
+    if (fine) {
+      card.addEventListener(
+        'pointerenter',
+        () => {
+          hovering = true;
+          update();
+        },
+        { signal },
+      );
+      card.addEventListener(
+        'pointerleave',
+        () => {
+          hovering = false;
+          update();
+        },
+        { signal },
+      );
+    }
+    card.addEventListener('focusin', update, { signal });
+    card.addEventListener(
+      'focusout',
+      () =>
+        queueMicrotask(() => {
+          if (!signal.aborted) update();
+        }),
+      { signal },
+    );
+  });
+  if (import.meta.hot) import.meta.hot.dispose(cleanup);
+</script>
+
+<style>
+  .where-to-buy__card {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-width: 0;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    background: var(--text-primary);
+  }
+
+  .where-to-buy__image-wrap {
+    display: grid;
+    aspect-ratio: 10 / 7;
+    place-items: center;
+    overflow: hidden;
+    background: var(--surface);
+  }
+
+  .where-to-buy__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .where-to-buy__image[data-kind='bakery'] {
+    width: min(82.75%, 20.6875rem);
+    height: auto;
+  }
+
+  .where-to-buy__image[data-kind='supermarket'],
+  .where-to-buy__image[data-kind='delivery'] {
+    object-fit: cover;
+  }
+
+  .where-to-buy__content {
+    display: grid;
+    align-content: start;
+    gap: 1.125rem;
+    padding: 1.5rem 1.25rem;
+    color: var(--page);
+  }
+
+  .where-to-buy__content h3 {
+    max-width: 20.4375rem;
+    font-family: 'Vetrino', Georgia, serif;
+    font-size: clamp(1.5rem, 6.25vw, 1.875rem);
+    font-weight: 400;
+    line-height: 1;
+  }
+
+  .where-to-buy__content p {
+    max-width: 22.375rem;
+    font-size: 1rem;
+    line-height: 1.3;
+  }
+
+  @media (min-width: 40rem) and (max-width: 74.999rem) {
+    .where-to-buy__card {
+      height: 514px;
+    }
+
+    .where-to-buy__content {
+      min-height: 0;
+      padding: 16px 16px 8px;
+    }
+
+    .where-to-buy__content h3 {
+      font-size: 30px;
+    }
+
+    .where-to-buy__content p {
+      font-size: 16px;
+      line-height: 1.2;
+    }
+  }
+
+  @media (min-width: 75rem) {
+    .where-to-buy__card {
+      height: 514px;
+    }
+
+    .where-to-buy__content {
+      min-height: 0;
+      gap: 18px;
+      padding: 16px 16px 8px;
+    }
+
+    .where-to-buy__content h3 {
+      font-size: 30px;
+    }
+
+    .where-to-buy__content p {
+      font-size: 16px;
+      line-height: 1.2;
+    }
+  }
+</style>
