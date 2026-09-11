@@ -1,35 +1,30 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro';
 import { CONTACTS } from '@/lib/site';
 
 interface Props {
   title: string;
-  description: string;
-  canonicalUrl?: string;
 }
 
-const { title, description, canonicalUrl } = Astro.props;
+const { title } = Astro.props;
 ---
 
-<BaseLayout {title} {description} {canonicalUrl} robots="noindex,follow">
-  <section class="legal-placeholder" aria-labelledby="legal-placeholder-title">
-    <div class="legal-placeholder__content">
-      <a class="legal-placeholder__logo" href="/#hero" aria-label="ZOTOV bakery, на главную страницу">
-        <img src="/footer/zotov-footer-logo.svg" width="391" height="466" alt="ZOTOV bakery" />
-      </a>
-      <h1 id="legal-placeholder-title">{title}</h1>
-      <p>
-        Документ находится в подготовке. По вопросам, связанным с персональными данными,
-        свяжитесь с ZOTOV bakery по телефону.
-      </p>
-      <div class="legal-placeholder__contacts">
-        <a href={CONTACTS.bakery.href}>{CONTACTS.bakery.display}</a>
-        <a href={CONTACTS.mobile.href}>{CONTACTS.mobile.display}</a>
-      </div>
-      <a class="legal-placeholder__home" href="/#hero">Вернуться на главную</a>
+<section class="legal-placeholder" aria-labelledby="legal-placeholder-title">
+  <div class="legal-placeholder__content">
+    <a class="legal-placeholder__logo" href="/#hero" aria-label="ZOTOV bakery, на главную страницу">
+      <img src="/footer/zotov-footer-logo.svg" width="391" height="466" alt="ZOTOV bakery" />
+    </a>
+    <h1 id="legal-placeholder-title">{title}</h1>
+    <p>
+      Документ находится в подготовке. По вопросам, связанным с персональными данными, свяжитесь с
+      ZOTOV bakery по телефону.
+    </p>
+    <div class="legal-placeholder__contacts">
+      <a href={CONTACTS.bakery.href}>{CONTACTS.bakery.display}</a>
+      <a href={CONTACTS.mobile.href}>{CONTACTS.mobile.display}</a>
     </div>
-  </section>
-</BaseLayout>
+    <a class="legal-placeholder__home" href="/#hero">Вернуться на главную</a>
+  </div>
+</section>
 
 <style>
   .legal-placeholder {

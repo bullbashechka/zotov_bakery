@@ -1,0 +1,169 @@
+---
+import ActionLink from './ActionLink.astro';
+import Wrapper from './Wrapper.astro';
+import type { Product } from '@/lib/assortment';
+import { getProductWhatsAppUrl } from '@/lib/site';
+interface Props {
+  product: Product;
+}
+const { product } = Astro.props;
+---
+
+<article
+  class="assortment__panel"
+  data-product
+  data-panel
+  data-name={product.name}
+  aria-labelledby={`assortment-${product.id}-title`}
+>
+  <div class="assortment__description">
+    <h3 id={`assortment-${product.id}-title`}>{product.name}</h3>
+    <p>{product.description}</p>
+  </div>
+  <details class="assortment__ingredients" open>
+    <summary>Состав:<span aria-hidden="true">+</span></summary>
+    <p>
+      {product.ingredients ?? 'Состав этого десерта уточните у пекарни по телефону или в WhatsApp.'}
+    </p>
+  </details>
+  <p class="assortment__highlight">{product.highlight}</p>
+  <Wrapper margin="auto 0 0" width="100%">
+    <ActionLink
+      variant="primary"
+      size="compact"
+      fullWidth="mobile"
+      href={getProductWhatsAppUrl(product.name)}
+      external
+    >
+      Узнать цену и наличие
+    </ActionLink>
+  </Wrapper>
+</article>
+
+<style>
+  .assortment__panel {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    min-width: 0;
+  }
+
+  .assortment__panel h3 {
+    margin: 0 0 0.25rem;
+    font:
+      400 1.875rem/1.1 'Vetrino',
+      Georgia,
+      serif;
+    text-wrap: balance;
+  }
+
+  .assortment__panel p {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.45;
+  }
+
+  .assortment__ingredients {
+    width: 100%;
+  }
+
+  .assortment__ingredients summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 2.75rem;
+    list-style: none;
+    font:
+      400 1.5rem/1.2 'Vetrino',
+      Georgia,
+      serif;
+  }
+
+  .assortment__ingredients summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .assortment__ingredients summary span {
+    font:
+      400 1.5rem/1 Arial,
+      sans-serif;
+  }
+
+  .assortment__ingredients[open] summary span {
+    transform: rotate(45deg);
+  }
+
+  .assortment__ingredients p {
+    padding-top: 0.5rem;
+  }
+
+  .assortment__panel .assortment__highlight {
+    width: fit-content;
+    max-width: 100%;
+    border: 1px solid currentColor;
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.625rem;
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  .assortment__panel[data-carousel] {
+    grid-area: 1 / 1;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .assortment__panel[data-carousel][data-active] {
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  @media (hover: hover) {
+    .assortment__ingredients summary:hover {
+      color: var(--focus);
+    }
+  }
+
+  @media (max-width: 39.999rem) {
+    .assortment__ingredients {
+      border-block: 1px solid rgb(59 38 39 / 20%);
+      padding-block: 0.25rem;
+    }
+
+    .assortment__ingredients[open] {
+      padding-bottom: 1rem;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .assortment__panel {
+      gap: 1.25rem;
+    }
+
+    .assortment__panel h3 {
+      font-size: 1.875rem;
+    }
+
+    .assortment__ingredients summary {
+      font-size: 1.875rem;
+    }
+
+    .assortment__panel[data-carousel] .assortment__ingredients summary {
+      pointer-events: none;
+      min-height: 0;
+    }
+
+    .assortment__ingredients p {
+      padding-top: 0.25rem;
+    }
+
+    .assortment__panel[data-carousel] .assortment__ingredients summary span {
+      display: none;
+    }
+
+    .assortment__panel p {
+      line-height: 1.25;
+    }
+  }
+</style>

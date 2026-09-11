@@ -1,0 +1,155 @@
+---
+import type { Advantage } from '@/lib/advantages';
+interface Props {
+  advantage: Advantage;
+  itemNumber?: number;
+  total?: number;
+}
+const { advantage, itemNumber, total } = Astro.props;
+---
+
+<article
+  class="advantages__card"
+  data-kind={advantage.kind}
+  data-advantages-card
+  data-motion="card"
+  aria-label={itemNumber && total ? `Преимущество ${itemNumber} из ${total}` : undefined}
+>
+  <h3 class="advantages__card-title">{advantage.title}</h3>
+  <div class="advantages__art" aria-hidden="true">
+    <img src={advantage.image} width="213" height="171" alt="" loading="lazy" data-motion-art />
+  </div>
+  <p class="advantages__description">{advantage.description}</p>
+</article>
+<script>
+  import { animate } from 'animejs';
+  import { mountMotion } from '@/lib/motion-lifecycle';
+  const cleanup = mountMotion(
+    '[data-advantages-card]',
+    ({ element: card, fine, signal, onceVisible, track, untrack }) => {
+      const art = card.querySelector<HTMLElement>('[data-motion-art]');
+      if (!art) return;
+      const index = ['family', 'history', 'production', 'ingredients'].indexOf(
+        card.dataset.kind ?? 'family',
+      );
+      let running = false;
+      const play = () => {
+        if (running || document.hidden) return;
+        running = true;
+        const frames = [
+          [{ rotate: -3 }, { rotate: 3 }, { rotate: 0 }],
+          [{ rotate: -3 }, { rotate: 1 }, { rotate: 0 }],
+          [{ scale: 0.94 }, { scale: 1.02 }, { scale: 1 }],
+          [{ y: innerWidth < 768 ? -4 : -8 }, { y: 0 }],
+        ][index % 4];
+        const animation = animate(art, {
+          keyframes: frames,
+          duration: 750,
+          ease: 'outQuad',
+          onComplete: (self) => {
+            running = false;
+            self.revert();
+            untrack(self);
+          },
+        });
+        track(animation);
+      };
+      onceVisible(play);
+      if (fine) card.addEventListener('pointerenter', play, { signal });
+    },
+  );
+  if (import.meta.hot) import.meta.hot.dispose(cleanup);
+</script>
+
+<style>
+  .advantages__card {
+    display: grid;
+
+    min-height: 21.9375rem;
+    grid-template-rows: minmax(2.5rem, auto) minmax(9.6875rem, 1fr) auto;
+    border-radius: 0.75rem;
+    background: var(--surface);
+    padding: 1.25rem;
+  }
+
+  .advantages__card:where([data-kind='history']) {
+    height: 22rem;
+    min-height: 22rem;
+  }
+
+  .advantages__card-title {
+    max-width: 14.75rem;
+    font-family: 'Vetrino', Georgia, serif;
+    font-size: 1.25rem;
+    font-weight: 400;
+    line-height: 1;
+  }
+
+  .advantages__art {
+    display: grid;
+    min-height: 9.6875rem;
+    align-items: center;
+    justify-items: center;
+  }
+
+  .advantages__art img {
+    display: block;
+    width: min(100%, 12.875rem);
+    max-height: 10rem;
+    object-fit: contain;
+  }
+
+  .advantages__description {
+    color: var(--text-primary);
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  @media (min-width: 30rem) {
+    .advantages__card {
+      min-height: 22rem;
+    }
+  }
+
+  @media (min-width: 56.25rem) {
+    .advantages__card {
+      height: 25rem;
+      min-height: 25rem;
+      grid-template-rows: minmax(3.75rem, auto) minmax(10.75rem, 1fr) auto;
+      padding: 1.875rem;
+    }
+
+    .advantages__card-title {
+      max-width: none;
+      font-size: 1.625rem;
+    }
+
+    .advantages__art {
+      min-height: 10.75rem;
+      padding-block: 0.625rem;
+    }
+
+    .advantages__art img {
+      width: min(100%, 13.3125rem);
+      max-height: 10.75rem;
+    }
+
+    .advantages__description {
+      color: var(--text-primary);
+      line-height: 1;
+    }
+  }
+
+  @media (min-width: 80rem) {
+    .advantages__card {
+      min-width: 0;
+      height: 25rem;
+      min-height: 25rem;
+      padding: 1.875rem;
+    }
+
+    .advantages__card-title {
+      font-size: 1.875rem;
+    }
+  }
+</style>

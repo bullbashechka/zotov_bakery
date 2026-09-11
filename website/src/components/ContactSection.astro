@@ -5,19 +5,29 @@ const whatsappUrl = getWhatsAppUrl('general');
 ---
 
 <section id="contacts" class="contact-section" aria-labelledby="contacts-title">
-  <h2 id="contacts-title" class="contact-section__title" data-footer-reveal-item>Контакты</h2>
+  <h2 id="contacts-title" class="contact-section__title" data-motion="heading">Контакты</h2>
   <div class="contact-section__card">
-    <img class="contact-section__frame" src="/footer/frame-1050.svg" alt="" aria-hidden="true" />
-    <div class="contact-section__content" data-footer-reveal-item>
+    <img
+      class="contact-section__frame"
+      data-motion="image"
+      src="/footer/frame-1050.svg"
+      alt=""
+      aria-hidden="true"
+    />
+    <div class="contact-section__content">
       <div class="contact-section__item">
         <h3>Мы находимся по адресу</h3>
         <p class="contact-section__detail">
           <img src="/footer/location.svg" width="16" height="21" alt="" />
-          {CONTACTS.twoGisUrl ? (
-            <a href={CONTACTS.twoGisUrl} target="_blank" rel="noopener noreferrer">{CONTACTS.address}</a>
-          ) : (
-            <span>{CONTACTS.address}</span>
-          )}
+          {
+            CONTACTS.twoGisUrl ? (
+              <a href={CONTACTS.twoGisUrl} target="_blank" rel="noopener noreferrer">
+                {CONTACTS.address}
+              </a>
+            ) : (
+              <span>{CONTACTS.address}</span>
+            )
+          }
         </p>
       </div>
 
@@ -39,10 +49,20 @@ const whatsappUrl = getWhatsAppUrl('general');
       </div>
 
       <div class="contact-section__socials">
-        <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" aria-label="Написать в WhatsApp">
+        <a
+          href={whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Написать в WhatsApp"
+        >
           <img src="/footer/whatsapp.svg" width="50" height="50" alt="" />
         </a>
-        <a href={CONTACTS.instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="Открыть Instagram ZOTOV bakery">
+        <a
+          href={CONTACTS.instagramUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Открыть Instagram ZOTOV bakery"
+        >
           <img src="/footer/instagram.svg" width="51" height="51" alt="" />
         </a>
       </div>
@@ -131,7 +151,10 @@ const whatsappUrl = getWhatsAppUrl('general');
     min-width: 0;
     border-radius: 0.25rem;
     color: inherit;
-    text-decoration: none;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 0.2em;
+    transition: text-decoration-color 180ms ease;
   }
 
   .contact-section__detail a,
@@ -139,10 +162,9 @@ const whatsappUrl = getWhatsAppUrl('general');
     overflow-wrap: anywhere;
   }
 
-  .contact-section__detail a:hover,
-  .contact-section__phones a:hover {
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
+  .contact-section__detail a:is(:hover, :focus-visible),
+  .contact-section__phones a:is(:hover, :focus-visible) {
+    text-decoration-color: currentColor;
   }
 
   .contact-section__phones {
@@ -173,6 +195,11 @@ const whatsappUrl = getWhatsAppUrl('general');
     height: 3rem;
     place-items: center;
     border-radius: 0.75rem;
+    transition: transform 180ms var(--motion-ease);
+  }
+
+  .contact-section__socials a:active {
+    transform: scale(0.96);
   }
 
   .contact-section__socials img {
@@ -238,6 +265,12 @@ const whatsappUrl = getWhatsAppUrl('general');
 
     .contact-section__content {
       padding: 3.25rem 3.1rem 2.5rem;
+    }
+  }
+
+  @media (min-width: 75rem) and (max-width: 87.499rem) {
+    .contact-section__title {
+      right: 0;
     }
   }
 </style>

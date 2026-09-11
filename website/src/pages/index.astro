@@ -1,9 +1,8 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import Advantages from '@/components/Advantages.astro';
+import Assortment from '@/components/Assortment.astro';
 import ConversionSection from '@/components/ConversionSection.astro';
 import Faq from '@/components/Faq.astro';
-import Hero from '@/components/Hero.astro';
 import HeroAdvantagesFlow from '@/components/HeroAdvantagesFlow.astro';
 import HoneyCake from '@/components/HoneyCake.astro';
 import PlaceholderSection from '@/components/PlaceholderSection.astro';
@@ -11,7 +10,6 @@ import SiteHeader from '@/components/SiteHeader.astro';
 import SiteFooter from '@/components/SiteFooter.astro';
 import WhereToBuy from '@/components/WhereToBuy.astro';
 import { HOME_SECTION_IDS } from '@/lib/site';
-import '@/styles/global.css';
 
 const title = 'ZOTOV bakery — десерты с характером';
 const description = 'ZOTOV bakery — десерты, которые хочется разделить с близкими.';
@@ -21,7 +19,6 @@ const canonicalUrl = publicWebsiteUrl
   : undefined;
 
 const placeholderSections = {
-  assortment: { id: HOME_SECTION_IDS.assortment, title: 'Ассортимент' },
   history: { id: HOME_SECTION_IDS.history, title: 'Наша история' },
 };
 ---
@@ -29,17 +26,27 @@ const placeholderSections = {
 <BaseLayout {title} {description} {canonicalUrl}>
   <SiteHeader slot="header" />
 
-  <HeroAdvantagesFlow>
-    <Hero />
-    <Advantages />
-  </HeroAdvantagesFlow>
+  <HeroAdvantagesFlow />
 
   <HoneyCake />
-  <PlaceholderSection id={placeholderSections.assortment.id} title={placeholderSections.assortment.title} />
+  <Assortment />
   <WhereToBuy />
-  <PlaceholderSection id={placeholderSections.history.id} title={placeholderSections.history.title} />
+  <PlaceholderSection
+    id={placeholderSections.history.id}
+    title={placeholderSections.history.title}
+  />
   <Faq />
   <ConversionSection />
 
   <SiteFooter slot="footer" />
 </BaseLayout>
+
+<script>
+  import { initPageMotion } from '@/lib/motion';
+
+  const cleanup = initPageMotion(document);
+  if (import.meta.hot)
+    import.meta.hot.dispose(() => {
+      cleanup();
+    });
+</script>

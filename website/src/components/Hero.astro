@@ -28,13 +28,15 @@ import { HOME_SECTION_IDS } from '@/lib/site';
     <div class="hero__copy">
       <h1 class="hero__title">
         Тот самый медовик из&nbsp;детства по&nbsp;семейному рецепту{' '}
-        <span class="hero__desktop-break">от&nbsp;<span class="hero__brand-z">Z</span>OTOV bakery</span>
+        <span class="hero__desktop-break"
+          >от&nbsp;<span class="hero__brand-z">Z</span>OTOV bakery</span
+        >
       </h1>
 
       <p class="hero__intro">
-        Кондитерская домашних традиций. Попробуйте наш легендарный медовик, воздушные
-        «Дамские пальчики», тающий торт «Нежность» и другие свежие десерты на каждый день и
-        для особого повода.
+        Кондитерская домашних традиций. Попробуйте наш легендарный медовик, воздушные «Дамские
+        пальчики», тающий торт «Нежность» и другие свежие десерты на каждый день и для особого
+        повода.
       </p>
 
       <div class="hero__actions">
@@ -52,18 +54,34 @@ import { HOME_SECTION_IDS } from '@/lib/site';
 </section>
 
 <script is:inline>
+  // Prepare the copy animation before paint; the cake itself remains static.
+  {
+    const hero = document.querySelector('.hero');
+    if (
+      hero &&
+      !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
+      !location.hash &&
+      window.scrollY < 20 &&
+      performance.now() < 1000
+    ) {
+      hero.dataset.heroEntrance = 'pending';
+      const showPending = () => {
+        if (hero.dataset.heroEntrance === 'pending') hero.dataset.heroEntrance = 'complete';
+      };
+      window.setTimeout(showPending, 1200);
+      hero.addEventListener('focusin', showPending, { once: true });
+      hero.addEventListener('pointerdown', showPending, { once: true });
+    }
+  }
+
   const media = document.querySelector('[data-hero-media]');
   const image = media?.querySelector('img');
 
   if (media && image && !image.complete) {
-    media.dataset.loading = 'true';
-    const reveal = () => delete media.dataset.loading;
     const fallback = () => {
-      delete media.dataset.loading;
       media.dataset.error = 'true';
       image.hidden = true;
     };
-    image.addEventListener('load', reveal, { once: true });
     image.addEventListener('error', fallback, { once: true });
   } else if (media && image && image.complete && image.naturalWidth === 0) {
     media.dataset.error = 'true';
@@ -88,7 +106,128 @@ import { HOME_SECTION_IDS } from '@/lib/site';
   });
 </script>
 
+<script>
+  import { gsap } from 'gsap';
+  import { SplitText } from 'gsap/SplitText';
+
+  /** Hero copy entrance composition; the cake intentionally stays static. */
+  function initHeroMotion(root: ParentNode): () => void {
+    const hero = root.querySelector<HTMLElement>('[data-hero-entrance]');
+    const title = hero?.querySelector<HTMLElement>('.hero__title');
+    if (!hero || !title || hero.dataset.heroEntrance !== 'pending') return () => {};
+
+    const events = new AbortController();
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let split: SplitText | undefined;
+    let timeline: gsap.core.Timeline | undefined;
+    let context: gsap.Context | undefined;
+    let finished = false;
+
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      timeline?.progress(1).pause();
+      split?.revert();
+      context?.revert();
+      hero.dataset.heroEntrance = 'complete';
+      events.abort();
+    };
+
+    hero.addEventListener('focusin', finish, { signal: events.signal });
+    hero.addEventListener('pointerdown', finish, { signal: events.signal });
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (window.scrollY > 80) finish();
+      },
+      { signal: events.signal, passive: true },
+    );
+    window.addEventListener('pagehide', finish, { signal: events.signal });
+    motion.addEventListener(
+      'change',
+      (event) => {
+        if (event.matches) finish();
+      },
+      { signal: events.signal },
+    );
+
+    void document.fonts.ready
+      .then(() => {
+        if (finished || motion.matches || hero.dataset.heroEntrance !== 'pending') {
+          finish();
+          return;
+        }
+
+        gsap.registerPlugin(SplitText);
+        const mobile = window.innerWidth < 768;
+        context = gsap.context(() => {}, hero);
+        context.add(() => {
+          split = SplitText.create(title, {
+            type: 'lines',
+            mask: 'lines',
+            linesClass: 'hero__text-line',
+            reduceWhiteSpace: false,
+            autoSplit: true,
+            aria: 'auto',
+            onSplit(self) {
+              timeline = gsap.timeline({ defaults: { ease: 'power3.out' }, onComplete: finish });
+              timeline.fromTo(
+                self.lines,
+                { yPercent: 110 },
+                { yPercent: 0, duration: 1.05, stagger: 0.13, ease: 'power4.out' },
+                0.2,
+              );
+              timeline.fromTo(
+                '.hero__intro',
+                { y: mobile ? 12 : 20, opacity: 0 },
+                { y: 0, opacity: 1, duration: 0.75 },
+                0.45,
+              );
+              timeline.fromTo(
+                '.hero__actions',
+                { opacity: 0.4 },
+                { opacity: 1, duration: 0.55 },
+                0.65,
+              );
+              return timeline;
+            },
+          });
+        });
+        hero.dataset.heroEntrance = 'active';
+      })
+      .catch(finish);
+
+    return finish;
+  }
+
+  const cleanup = initHeroMotion(document);
+  if (import.meta.hot) import.meta.hot.dispose(cleanup);
+</script>
+
 <style>
+  .hero[data-hero-entrance='pending'] .hero__title,
+  .hero[data-hero-entrance='pending'] .hero__intro {
+    opacity: 0;
+  }
+
+  .hero[data-hero-entrance='pending'] .hero__actions {
+    opacity: 0.4;
+  }
+
+  .hero__title :global(.hero__text-line-mask) {
+    /* Keep glyph overhangs visible without adding height to the split heading. */
+    overflow: clip;
+    overflow-clip-margin: 0.12em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero[data-hero-entrance='pending'] .hero__title,
+    .hero[data-hero-entrance='pending'] .hero__intro,
+    .hero[data-hero-entrance='pending'] .hero__actions {
+      opacity: 1;
+    }
+  }
+
   .hero {
     position: relative;
     z-index: 4;
@@ -115,7 +254,6 @@ import { HOME_SECTION_IDS } from '@/lib/site';
     width: clamp(16.5rem, 75vw, 19rem);
     transform: translateX(-50%);
     opacity: 1;
-    transition: opacity 240ms ease;
   }
 
   .hero__cake::before {
@@ -126,7 +264,12 @@ import { HOME_SECTION_IDS } from '@/lib/site';
     left: 4%;
     height: 14%;
     border-radius: 50%;
-    background: radial-gradient(ellipse, rgb(75 55 48 / 34%) 0%, rgb(75 55 48 / 16%) 42%, transparent 74%);
+    background: radial-gradient(
+      ellipse,
+      rgb(75 55 48 / 34%) 0%,
+      rgb(75 55 48 / 16%) 42%,
+      transparent 74%
+    );
     content: '';
     filter: blur(0.75rem);
     transform: scaleX(0.93);
@@ -143,7 +286,6 @@ import { HOME_SECTION_IDS } from '@/lib/site';
     filter: drop-shadow(0 0.5rem 0.625rem rgb(75 55 48 / 11%));
   }
 
-  .hero__media[data-loading='true'] .hero__cake,
   .hero__media[data-error='true'] .hero__cake {
     opacity: 0;
   }

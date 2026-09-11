@@ -1,0 +1,81 @@
+---
+import type { AstroComponentFactory } from 'astro/runtime/server/index.js';
+import '@/styles/global.css';
+import SiteHeader from '@/components/SiteHeader.astro';
+import SiteFooter from '@/components/SiteFooter.astro';
+import PlaceholderSection from '@/components/PlaceholderSection.astro';
+import Wrapper from '@/components/Wrapper.astro';
+import ActionLink from '@/components/ActionLink.astro';
+import { examples } from '../examples';
+
+export function getStaticPaths() {
+  return examples.map((example) => ({
+    params: { example: `${example.component}/${example.name}` },
+    props: { example },
+  }));
+}
+const { example } = Astro.props;
+const previewLayouts: Record<string, import('astro/types').ComponentProps<typeof Wrapper>> = {
+  AdvantageCard: { width: 'min(100%, 18.4375rem)', margin: '1rem auto' },
+  PurchaseCard: { width: 'min(100%, 25rem)', margin: '1rem auto' },
+  ProductDetails: { width: 'min(calc(100% - 2rem), 28rem)', margin: '1rem auto' },
+  FooterLogo: { width: 'min(100%, 24.5rem)', margin: '2rem auto' },
+  HoneyCakeIllustration: { width: 'min(100%, 43rem)', margin: '2rem auto' },
+  AdvantagesDecoration: {
+    position: 'relative',
+    overflow: 'clip',
+    minHeight: '106rem',
+    at: { small: { minHeight: '24rem' } },
+  },
+  FaqItem: { width: 'min(calc(100% - 2rem), 77.5rem)', margin: '1rem auto' },
+  FaqAccordion: { width: 'min(calc(100% - 2rem), 77.5rem)', margin: '1rem auto' },
+  SiteHeader: { minHeight: '180vh' },
+};
+const modules = import.meta.glob<{ default: AstroComponentFactory }>(
+  '../../src/components/*.astro',
+  { eager: true },
+);
+const Component = modules[`../../src/components/${example.component}.astro`].default;
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>{example.component} — {example.name}</title>
+  </head>
+  <body>
+    {
+      example.component === 'PageFrame' ? (
+        <Component>
+          <SiteHeader slot="header" />
+          <Wrapper padding="12rem 0 4rem">
+            <PlaceholderSection id="example" title="Содержимое страницы" />
+          </Wrapper>
+          <SiteFooter slot="footer" />
+        </Component>
+      ) : (
+        <Wrapper {...previewLayouts[example.component]} padding={example.padding ?? '0'}>
+          <Component {...example.props}>
+            {example.component === 'Wrapper' ? (
+              <>
+                <ActionLink href="#first" variant="primary">
+                  Первый
+                </ActionLink>
+                <Wrapper>
+                  <ActionLink href="#second" variant="secondary">
+                    Вложенный Wrapper
+                  </ActionLink>
+                </Wrapper>
+              </>
+            ) : (
+              example.text
+            )}
+          </Component>
+        </Wrapper>
+      )
+    }
+  </body>
+</html>

@@ -18,15 +18,27 @@
 
 ```bash
 bun install
-
+bun run dev
 ```
 
 Проверки и сборка:
 
 ```bash
+bun run check:ui
 bun run typecheck
 bun run build
 ```
+
+## Библиотека компонентов
+
+Все UI-компоненты находятся плоско в `website/src/components/`. Визуальные стили принадлежат компоненту; внешнее размещение задаётся через `Wrapper`.
+
+```bash
+bun run storybook        # Storybook :6006 + Astro-примеры :4322, обновление из исходников
+bun run build:storybook  # автономная библиотека в website/storybook-static
+```
+
+У каждого компонента есть история. `bun run check:ui` проверяет архитектурные границы и покрытие историями. [Отчёт по файлам, API и проверкам](docs/ui-refactor.md).
 
 ## Cloudflare Pages
 

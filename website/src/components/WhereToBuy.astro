@@ -1,79 +1,41 @@
 ---
-import ActionLink from '@/components/ActionLink.astro';
-import { getWhatsAppUrl, HOME_SECTION_IDS, PURCHASE_LINKS } from '@/lib/site';
-
-const purchaseOptions = [
-  {
-    title: 'В пекарне ZOTOV bakery',
-    description:
-      'Выберите готовый десерт в пекарне без предварительного заказа. Наличие можно уточнить по телефону или в WhatsApp.',
-    action: 'Уточнить наличие',
-    href: getWhatsAppUrl('bakeryAvailability'),
-    image: '/zotov-logo.svg',
-    imageAlt: '',
-    imageClass: 'where-to-buy__image--logo',
-  },
-  {
-    title: 'В супермаркетах aimer',
-    description:
-      'Продукцию ZOTOV bakery можно найти в магазинах сети в Петропавловске. Ассортимент может отличаться.',
-    action: 'Посмотреть адреса',
-    href: PURCHASE_LINKS.aimerTwoGisUrl,
-    image: '/where-to-buy/aimer.png',
-    imageAlt: '',
-    imageClass: 'where-to-buy__image--aimer',
-  },
-  {
-    title: 'С доставкой на дом или в офис',
-    description:
-      'Напишите нам в WhatsApp. Подскажем, что есть в наличии, и уточним стоимость и условия доставки.',
-    action: 'Заказать доставку',
-    href: getWhatsAppUrl('delivery'),
-    image: '/where-to-buy/delivery.png',
-    imageAlt: '',
-    imageClass: 'where-to-buy__image--delivery',
-  },
-] as const;
+import PurchaseCard from './PurchaseCard.astro';
+import Wrapper from './Wrapper.astro';
+import { PURCHASE_OPTIONS } from '@/lib/purchase';
+import { HOME_SECTION_IDS } from '@/lib/site';
 ---
 
 <section id={HOME_SECTION_IDS.whereToBuy} class="where-to-buy" aria-labelledby="where-to-buy-title">
   <div class="where-to-buy__inner">
-    <h2 id="where-to-buy-title" class="where-to-buy__title" data-scroll-reveal="clip">
+    <h2 id="where-to-buy-title" class="where-to-buy__title" data-motion="heading">
       Где купить торты и десерты от ZOTOV bakery
     </h2>
 
-    <div class="where-to-buy__track" tabindex="0" aria-label="Способы покупки тортов и десертов ZOTOV bakery">
-      {purchaseOptions.map((option, index) => (
-        <article class="where-to-buy__card" data-scroll-reveal="fade" data-reveal-delay={index * 90}>
-          <div class="where-to-buy__image-wrap" aria-hidden="true">
-            <img
-              class:list={['where-to-buy__image', option.imageClass]}
-              src={option.image}
-              width="400"
-              height="280"
-              alt={option.imageAlt}
-              loading="lazy"
-            />
-          </div>
-          <div class="where-to-buy__content">
-            <h3>{option.title}</h3>
-            <p>{option.description}</p>
-          </div>
-          <ActionLink variant="surface" href={option.href} fullWidth target="_blank" rel="noopener noreferrer">
-            {option.action}
-          </ActionLink>
-        </article>
-      ))}
+    <div
+      class="where-to-buy__track"
+      tabindex="0"
+      aria-label="Способы покупки тортов и десертов ZOTOV bakery"
+    >
+      {
+        PURCHASE_OPTIONS.map((option, index) => (
+          <Wrapper
+            at={{
+              tablet: {
+                flex: '0 0 25rem',
+                alignSelf: 'start',
+                snap: 'start',
+                margin: `${index * 2.6875}rem 0 0`,
+              },
+              desktop: { flex: '0 1 auto' },
+            }}
+          >
+            <PurchaseCard option={option} />
+          </Wrapper>
+        ))
+      }
     </div>
   </div>
 </section>
-
-<script>
-  import { initScrollReveal } from '@/lib/scroll-reveal';
-
-  const whereToBuySection = document.querySelector<HTMLElement>('.where-to-buy');
-  if (whereToBuySection) initScrollReveal(whereToBuySection);
-</script>
 
 <style>
   .where-to-buy {
@@ -104,66 +66,6 @@ const purchaseOptions = [
     width: min(calc(100% - 2rem), 25rem);
     margin: 2.5rem auto 0;
     outline-offset: 0.5rem;
-  }
-
-  .where-to-buy__card {
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    min-width: 0;
-    overflow: hidden;
-    border-radius: 0.75rem;
-    background: var(--text-primary);
-  }
-
-  .where-to-buy__image-wrap {
-    display: grid;
-    aspect-ratio: 10 / 7;
-    place-items: center;
-    overflow: hidden;
-    background: var(--surface);
-  }
-
-  .where-to-buy__image {
-    display: block;
-    width: 100%;
-    height: 100%;
-  }
-
-  .where-to-buy__image--logo {
-    width: min(82.75%, 20.6875rem);
-    height: auto;
-  }
-
-  .where-to-buy__image--aimer,
-  .where-to-buy__image--delivery {
-    object-fit: cover;
-  }
-
-  .where-to-buy__content {
-    display: grid;
-    align-content: start;
-    gap: 1.125rem;
-    padding: 1.5rem 1.25rem;
-    color: var(--page);
-  }
-
-  .where-to-buy__content h3 {
-    max-width: 20.4375rem;
-    font-family: 'Vetrino', Georgia, serif;
-    font-size: clamp(1.5rem, 6.25vw, 1.875rem);
-    font-weight: 400;
-    line-height: 1;
-  }
-
-  .where-to-buy__content p {
-    max-width: 22.375rem;
-    font-size: 1rem;
-    line-height: 1.3;
-  }
-
-  .where-to-buy__card :global(.action-link) {
-    width: calc(100% - 1.25rem);
-    margin: auto 0.625rem 0.625rem;
   }
 
   @media (min-width: 40rem) and (max-width: 74.999rem) {
@@ -197,40 +99,6 @@ const purchaseOptions = [
       border-radius: 999px;
       background: var(--accent);
     }
-
-    .where-to-buy__card {
-      flex: 0 0 25rem;
-      height: 514px;
-      align-self: start;
-      scroll-snap-align: start;
-    }
-
-    .where-to-buy__card:nth-child(2) {
-      margin-top: 2.6875rem;
-    }
-
-    .where-to-buy__card:nth-child(3) {
-      margin-top: 5.375rem;
-    }
-
-    .where-to-buy__content {
-      min-height: 0;
-      padding: 16px 16px 8px;
-    }
-
-    .where-to-buy__content h3 {
-      font-size: 30px;
-    }
-
-    .where-to-buy__card :global(.action-link) {
-      width: calc(100% - 1.5rem);
-      margin: 0 0.75rem 0.75rem;
-    }
-
-    .where-to-buy__content p {
-      font-size: 16px;
-      line-height: 1.2;
-    }
   }
 
   @media (min-width: 75rem) {
@@ -247,39 +115,6 @@ const purchaseOptions = [
       width: 100%;
       gap: 20px;
       margin-top: 39px;
-    }
-
-    .where-to-buy__card {
-      height: 514px;
-      align-self: start;
-    }
-
-    .where-to-buy__card:nth-child(2) {
-      margin-top: 2.6875rem;
-    }
-
-    .where-to-buy__card:nth-child(3) {
-      margin-top: 5.375rem;
-    }
-
-    .where-to-buy__content {
-      min-height: 0;
-      gap: 18px;
-      padding: 16px 16px 8px;
-    }
-
-    .where-to-buy__content h3 {
-      font-size: 30px;
-    }
-
-    .where-to-buy__card :global(.action-link) {
-      width: calc(100% - 24px);
-      margin: 0 12px 12px;
-    }
-
-    .where-to-buy__content p {
-      font-size: 16px;
-      line-height: 1.2;
     }
   }
 </style>

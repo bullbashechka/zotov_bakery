@@ -1,69 +1,48 @@
 ---
 import ContactSection from '@/components/ContactSection.astro';
-import { HOME_NAV_LINKS, POLICY_LINKS } from '@/lib/site';
+import FooterLogo from './FooterLogo.astro';
+import FooterNavigation from './FooterNavigation.astro';
+import Copyright from './Copyright.astro';
+import Wrapper from './Wrapper.astro';
 ---
 
-<div class="site-footer__surface" data-footer-reveal>
+<div class="site-footer__surface">
   <div class="site-footer__content">
-    <a class="site-footer__logo" data-footer-reveal-item href="/#hero" aria-label="ZOTOV bakery, в начало страницы">
-      <img src="/footer/zotov-footer-logo.svg" width="391" height="466" alt="ZOTOV bakery" />
-    </a>
+    <Wrapper
+      column="1"
+      order={2}
+      alignSelf="end"
+      width="clamp(6.875rem, 31vw, 8.5rem)"
+      at={{ desktop: { row: '1 / span 3', alignSelf: 'center', width: 'min(100%, 24.5rem)' } }}
+    >
+      <FooterLogo />
+    </Wrapper>
 
-    <ContactSection />
+    <Wrapper column="1 / -1" order={1} at={{ desktop: { column: '2', row: '1' } }}>
+      <ContactSection />
+    </Wrapper>
 
-    <nav class="site-footer__navigation" data-footer-reveal-item aria-label="Навигация в подвале">
-      {HOME_NAV_LINKS.map((link) => <a href={link.href}>{link.label}</a>)}
-    </nav>
-
-    <nav class="site-footer__policies" data-footer-reveal-item aria-label="Юридическая информация">
-      {POLICY_LINKS.map((link) => <a href={link.href}>{link.label}</a>)}
-    </nav>
-
-    <p class="site-footer__copyright" data-footer-reveal-item>
-      © <time data-current-year>{new Date().getFullYear()}</time> ZOTOV bakery
-    </p>
+    <Wrapper column="2" order={3} at={{ desktop: { row: '2', margin: '0.5rem 0 0' } }}>
+      <FooterNavigation variant="primary" />
+    </Wrapper>
+    <Wrapper
+      column="1 / -1"
+      order={4}
+      margin="0.5rem 0 0"
+      at={{ desktop: { column: '2', row: '3', margin: '0' } }}
+    >
+      <FooterNavigation variant="legal" />
+    </Wrapper>
+    <Wrapper
+      column="1 / -1"
+      order={5}
+      margin="0.25rem 0 0"
+      at={{ desktop: { column: '2', row: '4' } }}
+    >
+      <Copyright />
+    </Wrapper>
   </div>
 </div>
-
-<script>
-  const reveal = document.querySelector<HTMLElement>('[data-footer-reveal]');
-
-  if (reveal && reveal.dataset.revealReady !== 'true') {
-    reveal.dataset.revealReady = 'true';
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    let observer: IntersectionObserver | undefined;
-
-    const revealContent = () => {
-      observer?.disconnect();
-      reveal.inert = false;
-      reveal.dataset.revealed = 'true';
-      delete reveal.dataset.revealing;
-    };
-
-    if (!reducedMotion.matches) {
-      reveal.dataset.revealing = 'true';
-      reveal.inert = true;
-      observer = new IntersectionObserver(
-        ([entry]) => {
-          if (!entry.isIntersecting) return;
-          requestAnimationFrame(() => {
-            revealContent();
-          });
-        },
-        { rootMargin: '0px 0px -12% 0px' },
-      );
-      observer.observe(reveal);
-    }
-
-    reducedMotion.addEventListener('change', () => {
-      if (reducedMotion.matches) revealContent();
-    });
-
-    document.querySelectorAll<HTMLElement>('[data-current-year]').forEach((year) => {
-      year.textContent = String(new Date().getFullYear());
-    });
-  }
-</script>
 
 <style>
   .site-footer__surface {
@@ -83,79 +62,6 @@ import { HOME_NAV_LINKS, POLICY_LINKS } from '@/lib/site';
     margin-inline: auto;
   }
 
-  .site-footer__content > :global(.contact-section) {
-    grid-column: 1 / -1;
-    order: 1;
-  }
-
-  .site-footer__logo {
-    display: block;
-    align-self: end;
-    grid-column: 1;
-    order: 2;
-    width: clamp(6.875rem, 31vw, 8.5rem);
-    border-radius: 0.5rem;
-  }
-
-  .site-footer__logo img {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
-
-  .site-footer__navigation,
-  .site-footer__policies {
-    display: grid;
-    align-content: start;
-    gap: 0.25rem;
-  }
-
-  .site-footer__navigation {
-    grid-column: 2;
-    order: 3;
-  }
-
-  .site-footer__policies {
-    grid-column: 1 / -1;
-    order: 4;
-    margin-top: 0.5rem;
-  }
-
-  .site-footer__navigation a,
-  .site-footer__policies a {
-    display: inline-flex;
-    min-height: 2.75rem;
-    align-items: center;
-    border-radius: 0.25rem;
-    color: inherit;
-    font-size: 0.9375rem;
-    line-height: 1.15;
-    text-decoration: none;
-  }
-
-  .site-footer__navigation a:hover,
-  .site-footer__policies a:hover {
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
-  }
-
-  .site-footer__copyright {
-    grid-column: 1 / -1;
-    order: 5;
-    margin-top: 0.25rem;
-    color: var(--text-muted);
-    font-size: 0.8125rem;
-  }
-
-  [data-footer-reveal][data-revealing='true'] :global([data-footer-reveal-item]) {
-    opacity: 0;
-    transform: translateY(1rem);
-  }
-
-  [data-footer-reveal] :global([data-footer-reveal-item]) {
-    transition: opacity 420ms ease, transform 420ms ease;
-  }
-
   @media (min-width: 40rem) {
     .site-footer__surface {
       padding-bottom: 3.5rem;
@@ -164,17 +70,6 @@ import { HOME_NAV_LINKS, POLICY_LINKS } from '@/lib/site';
     .site-footer__content {
       grid-template-columns: minmax(13rem, 0.9fr) minmax(0, 1.1fr);
       gap: 1.5rem 2.5rem;
-    }
-
-    .site-footer__navigation,
-    .site-footer__policies {
-      grid-auto-flow: column;
-      justify-content: start;
-      gap: 1.25rem;
-    }
-
-    .site-footer__policies {
-      gap: 2rem;
     }
   }
 
@@ -187,49 +82,6 @@ import { HOME_NAV_LINKS, POLICY_LINKS } from '@/lib/site';
     .site-footer__content {
       grid-template-columns: minmax(20rem, 0.8fr) minmax(0, 1.2fr);
       gap: 1.25rem 3rem;
-    }
-
-    .site-footer__content > :global(.contact-section) {
-      grid-column: 2;
-      grid-row: 1;
-    }
-
-    .site-footer__logo {
-      align-self: center;
-      grid-column: 1;
-      grid-row: 1 / span 3;
-      width: min(100%, 24.5rem);
-    }
-
-    .site-footer__navigation {
-      grid-column: 2;
-      grid-row: 2;
-      margin-top: 0.5rem;
-    }
-
-    .site-footer__policies {
-      grid-column: 2;
-      grid-row: 3;
-      margin-top: 0;
-    }
-
-    .site-footer__copyright {
-      grid-column: 2;
-      grid-row: 4;
-    }
-
-    .site-footer__navigation a,
-    .site-footer__policies a {
-      min-height: 2rem;
-      font-size: 1rem;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    [data-footer-reveal] :global([data-footer-reveal-item]) {
-      opacity: 1;
-      transform: none;
-      transition: none;
     }
   }
 </style>
