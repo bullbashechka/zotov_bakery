@@ -1,0 +1,330 @@
+{
+  "shots": [
+    {
+      "device": "desktop",
+      "label": "Точка входа: первый экран",
+      "file": "desktop-01.png"
+    },
+    {
+      "device": "desktop",
+      "label": "CTA первого экрана → ассортимент, Нежность",
+      "file": "desktop-02.png"
+    },
+    {
+      "device": "desktop",
+      "label": "Выбран товар: Карамельное облако",
+      "file": "desktop-03.png"
+    },
+    {
+      "device": "desktop",
+      "label": "Выбран товар: Праздничный букет",
+      "file": "desktop-04.png"
+    },
+    {
+      "device": "desktop",
+      "label": "Выбран товар: Нежность",
+      "file": "desktop-05.png"
+    },
+    {
+      "device": "desktop",
+      "label": "Медовик: подсказки закрыты",
+      "file": "desktop-06.png"
+    },
+    {
+      "device": "desktop",
+      "label": "Медовик: Белковый крем",
+      "file": "desktop-07.png"
+    },
+    {
+      "device": "desktop",
+      "label": "Медовик: Медовые коржи",
+      "file": "desktop-08.png"
+    },
+    {
+      "device": "desktop",
+      "label": "Медовик: Крем",
+      "file": "desktop-09.png"
+    },
+    {
+      "device": "desktop",
+      "label": "Преимущества",
+      "file": "desktop-10.png"
+    },
+    {
+      "device": "desktop",
+      "label": "CTA Где купить → три способа покупки",
+      "file": "desktop-11.png"
+    },
+    {
+      "device": "desktop",
+      "label": "Наша история: текущее незавершённое состояние",
+      "file": "desktop-12.png"
+    },
+    {
+      "device": "desktop",
+      "label": "FAQ: первый ответ открыт по умолчанию",
+      "file": "desktop-13.png"
+    },
+    {
+      "device": "desktop",
+      "label": "FAQ: все ответы закрыты",
+      "file": "desktop-14.png"
+    },
+    {
+      "device": "desktop",
+      "label": "FAQ: ответ 1",
+      "file": "desktop-15.png"
+    },
+    {
+      "device": "desktop",
+      "label": "FAQ: ответ 2",
+      "file": "desktop-16.png"
+    },
+    {
+      "device": "desktop",
+      "label": "FAQ: ответ 3",
+      "file": "desktop-17.png"
+    },
+    {
+      "device": "desktop",
+      "label": "FAQ: ответ 4",
+      "file": "desktop-18.png"
+    },
+    {
+      "device": "desktop",
+      "label": "FAQ: ответ 5",
+      "file": "desktop-19.png"
+    },
+    {
+      "device": "desktop",
+      "label": "Помощь в выборе → WhatsApp или ассортимент",
+      "file": "desktop-20.png"
+    },
+    {
+      "device": "desktop",
+      "label": "Контакты и нижняя навигация",
+      "file": "desktop-21.png"
+    },
+    {
+      "device": "desktop",
+      "label": "Вся страница после прохождения",
+      "file": "desktop-full.png"
+    },
+    {
+      "device": "desktop",
+      "label": "Политика конфиденциальности: заглушка документа",
+      "file": "desktop-22.png"
+    },
+    {
+      "device": "desktop",
+      "label": "Политика обработки данных: заглушка документа",
+      "file": "desktop-23.png"
+    },
+    {
+      "device": "mobile",
+      "label": "Точка входа: первый экран",
+      "file": "mobile-01.png"
+    },
+    {
+      "device": "mobile",
+      "label": "Мобильное меню раскрыто",
+      "file": "mobile-02.png"
+    },
+    {
+      "device": "mobile",
+      "label": "CTA первого экрана → ассортимент, Нежность",
+      "file": "mobile-03.png"
+    },
+    {
+      "device": "mobile",
+      "label": "Выбран товар: Карамельное облако",
+      "file": "mobile-04.png"
+    },
+    {
+      "device": "mobile",
+      "label": "Выбран товар: Праздничный букет",
+      "file": "mobile-05.png"
+    },
+    {
+      "device": "mobile",
+      "label": "Выбран товар: Нежность",
+      "file": "mobile-06.png"
+    },
+    {
+      "device": "mobile",
+      "label": "Состав товара раскрыт",
+      "file": "mobile-07.png"
+    },
+    {
+      "device": "mobile",
+      "label": "Состав товара закрыт",
+      "file": "mobile-08.png"
+    },
+    {
+      "device": "mobile",
+      "label": "Медовик: подсказки закрыты",
+      "file": "mobile-09.png"
+    },
+    {
+      "device": "mobile",
+      "label": "Медовик: Белковый крем",
+      "file": "mobile-10.png"
+    },
+    {
+      "device": "mobile",
+      "label": "Медовик: Медовые коржи",
+      "file": "mobile-11.png"
+    },
+    {
+      "device": "mobile",
+      "label": "Медовик: Крем",
+      "file": "mobile-12.png"
+    },
+    {
+      "device": "mobile",
+      "label": "Преимущества",
+      "file": "mobile-13.png"
+    },
+    {
+      "device": "mobile",
+      "label": "CTA Где купить → три способа покупки",
+      "file": "mobile-14.png"
+    },
+    {
+      "device": "mobile",
+      "label": "Наша история: текущее незавершённое состояние",
+      "file": "mobile-15.png"
+    },
+    {
+      "device": "mobile",
+      "label": "FAQ: первый ответ открыт по умолчанию",
+      "file": "mobile-16.png"
+    },
+    {
+      "device": "mobile",
+      "label": "FAQ: все ответы закрыты",
+      "file": "mobile-17.png"
+    },
+    {
+      "device": "mobile",
+      "label": "FAQ: ответ 1",
+      "file": "mobile-18.png"
+    },
+    {
+      "device": "mobile",
+      "label": "FAQ: ответ 2",
+      "file": "mobile-19.png"
+    },
+    {
+      "device": "mobile",
+      "label": "FAQ: ответ 3",
+      "file": "mobile-20.png"
+    },
+    {
+      "device": "mobile",
+      "label": "FAQ: ответ 4",
+      "file": "mobile-21.png"
+    },
+    {
+      "device": "mobile",
+      "label": "FAQ: ответ 5",
+      "file": "mobile-22.png"
+    },
+    {
+      "device": "mobile",
+      "label": "Помощь в выборе → WhatsApp или ассортимент",
+      "file": "mobile-23.png"
+    },
+    {
+      "device": "mobile",
+      "label": "Контакты и нижняя навигация",
+      "file": "mobile-24.png"
+    },
+    {
+      "device": "mobile",
+      "label": "Вся страница после прохождения",
+      "file": "mobile-full.png"
+    },
+    {
+      "device": "mobile",
+      "label": "Политика конфиденциальности: заглушка документа",
+      "file": "mobile-25.png"
+    },
+    {
+      "device": "mobile",
+      "label": "Политика обработки данных: заглушка документа",
+      "file": "mobile-26.png"
+    }
+  ],
+  "checks": [
+    "desktop: выбран Карамельное облако",
+    "desktop: выбран Праздничный букет",
+    "desktop: выбран Нежность",
+    "desktop: подсказки медовика взаимоисключающие, Escape закрывает",
+    "desktop: FAQ открывает один ответ или закрывает все",
+    "mobile: меню закрывается по Escape",
+    "mobile: выбран Карамельное облако",
+    "mobile: выбран Праздничный букет",
+    "mobile: выбран Нежность",
+    "mobile: подсказки медовика взаимоисключающие, Escape закрывает",
+    "mobile: FAQ открывает один ответ или закрывает все"
+  ],
+  "links": [
+    {
+      "label": "+7 707 493-93-63",
+      "url": "tel:+77074939363"
+    },
+    {
+      "label": "Позвонить",
+      "url": "tel:+77074939363"
+    },
+    {
+      "label": "+7 707 493-93-63",
+      "url": "tel:+77074939363"
+    },
+    {
+      "label": "Узнать цену и наличие",
+      "url": "https://wa.me/77074939363?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%9F%D0%BE%D0%B4%D1%81%D0%BA%D0%B0%D0%B6%D0%B8%D1%82%D0%B5%2C%20%D0%BF%D0%BE%D0%B6%D0%B0%D0%BB%D1%83%D0%B9%D1%81%D1%82%D0%B0%2C%20%D0%BA%D0%B0%D0%BA%D0%B8%D0%B5%20%D0%B4%D0%B5%D1%81%D0%B5%D1%80%D1%82%D1%8B%20%D0%B5%D1%81%D1%82%D1%8C%20%D0%B2%20%D0%BD%D0%B0%D0%BB%D0%B8%D1%87%D0%B8%D0%B8%20%D0%B8%20%D0%B3%D0%B4%D0%B5%20%D0%B8%D1%85%20%D0%BC%D0%BE%D0%B6%D0%BD%D0%BE%20%D0%BA%D1%83%D0%BF%D0%B8%D1%82%D1%8C%3F"
+    },
+    {
+      "label": "Узнать цену и наличие",
+      "url": "https://wa.me/77074939363?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%9F%D0%BE%D0%B4%D1%81%D0%BA%D0%B0%D0%B6%D0%B8%D1%82%D0%B5%20%D1%86%D0%B5%D0%BD%D1%83%20%D0%B8%20%D0%BD%D0%B0%D0%BB%D0%B8%D1%87%D0%B8%D0%B5%3A%20%D0%A2%D0%BE%D1%80%D1%82%20%C2%AB%D0%9D%D0%B5%D0%B6%D0%BD%D0%BE%D1%81%D1%82%D1%8C%C2%BB."
+    },
+    {
+      "label": "Узнать цену и наличие",
+      "url": "https://wa.me/77074939363?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%9F%D0%BE%D0%B4%D1%81%D0%BA%D0%B0%D0%B6%D0%B8%D1%82%D0%B5%20%D1%86%D0%B5%D0%BD%D1%83%20%D0%B8%20%D0%BD%D0%B0%D0%BB%D0%B8%D1%87%D0%B8%D0%B5%3A%20%D0%94%D0%B5%D1%81%D0%B5%D1%80%D1%82%20%C2%AB%D0%9A%D0%B0%D1%80%D0%B0%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D0%BE%D0%B5%20%D0%BE%D0%B1%D0%BB%D0%B0%D0%BA%D0%BE%C2%BB."
+    },
+    {
+      "label": "Узнать цену и наличие",
+      "url": "https://wa.me/77074939363?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%9F%D0%BE%D0%B4%D1%81%D0%BA%D0%B0%D0%B6%D0%B8%D1%82%D0%B5%20%D1%86%D0%B5%D0%BD%D1%83%20%D0%B8%20%D0%BD%D0%B0%D0%BB%D0%B8%D1%87%D0%B8%D0%B5%3A%20%D0%A2%D0%BE%D1%80%D1%82%20%C2%AB%D0%9F%D1%80%D0%B0%D0%B7%D0%B4%D0%BD%D0%B8%D1%87%D0%BD%D1%8B%D0%B9%20%D0%B1%D1%83%D0%BA%D0%B5%D1%82%C2%BB."
+    },
+    {
+      "label": "Уточнить наличие",
+      "url": "https://wa.me/77074939363?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%9F%D0%BE%D0%B4%D1%81%D0%BA%D0%B0%D0%B6%D0%B8%D1%82%D0%B5%2C%20%D0%BF%D0%BE%D0%B6%D0%B0%D0%BB%D1%83%D0%B9%D1%81%D1%82%D0%B0%2C%20%D0%BA%D0%B0%D0%BA%D0%B8%D0%B5%20%D0%B4%D0%B5%D1%81%D0%B5%D1%80%D1%82%D1%8B%20%D1%81%D0%B5%D0%B9%D1%87%D0%B0%D1%81%20%D0%B5%D1%81%D1%82%D1%8C%20%D0%B2%20%D0%BD%D0%B0%D0%BB%D0%B8%D1%87%D0%B8%D0%B8%20%D0%B2%20%D0%BF%D0%B5%D0%BA%D0%B0%D1%80%D0%BD%D0%B5%20ZOTOV%20bakery%3F"
+    },
+    {
+      "label": "Посмотреть адреса",
+      "url": "https://2gis.kz/petropavlovsk/search/aimer"
+    },
+    {
+      "label": "Заказать доставку",
+      "url": "https://wa.me/77074939363?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7%D0%B0%D1%82%D1%8C%20%D0%B4%D0%BE%D1%81%D1%82%D0%B0%D0%B2%D0%BA%D1%83.%20%D0%9F%D0%BE%D0%B4%D1%81%D0%BA%D0%B0%D0%B6%D0%B8%D1%82%D0%B5%2C%20%D0%BF%D0%BE%D0%B6%D0%B0%D0%BB%D1%83%D0%B9%D1%81%D1%82%D0%B0%2C%20%D0%BA%D0%B0%D0%BA%D0%B8%D0%B5%20%D0%B4%D0%B5%D1%81%D0%B5%D1%80%D1%82%D1%8B%20%D0%B5%D1%81%D1%82%D1%8C%20%D0%B2%20%D0%BD%D0%B0%D0%BB%D0%B8%D1%87%D0%B8%D0%B8%2C%20%D0%B0%20%D1%82%D0%B0%D0%BA%D0%B6%D0%B5%20%D1%81%D1%82%D0%BE%D0%B8%D0%BC%D0%BE%D1%81%D1%82%D1%8C%20%D0%B8%20%D1%83%D1%81%D0%BB%D0%BE%D0%B2%D0%B8%D1%8F%20%D0%B4%D0%BE%D1%81%D1%82%D0%B0%D0%B2%D0%BA%D0%B8%3F"
+    },
+    {
+      "label": "Написать в WhatsApp",
+      "url": "https://wa.me/77074939363?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%9F%D0%BE%D0%BC%D0%BE%D0%B3%D0%B8%D1%82%D0%B5%2C%20%D0%BF%D0%BE%D0%B6%D0%B0%D0%BB%D1%83%D0%B9%D1%81%D1%82%D0%B0%2C%20%D0%B2%D1%8B%D0%B1%D1%80%D0%B0%D1%82%D1%8C%20%D0%B4%D0%B5%D1%81%D0%B5%D1%80%D1%82.%20%D0%9F%D0%BE%D0%B4%D1%81%D0%BA%D0%B0%D0%B6%D0%B8%D1%82%D0%B5%2C%20%D0%BA%D0%B0%D0%BA%D0%B8%D0%B5%20%D0%B2%D0%B0%D1%80%D0%B8%D0%B0%D0%BD%D1%82%D1%8B%20%D0%B5%D1%81%D1%82%D1%8C%20%D0%B2%20%D0%BD%D0%B0%D0%BB%D0%B8%D1%87%D0%B8%D0%B8%20%D0%B8%20%D0%B3%D0%B4%D0%B5%20%D0%B8%D1%85%20%D0%BC%D0%BE%D0%B6%D0%BD%D0%BE%20%D0%BA%D1%83%D0%BF%D0%B8%D1%82%D1%8C%3F"
+    },
+    {
+      "label": "+7 (7152) 42-43-54",
+      "url": "tel:+77152424354"
+    },
+    {
+      "label": "+7 707 493-93-63",
+      "url": "tel:+77074939363"
+    },
+    {
+      "label": "Написать в WhatsApp",
+      "url": "https://wa.me/77074939363?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%9F%D0%BE%D0%B4%D1%81%D0%BA%D0%B0%D0%B6%D0%B8%D1%82%D0%B5%2C%20%D0%BF%D0%BE%D0%B6%D0%B0%D0%BB%D1%83%D0%B9%D1%81%D1%82%D0%B0%2C%20%D0%BA%D0%B0%D0%BA%D0%B8%D0%B5%20%D0%B4%D0%B5%D1%81%D0%B5%D1%80%D1%82%D1%8B%20%D0%B5%D1%81%D1%82%D1%8C%20%D0%B2%20%D0%BD%D0%B0%D0%BB%D0%B8%D1%87%D0%B8%D0%B8%20%D0%B8%20%D0%B3%D0%B4%D0%B5%20%D0%B8%D1%85%20%D0%BC%D0%BE%D0%B6%D0%BD%D0%BE%20%D0%BA%D1%83%D0%BF%D0%B8%D1%82%D1%8C%3F"
+    }
+  ]
+}

@@ -13,20 +13,25 @@ import { HOME_SECTION_IDS } from '@/lib/site';
 
     <div
       class="where-to-buy__track"
-      tabindex="0"
       aria-label="Способы покупки тортов и десертов ZOTOV bakery"
     >
       {
-        PURCHASE_OPTIONS.map((option, index) => (
+        PURCHASE_OPTIONS.map((option) => (
           <Wrapper
             at={{
               tablet: {
-                flex: '0 0 25rem',
-                alignSelf: 'start',
-                snap: 'start',
-                margin: `${index * 2.6875}rem 0 0`,
+                display: 'flex',
+                dir: 'column',
+                alignSelf: 'stretch',
+                column: option.kind === 'delivery' ? '1 / -1' : 'auto',
+                height: '100%',
+                margin: '0',
               },
-              desktop: { flex: '0 1 auto' },
+              desktop: {
+                display: 'block',
+                height: 'auto',
+                column: 'auto',
+              },
             }}
           >
             <PurchaseCard option={option} />
@@ -78,26 +83,11 @@ import { HOME_SECTION_IDS } from '@/lib/site';
     }
 
     .where-to-buy__track {
-      display: flex;
-      width: 100%;
-      min-height: 35.75rem;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      width: min(calc(100% - 4rem), 52.5rem);
       margin-top: 2.5rem;
-      overflow-x: auto;
-      overflow-y: visible;
-      padding: 0 2rem 1rem;
-      scroll-padding-inline: 2rem;
-      scroll-snap-type: x proximity;
-      scrollbar-color: var(--accent) transparent;
-      scrollbar-width: thin;
-    }
-
-    .where-to-buy__track::-webkit-scrollbar {
-      height: 0.5rem;
-    }
-
-    .where-to-buy__track::-webkit-scrollbar-thumb {
-      border-radius: 999px;
-      background: var(--accent);
+      align-items: stretch;
+      overflow: visible;
     }
   }
 
