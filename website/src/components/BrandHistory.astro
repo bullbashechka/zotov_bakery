@@ -2,6 +2,8 @@
 import { Image } from 'astro:assets';
 import { HISTORY_EVENTS } from '@/lib/history';
 import { HOME_SECTION_IDS } from '@/lib/site';
+
+const historyCount = HISTORY_EVENTS.length;
 ---
 
 <brand-history>
@@ -12,33 +14,55 @@ import { HOME_SECTION_IDS } from '@/lib/site';
     aria-labelledby="history-title"
   >
     <div class="history__inner">
-      <div class="history__header">
+      <header class="history__header">
         <h2 id="history-title" class="history__title">С чего всё начиналось</h2>
-        <a
-          class="history__skip"
-          href={`#${HOME_SECTION_IDS.faq}`}
-          data-history-skip
-        >
-          Пропустить историю
-        </a>
+      </header>
+
+      <div class="history__timeline-clip" data-history-timeline-clip>
+        <div class="history__timeline" role="tablist" aria-label="История ZOTOV Bakery">
+          {
+            HISTORY_EVENTS.map((event, index) => (
+              <button
+                id={`${event.id}-tab`}
+                class="history__timeline-tab"
+                type="button"
+                role="tab"
+                aria-controls={`${event.id}-panel`}
+                aria-selected={index === 0 ? 'true' : 'false'}
+                tabindex={index === 0 ? 0 : -1}
+                data-history-tab
+                data-history-index={index}
+              >
+                <span class="history__timeline-marker">
+                  <span class="history__timeline-line" aria-hidden="true"></span>
+                  <span class="history__timeline-year">{event.year}</span>
+                  <span class="history__timeline-line" aria-hidden="true"></span>
+                </span>
+                <span class="history__timeline-label">{event.navLabel}</span>
+              </button>
+            ))
+          }
+        </div>
       </div>
 
-      <div class="history__stage" data-history-stage>
-        <ol class="history__events" data-history-events>
+      <div class="history__carousel" data-history-carousel>
+        <ol class="history__track" data-history-track>
           {
             HISTORY_EVENTS.map((event, index) => (
               <li
-                class="history__event"
-                data-history-event
+                id={`${event.id}-panel`}
+                class="history__slide"
+                role="tabpanel"
+                aria-labelledby={`${event.id}-tab`}
+                data-history-slide
                 data-history-index={index}
-                data-side={event.side}
               >
-                <article class="history__event-content" aria-labelledby={`${event.id}-title`}>
-                  <div class="history__art" data-history-art>
+                <article class="history__slide-content">
+                  <div class="history__art">
                     <Image
                       src={event.image}
                       widths={[320, 480, 640, 800]}
-                      sizes="(max-width: 639px) calc(100vw - 2rem), (max-width: 1023px) 42rem, 50rem"
+                      sizes="(max-width: 47.999rem) calc(100vw - 2.5rem), (max-width: 77.499rem) 42vw, 40rem"
                       format="webp"
                       alt=""
                       aria-hidden="true"
@@ -47,11 +71,40 @@ import { HOME_SECTION_IDS } from '@/lib/site';
                     />
                   </div>
 
-                  <div class="history__copy" data-history-copy>
-                    <time datetime={event.date ?? event.year}>{event.year}</time>
-                    <h3 id={`${event.id}-title`}>{event.title}</h3>
+                  <div class="history__copy">
+                    <p class="history__meta">
+                      <time datetime={event.date ?? event.year}>{event.year}</time>
+                      <span aria-hidden="true"> · </span>
+                      <span>{index + 1} / {historyCount}</span>
+                    </p>
+                    <h3>{event.title}</h3>
                     <div class="history__body">
-                      {event.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+                      <p>{event.summary}</p>
+                      <details class="history__details" data-history-details>
+                        <summary>
+                          <span class="history__details-open">Читать далее</span>
+                          <span class="history__details-close">Свернуть</span>
+                        </summary>
+                        <div class="history__details-content">
+                          {event.details.map((paragraph) => <p>{paragraph}</p>)}
+                          {
+                            event.ending && (
+                              <div class="history__ending">
+                                <span class="history__ending-squirrel" aria-hidden="true">
+                                  <img
+                                    src="/zotov-logo.svg"
+                                    alt=""
+                                    width="331"
+                                    height="127"
+                                    loading="lazy"
+                                  />
+                                </span>
+                                <p>{event.ending}</p>
+                              </div>
+                            )
+                          }
+                        </div>
+                      </details>
                     </div>
                   </div>
                 </article>
@@ -60,26 +113,11 @@ import { HOME_SECTION_IDS } from '@/lib/site';
           }
         </ol>
       </div>
-
-      <div class="history__ending">
-        <span class="history__ending-squirrel" aria-hidden="true">
-          <img src="/zotov-logo.svg" alt="" width="331" height="127" loading="lazy" />
-        </span>
-        <p>Белочка осталась с нами. Просто стала немного старше и мудрее.</p>
-      </div>
     </div>
   </section>
 </brand-history>
 
 <script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-  type HistoryScene = {
-    timeline: gsap.core.Timeline;
-    trigger: ScrollTrigger;
-  };
-
   class BrandHistory extends HTMLElement {
     private cleanup: (() => void) | null = null;
 
@@ -87,305 +125,252 @@ import { HOME_SECTION_IDS } from '@/lib/site';
       if (this.cleanup) return;
 
       const root = this.querySelector<HTMLElement>('[data-history-root]');
-      const stage = this.querySelector<HTMLElement>('[data-history-stage]');
-      const skipLink = this.querySelector<HTMLAnchorElement>('[data-history-skip]');
-      const historyLinks = Array.from(
-        document.querySelectorAll<HTMLAnchorElement>(`a[href="#${root?.id ?? 'history'}"]`),
+      const carousel = this.querySelector<HTMLElement>('[data-history-carousel]');
+      const track = this.querySelector<HTMLElement>('[data-history-track]');
+      const tabs = Array.from(this.querySelectorAll<HTMLButtonElement>('[data-history-tab]'));
+      const slides = Array.from(this.querySelectorAll<HTMLElement>('[data-history-slide]'));
+      const slideContents = Array.from(
+        this.querySelectorAll<HTMLElement>('.history__slide-content'),
       );
-      const events = Array.from(this.querySelectorAll<HTMLElement>('[data-history-event]'));
-      const arts = Array.from(this.querySelectorAll<HTMLElement>('[data-history-art]'));
-      const copies = Array.from(this.querySelectorAll<HTMLElement>('[data-history-copy]'));
+      const details = Array.from(this.querySelectorAll<HTMLDetailsElement>('[data-history-details]'));
 
       if (
         !root ||
-        !stage ||
-        !skipLink ||
-        !events.length ||
-        events.length !== arts.length ||
-        events.length !== copies.length
+        !carousel ||
+        !track ||
+        !tabs.length ||
+        tabs.length !== slides.length ||
+        slides.length !== slideContents.length
       )
         return;
 
-      gsap.registerPlugin(ScrollTrigger);
-      const media = gsap.matchMedia();
-      let scene: HistoryScene | null = null;
-      let resizeObserver: ResizeObserver | null = null;
-      let rebuildFrame = 0;
-      let resumeFrame = 0;
-      let enhancementSuspended = false;
-      let resumeLocked = false;
-      let previousScrollY = window.scrollY;
-      let previousWidth = 0;
-      let previousHeight = 0;
-      const originalStageHeight = stage.style.height;
-      const prefersMotion = () => window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
+      let activeIndex = 0;
+      let resizeFrame = 0;
+      let transitionFrame = 0;
+      let settleTimer = 0;
+      let scrolling = false;
+      let targetIndex: number | null = null;
+      let trackWidth = track.clientWidth;
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const resizeObserver = new ResizeObserver(() => {
+        if (resizeFrame) return;
+        resizeFrame = window.requestAnimationFrame(() => {
+          resizeFrame = 0;
+          const nextWidth = track.clientWidth;
+          const widthChanged = Math.abs(nextWidth - trackWidth) > 0.5;
+          trackWidth = nextWidth;
 
-      const headerOffset = () => {
-        const value = getComputedStyle(document.documentElement)
-          .getPropertyValue('--header-offset')
-          .trim();
-        const match = value.match(/^(-?[\d.]+)(px|rem|em|vh|vw)?$/);
-        if (!match) return 0;
-
-        const amount = Number.parseFloat(match[1]);
-        if (!Number.isFinite(amount)) return 0;
-
-        switch (match[2]) {
-          case 'rem':
-          case 'em':
-            return amount * Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
-          case 'vh':
-            return (amount / 100) * window.innerHeight;
-          case 'vw':
-            return (amount / 100) * window.innerWidth;
-          default:
-            return amount;
-        }
-      };
-
-      const resetScene = () => {
-        scene?.trigger.kill();
-        scene?.timeline.kill();
-        scene = null;
-        gsap.set([...arts, ...copies], { clearProps: 'transform,opacity,visibility' });
-      };
-
-      const destroyScene = () => {
-        resetScene();
-        stage.style.height = originalStageHeight;
-        delete root.dataset.historyEnhanced;
-      };
-
-      const buildScene = (progress = 0) => {
-        resetScene();
-        root.dataset.historyEnhanced = 'true';
-        stage.style.removeProperty('height');
-
-        const baseStageHeight = stage.clientHeight;
-        if (!baseStageHeight) return;
-
-        const copyHeights = copies.map((copy) => copy.getBoundingClientRect().height);
-        const longestCopy = Math.max(...copyHeights, 0);
-        // Very narrow screens can wrap a card beyond the viewport height. Let the
-        // pinned stage grow just enough to keep the complete copy readable.
-        const safeStageHeight = Math.max(baseStageHeight, longestCopy + 48);
-        if (safeStageHeight > baseStageHeight + 1) stage.style.height = `${safeStageHeight}px`;
-        const stageHeight = stage.clientHeight;
-        // The chapter distance is long enough for the tallest card to be read,
-        // while remaining short enough that a quick wheel/touch gesture can skip it.
-        const chapterDistance = Math.max(stageHeight * 0.82, longestCopy * 1.12 + 88);
-        const chapterDuration = 1;
-        const timeline = gsap.timeline({ paused: true, defaults: { ease: 'none' } });
-
-        gsap.set(arts, { autoAlpha: 0, y: stageHeight + 24 });
-        gsap.set(copies, { autoAlpha: 0, y: stageHeight + 32 });
-        gsap.set(arts[0], { autoAlpha: 1, y: 0 });
-
-        events.forEach((_, index) => {
-          const start = index * chapterDuration;
-          if (index > 0) {
-            timeline.to(arts[index - 1], { autoAlpha: 0, duration: 0.16 }, start);
-            timeline.to(arts[index], { autoAlpha: 1, y: 0, duration: 0.28 }, start);
-            timeline.to(copies[index - 1], { autoAlpha: 0, duration: 0.16 }, start);
+          if (widthChanged) {
+            window.clearTimeout(settleTimer);
+            scrolling = false;
+            targetIndex = null;
+            alignToActive();
+            syncHeight(true);
+          } else if (!scrolling) {
+            syncHeight();
           }
-
-          const copyStart = start + (index === 0 ? 0.18 : 0.3);
-          timeline.to(copies[index], { autoAlpha: 1, y: 0, duration: 0.25 }, copyStart);
-
-          const copyRatio = Math.min(0.45, (copyHeights[index] / stageHeight) * 0.3);
-          timeline.to({}, { duration: Math.max(0.4, 0.68 - copyRatio) }, copyStart + 0.25);
         });
-
-        const trigger = ScrollTrigger.create({
-          trigger: stage,
-          animation: timeline,
-          pin: true,
-          pinSpacing: true,
-          start: () => `top ${headerOffset()}px`,
-          end: () => `+=${chapterDistance * events.length}`,
-          scrub: 0.55,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-        });
-
-        scene = { timeline, trigger };
-        if (progress > 0) timeline.progress(progress);
-        previousWidth = stage.clientWidth;
-        previousHeight = stage.clientHeight;
-      };
-
-      const scheduleResume = () => {
-        if (!enhancementSuspended || resumeLocked || resumeFrame) return;
-
-        resumeFrame = window.requestAnimationFrame(() => {
-          resumeFrame = 0;
-          if (!enhancementSuspended || !prefersMotion()) return;
-
-          const stageRect = stage.getBoundingClientRect();
-          if (stageRect.bottom <= 0 || stageRect.top >= window.innerHeight) return;
-
-          enhancementSuspended = false;
-          buildScene();
-          ScrollTrigger.refresh();
-        });
-      };
-
-      const handleScroll = () => {
-        const currentScrollY = window.scrollY;
-        const movingBackToHistory = currentScrollY < previousScrollY - 1;
-        previousScrollY = currentScrollY;
-
-        if (movingBackToHistory && !resumeLocked) scheduleResume();
-      };
-
-      const handleNavigation = () => {
-        if (window.location.hash === `#${root.id}`) scheduleResume();
-      };
-
-      const scrollInstantlyTo = (top: number) => {
-        const previousScrollBehavior = document.documentElement.style.scrollBehavior;
-        document.documentElement.style.scrollBehavior = 'auto';
-        window.scrollTo(0, Math.max(0, top));
-        document.documentElement.style.scrollBehavior = previousScrollBehavior;
-      };
-
-      const focusSectionHeading = (section: HTMLElement) => {
-        const heading = section.querySelector<HTMLElement>('h1, h2, h3, h4, h5, h6');
-        if (!heading) return;
-
-        heading.setAttribute('tabindex', '-1');
-        heading.focus({ preventScroll: true });
-      };
-
-      const activateHistory = (pushState: boolean) => {
-        resumeLocked = true;
-
-        const top = root.getBoundingClientRect().top + window.scrollY - headerOffset();
-        if (pushState) window.history.pushState({ brandHistory: 'history' }, '', `#${root.id}`);
-        scrollInstantlyTo(top);
-
-        if (enhancementSuspended && prefersMotion()) {
-          window.requestAnimationFrame(() => {
-            enhancementSuspended = false;
-            buildScene();
-            ScrollTrigger.refresh();
-            previousScrollY = window.scrollY;
-            window.setTimeout(() => {
-              resumeLocked = false;
-            }, 0);
-          });
-        } else {
-          enhancementSuspended = false;
-          previousScrollY = window.scrollY;
-          resumeLocked = false;
-        }
-      };
-
-      const suspendAtFaq = (pushState: boolean) => {
-        const target = document.getElementById('faq');
-        if (!target) return;
-
-        enhancementSuspended = true;
-        resumeLocked = true;
-        destroyScene();
-
-        window.requestAnimationFrame(() => {
-          const top = target.getBoundingClientRect().top + window.scrollY - headerOffset();
-          if (pushState) window.history.pushState({ brandHistory: 'skipped' }, '', '#faq');
-          previousScrollY = top;
-          scrollInstantlyTo(top);
-          focusSectionHeading(target);
-
-          window.setTimeout(() => {
-            previousScrollY = window.scrollY;
-            resumeLocked = false;
-          }, 0);
-        });
-      };
-
-      const handleHistoryLink = (event: MouseEvent) => {
-        if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
-          return;
-
-        event.preventDefault();
-        activateHistory(true);
-      };
-
-      const handleSkip = (event: MouseEvent) => {
-        event.preventDefault();
-        suspendAtFaq(true);
-      };
-
-      const handlePopState = (event: PopStateEvent) => {
-        const destination = (event.state as { brandHistory?: string } | null)?.brandHistory;
-
-        if (window.location.hash === '#faq' && destination === 'skipped') {
-          suspendAtFaq(false);
-          return;
-        }
-
-        if (window.location.hash === `#${root.id}`) activateHistory(false);
-      };
-
-      const scheduleRebuild = () => {
-        if (rebuildFrame) return;
-        rebuildFrame = window.requestAnimationFrame(() => {
-          rebuildFrame = 0;
-          if (!scene) return;
-          const width = stage.clientWidth;
-          const height = stage.clientHeight;
-          if (Math.abs(width - previousWidth) < 1 && Math.abs(height - previousHeight) < 1) return;
-          const progress = scene.trigger.progress;
-          buildScene(progress);
-          ScrollTrigger.refresh();
-        });
-      };
-
-      media.add('(prefers-reduced-motion: no-preference)', () => {
-        try {
-          root.dataset.historyEnhanced = 'true';
-          buildScene();
-          resizeObserver = new ResizeObserver(scheduleRebuild);
-          resizeObserver.observe(stage);
-          window.addEventListener('resize', scheduleRebuild, { passive: true });
-
-          return () => {
-            resizeObserver?.disconnect();
-            resizeObserver = null;
-            window.removeEventListener('resize', scheduleRebuild);
-            if (rebuildFrame) window.cancelAnimationFrame(rebuildFrame);
-            rebuildFrame = 0;
-            if (resumeFrame) window.cancelAnimationFrame(resumeFrame);
-            resumeFrame = 0;
-            destroyScene();
-            stage.style.height = originalStageHeight;
-            delete root.dataset.historyEnhanced;
-          };
-        } catch {
-          // A failed enhancement leaves the semantic, fully readable fallback intact.
-          delete root.dataset.historyEnhanced;
-          resetScene();
-          return undefined;
-        }
       });
 
-      skipLink.addEventListener('click', handleSkip);
-      historyLinks.forEach((link) => link.addEventListener('click', handleHistoryLink));
-      window.addEventListener('scroll', handleScroll, { passive: true });
-      window.addEventListener('hashchange', handleNavigation);
-      window.addEventListener('popstate', handlePopState);
+      const clampIndex = (index: number) => Math.min(Math.max(index, 0), slides.length - 1);
+      const shouldReduceMotion = () => reducedMotion.matches;
 
-      if (window.location.hash === `#${root.id}`) {
-        window.requestAnimationFrame(() => activateHistory(false));
-      }
+      const getSlideHeight = (index = activeIndex) => {
+        const content = slideContents[index];
+        return Math.ceil(content?.getBoundingClientRect().height ?? 0);
+      };
+
+      const syncHeight = (instant = false) => {
+        const height = getSlideHeight();
+        if (height <= 0) return;
+
+        if (instant) {
+          root.dataset.historyResizing = 'true';
+          if (transitionFrame) window.cancelAnimationFrame(transitionFrame);
+          transitionFrame = window.requestAnimationFrame(() => {
+            transitionFrame = window.requestAnimationFrame(() => {
+              delete root.dataset.historyResizing;
+              transitionFrame = 0;
+            });
+          });
+        }
+
+        carousel.style.height = `${height}px`;
+      };
+
+      const scrollTabIntoView = (index: number) => {
+        tabs[index]?.scrollIntoView({
+          behavior: shouldReduceMotion() ? 'auto' : 'smooth',
+          block: 'nearest',
+          inline: 'center',
+        });
+      };
+
+      const setActive = (index: number, focusTab = false) => {
+        activeIndex = clampIndex(index);
+        setTabSelection(activeIndex);
+
+        slides.forEach((slide, slideIndex) => {
+          const selected = slideIndex === activeIndex;
+          slide.toggleAttribute('inert', !selected);
+          slide.setAttribute('aria-hidden', String(!selected));
+        });
+
+        if (focusTab) tabs[activeIndex]?.focus({ preventScroll: true });
+        scrollTabIntoView(activeIndex);
+        window.requestAnimationFrame(() => syncHeight());
+      };
+
+      const setTabSelection = (index: number) => {
+        const selectedIndex = clampIndex(index);
+
+        tabs.forEach((tab, tabIndex) => {
+          const selected = tabIndex === selectedIndex;
+          tab.setAttribute('aria-selected', String(selected));
+          tab.tabIndex = selected ? 0 : -1;
+        });
+      };
+
+      const selectTabNearSnapPoint = () => {
+        const width = track.clientWidth;
+        if (!width) return;
+
+        const nearestIndex = clampIndex(Math.round(track.scrollLeft / width));
+        const nearestLeft = width * nearestIndex;
+        const snapThreshold = Math.max(8, width * 0.015);
+        if (Math.abs(track.scrollLeft - nearestLeft) <= snapThreshold)
+          setTabSelection(nearestIndex);
+      };
+
+      const alignToActive = () => {
+        track.scrollTo({ left: track.clientWidth * activeIndex, behavior: 'auto' });
+      };
+
+      const selectIndex = (index: number, focusTab = false) => {
+        const nextIndex = clampIndex(index);
+        const targetLeft = track.clientWidth * nextIndex;
+
+        if (nextIndex === activeIndex && Math.abs(track.scrollLeft - targetLeft) <= 2) {
+          scrolling = false;
+          targetIndex = null;
+          setActive(nextIndex, focusTab);
+          return;
+        }
+
+        const behavior: ScrollBehavior = shouldReduceMotion() ? 'auto' : 'smooth';
+        window.clearTimeout(settleTimer);
+        syncHeight();
+        scrolling = !shouldReduceMotion();
+        targetIndex = shouldReduceMotion() ? null : nextIndex;
+        track.scrollTo({ left: targetLeft, behavior });
+
+        if (shouldReduceMotion()) {
+          setActive(nextIndex, focusTab);
+          return;
+        }
+
+        if (focusTab) tabs[nextIndex]?.focus({ preventScroll: true });
+      };
+
+      const commitNearestSlide = () => {
+        const width = track.clientWidth;
+        if (!width) return;
+
+        if (targetIndex !== null) {
+          const targetLeft = width * targetIndex;
+          if (Math.abs(track.scrollLeft - targetLeft) > 2) return;
+        }
+
+        window.clearTimeout(settleTimer);
+        scrolling = false;
+        targetIndex = null;
+        setActive(Math.round(track.scrollLeft / width));
+      };
+
+      const scheduleCommit = () => {
+        window.clearTimeout(settleTimer);
+        settleTimer = window.setTimeout(commitNearestSlide, 72);
+      };
+
+      const handleTrackScroll = () => {
+        scrolling = true;
+        selectTabNearSnapPoint();
+        scheduleCommit();
+      };
+
+      const cancelProgrammaticScroll = () => {
+        if (targetIndex === null) return;
+        targetIndex = null;
+        window.clearTimeout(settleTimer);
+        track.scrollTo({ left: track.scrollLeft, behavior: 'auto' });
+      };
+
+      const handleTabClick = (event: MouseEvent) => {
+        const tab = event.currentTarget as HTMLButtonElement;
+        const index = Number(tab.dataset.historyIndex);
+        if (Number.isFinite(index)) selectIndex(index);
+      };
+
+      const handleTabKeydown = (event: KeyboardEvent) => {
+        const current = tabs.indexOf(event.currentTarget as HTMLButtonElement);
+        if (current < 0) return;
+
+        let next: number | null = null;
+        if (event.key === 'ArrowRight') next = current + 1;
+        if (event.key === 'ArrowLeft') next = current - 1;
+        if (event.key === 'Home') next = 0;
+        if (event.key === 'End') next = tabs.length - 1;
+        if (next === null) return;
+
+        event.preventDefault();
+        selectIndex(next, true);
+      };
+
+      const handleDetailsToggle = (event: Event) => {
+        const detail = event.currentTarget as HTMLDetailsElement;
+        const slide = detail.closest<HTMLElement>('[data-history-slide]');
+        if (slide?.dataset.historyIndex === String(activeIndex) && !scrolling)
+          window.requestAnimationFrame(() => syncHeight());
+      };
+
+      root.dataset.historyEnhanced = 'true';
+      setActive(0);
+      resizeObserver.observe(track);
+      slideContents.forEach((content) => resizeObserver.observe(content));
+      track.addEventListener('scroll', handleTrackScroll, { passive: true });
+      track.addEventListener('scrollend', commitNearestSlide);
+      track.addEventListener('pointerdown', cancelProgrammaticScroll, { passive: true });
+      track.addEventListener('wheel', cancelProgrammaticScroll, { passive: true });
+      tabs.forEach((tab) => {
+        tab.addEventListener('click', handleTabClick);
+        tab.addEventListener('keydown', handleTabKeydown);
+      });
+      details.forEach((detail) => detail.addEventListener('toggle', handleDetailsToggle));
+      document.fonts?.ready.then(() => {
+        if (this.isConnected && !scrolling) syncHeight(true);
+      });
 
       this.cleanup = () => {
-        skipLink.removeEventListener('click', handleSkip);
-        historyLinks.forEach((link) => link.removeEventListener('click', handleHistoryLink));
-        window.removeEventListener('scroll', handleScroll);
-        window.removeEventListener('hashchange', handleNavigation);
-        window.removeEventListener('popstate', handlePopState);
-        media.revert();
+        window.clearTimeout(settleTimer);
+        if (resizeFrame) window.cancelAnimationFrame(resizeFrame);
+        if (transitionFrame) window.cancelAnimationFrame(transitionFrame);
+        resizeObserver.disconnect();
+        track.removeEventListener('scroll', handleTrackScroll);
+        track.removeEventListener('scrollend', commitNearestSlide);
+        track.removeEventListener('pointerdown', cancelProgrammaticScroll);
+        track.removeEventListener('wheel', cancelProgrammaticScroll);
+        tabs.forEach((tab) => {
+          tab.removeEventListener('click', handleTabClick);
+          tab.removeEventListener('keydown', handleTabKeydown);
+        });
+        details.forEach((detail) => detail.removeEventListener('toggle', handleDetailsToggle));
+        slides.forEach((slide) => {
+          slide.removeAttribute('inert');
+          slide.removeAttribute('aria-hidden');
+        });
+        carousel.style.removeProperty('height');
+        delete root.dataset.historyResizing;
+        delete root.dataset.historyEnhanced;
         this.cleanup = null;
       };
     }
@@ -399,61 +384,107 @@ import { HOME_SECTION_IDS } from '@/lib/site';
 </script>
 
 <style>
-  brand-history {
-    display: block;
-  }
+  brand-history { display: block; }
 
   .history {
-    overflow: visible;
     background: var(--page);
-    padding-block: clamp(4rem, 8vw, 7rem) clamp(3.5rem, 7vw, 6rem);
+    padding-block: clamp(4rem, 8vw, 7rem) 2.5rem;
   }
 
-  .history__inner {
-    width: min(calc(100% - 2.5rem), 77.5rem);
-    margin-inline: auto;
-  }
+  .history__inner { width: min(calc(100% - 2.5rem), 77.5rem); margin-inline: auto; }
 
   .history__header {
-    display: flex;
-    align-items: end;
-    justify-content: space-between;
+    display: grid;
+    justify-items: center;
     gap: 1.25rem;
+    text-align: center;
   }
 
   .history__title {
-    max-width: 42rem;
+    max-width: 48rem;
+    margin: 0;
+    padding: 0.08em 0.15em;
     color: var(--text-primary);
     font-family: 'Vetrino', Georgia, serif;
-    font-size: clamp(2rem, 8vw, 3.25rem);
+    font-size: clamp(2.25rem, 7vw, 4rem);
     font-weight: 400;
     line-height: 0.98;
     text-wrap: balance;
   }
 
-  .history__skip {
-    flex: 0 0 auto;
-    color: var(--text-muted);
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    text-decoration: underline;
-    text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
-    text-underline-offset: 0.25em;
-    transition: color var(--motion-interaction-duration) ease;
+  .history__timeline-clip {
+    display: none;
+    margin-top: clamp(2.75rem, 6vw, 5rem);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
   }
 
-  .history__skip:hover,
-  .history__skip:focus-visible {
-    color: var(--accent);
+  .history__timeline-clip::-webkit-scrollbar,
+  .history__track::-webkit-scrollbar { display: none; }
+
+  .history__timeline {
+    display: grid;
+    grid-auto-columns: minmax(9rem, 44vw);
+    grid-auto-flow: column;
+    min-width: max-content;
+    padding-inline: max(0.75rem, calc((100% - 44vw) / 2));
   }
 
-  .history__stage {
-    position: relative;
-    margin-top: clamp(2.5rem, 6vw, 5rem);
+  .history__timeline-tab {
+    display: grid;
+    grid-template-rows: auto auto;
+    gap: 0.85rem;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--text-primary);
+    font: inherit;
+    text-align: center;
   }
 
-  .history__events {
+  .history__timeline-marker {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .history__timeline-line {
+    display: block;
+    width: 100%;
+    height: 1px;
+    background: color-mix(in srgb, var(--text-muted) 27%, transparent);
+  }
+
+  .history__timeline-tab:first-child .history__timeline-line:first-child,
+  .history__timeline-tab:last-child .history__timeline-line:last-child { visibility: hidden; }
+
+  .history__timeline-year {
+    padding: 0.2rem 0.42rem 0.24rem;
+    color: inherit;
+    font-family: 'Vetrino', Georgia, serif;
+    font-size: clamp(2rem, 7vw, 2.7rem);
+    line-height: 1;
+  }
+
+  .history__timeline-tab[aria-selected='true'] .history__timeline-year {
+    background: var(--text-primary);
+    color: #ffffff;
+  }
+
+  .history__timeline-label {
+    justify-self: center;
+    color: var(--text-primary);
+    font-size: clamp(0.78rem, 2.8vw, 0.98rem);
+    line-height: 1.15;
+  }
+
+  .history__carousel { margin-top: clamp(2.75rem, 6vw, 5rem); }
+
+  .history__track {
     display: grid;
     gap: clamp(3.5rem, 8vw, 7rem);
     margin: 0;
@@ -461,229 +492,178 @@ import { HOME_SECTION_IDS } from '@/lib/site';
     list-style: none;
   }
 
-  .history__event {
-    min-width: 0;
-  }
+  .history__slide { min-width: 0; }
 
-  .history__event-content {
+  .history__slide-content {
     display: grid;
-    gap: 1.75rem;
+    gap: clamp(1.75rem, 4vw, 3rem);
+    align-items: center;
   }
 
   .history__art {
     display: grid;
+    min-height: 14rem;
     place-items: center;
-    min-height: 12rem;
   }
 
   .history__art img {
     display: block;
-    width: min(100%, 50rem);
+    width: min(100%, 34rem);
     height: auto;
-    max-height: 25rem;
+    max-height: 28rem;
     object-fit: contain;
   }
 
-  .history__copy {
-    width: min(100%, 40rem);
-    margin-inline: auto;
-    padding: clamp(1.25rem, 4vw, 2.5rem);
-    border: 1px solid color-mix(in srgb, var(--text-primary) 11%, transparent);
-    border-radius: 1.25rem;
-    background: var(--surface-elevated);
-    box-shadow: 0 1.25rem 3rem rgb(59 38 39 / 8%);
-  }
+  .history__copy { min-width: 0; }
 
-  .history__copy time {
-    display: inline-flex;
-    min-width: 4.2rem;
-    justify-content: center;
-    padding: 0.42rem 0.7rem;
-    border-radius: 999px;
-    background: var(--text-primary);
-    color: #ffffff;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
+  .history__meta {
+    margin: 0;
+    color: var(--accent);
+    font-size: clamp(0.9rem, 2vw, 1.15rem);
+    letter-spacing: 0.04em;
   }
 
   .history__copy h3 {
-    margin-top: 1rem;
+    max-width: 40rem;
+    margin: 0.85rem 0 0;
     color: var(--text-primary);
     font-family: 'Vetrino', Georgia, serif;
-    font-size: clamp(1.5rem, 4vw, 2.35rem);
+    font-size: clamp(2rem, 5vw, 3.4rem);
     font-weight: 400;
-    line-height: 1.05;
+    line-height: 1;
     text-wrap: balance;
   }
 
   .history__body {
     display: grid;
-    gap: 0.75rem;
-    margin-top: 1.25rem;
+    gap: 1rem;
+    max-width: 42rem;
+    margin-top: 1.35rem;
     color: var(--text-muted);
-    font-size: clamp(0.9375rem, 1.7vw, 1.0625rem);
-    line-height: 1.55;
+    font-size: clamp(1rem, 2vw, 1.35rem);
+    line-height: 1.48;
   }
 
-  .history__body p {
-    margin: 0;
+  .history__body p { margin: 0; }
+  .history__details { display: block; }
+
+  .history__details summary {
+    width: fit-content;
+    margin-top: 0.15rem;
+    color: var(--accent);
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 700;
+    list-style: none;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, currentColor 42%, transparent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.24em;
   }
 
-  .history[data-history-enhanced='true'] .history__stage {
-    height: clamp(26rem, calc(100svh - var(--header-offset) - 1rem), 44rem);
-    overflow: clip;
-    isolation: isolate;
-  }
+  .history__details summary::-webkit-details-marker { display: none; }
+  .history__details-close, .history__details[open] .history__details-open { display: none; }
+  .history__details[open] .history__details-close { display: inline; }
 
-  .history[data-history-enhanced='true'] .history__events {
-    position: relative;
-    display: block;
-    height: 100%;
-    overflow: clip;
-  }
-
-  .history[data-history-enhanced='true'] .history__event {
-    position: absolute;
-    inset: 0;
-    display: block;
-  }
-
-  .history[data-history-enhanced='true'] .history__event[data-history-index='0'] { z-index: 10; }
-  .history[data-history-enhanced='true'] .history__event[data-history-index='1'] { z-index: 11; }
-  .history[data-history-enhanced='true'] .history__event[data-history-index='2'] { z-index: 12; }
-  .history[data-history-enhanced='true'] .history__event[data-history-index='3'] { z-index: 13; }
-
-  .history[data-history-enhanced='true'] .history__event-content {
-    position: relative;
-    display: block;
-    height: 100%;
-  }
-
-  .history[data-history-enhanced='true'] .history__art {
-    position: absolute;
-    z-index: 1;
-    inset: 0;
+  .history__details-content {
     display: grid;
-    place-items: start center;
-    overflow: clip;
-    padding: clamp(1rem, 4vw, 3rem) 1rem 4rem;
-    will-change: transform;
-  }
-
-  .history[data-history-enhanced='true'] .history__art img {
-    width: min(100%, 50rem);
-    max-height: 100%;
-  }
-
-  .history[data-history-enhanced='true'] .history__copy {
-    position: absolute;
-    z-index: 3;
-    right: 1rem;
-    bottom: 0;
-    left: 1rem;
-    width: auto;
-    margin: 0;
-    will-change: transform;
+    gap: 1rem;
+    margin-top: 1rem;
   }
 
   .history__ending {
     display: grid;
-    justify-items: center;
-    gap: 0.8rem;
-    max-width: 36rem;
-    margin: clamp(3rem, 8vw, 6rem) auto 0;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
     color: var(--text-primary);
-    text-align: center;
-  }
-
-  .history__ending p {
-    margin: 0;
     font-family: 'Vetrino', Georgia, serif;
-    font-size: clamp(1.35rem, 3vw, 2rem);
-    line-height: 1.08;
-    text-wrap: balance;
+    font-size: clamp(1.2rem, 2.5vw, 1.7rem);
+    line-height: 1.05;
   }
 
   .history__ending-squirrel {
     display: block;
-    width: 2.25rem;
-    height: 2.25rem;
+    width: 2.3rem;
+    height: 2.3rem;
     overflow: hidden;
   }
 
   .history__ending-squirrel img {
     display: block;
-    width: 6.25rem;
+    width: 6.4rem;
     max-width: none;
     height: auto;
   }
 
-  .history__skip:focus-visible,
-  .history__ending-squirrel:focus-visible {
-    outline-offset: 0.25rem;
+  .history[data-history-enhanced='true'] .history__timeline-clip { display: block; }
+
+  .history[data-history-enhanced='true'] .history__carousel {
+    overflow: clip;
+    transition: height var(--motion-interaction-duration) var(--motion-ease);
+  }
+
+  .history[data-history-resizing='true'] .history__carousel { transition: none; }
+
+  .history[data-history-enhanced='true'] .history__track {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    touch-action: pan-x pan-y;
+  }
+
+  .history[data-history-enhanced='true'] .history__slide {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    scroll-snap-stop: normal;
   }
 
   @media (min-width: 40rem) {
-    .history__inner {
-      width: min(calc(100% - 4rem), 77.5rem);
-    }
-
-    .history__header {
-      align-items: center;
-    }
-
-    .history__skip {
-      font-size: 0.8125rem;
+    .history__inner { width: min(calc(100% - 4rem), 77.5rem); }
+    .history__timeline {
+      grid-auto-columns: minmax(10rem, 11rem);
+      padding-inline: max(1rem, calc((100% - 11rem) / 2));
     }
   }
 
   @media (min-width: 48rem) {
-    .history[data-history-enhanced='true'] .history__copy {
-      right: auto;
-      left: clamp(1rem, 5vw, 6rem);
-      width: min(calc(100% - 2rem), 40rem);
+    .history { padding-bottom: 3.5rem; }
+    .history__title {
+      max-width: 100%;
+      font-size: clamp(2.9rem, 6vw, 4rem);
+      text-wrap: nowrap;
+      white-space: nowrap;
     }
-
-    .history[data-history-enhanced='true'] .history__event[data-side='right'] .history__copy {
-      right: clamp(1rem, 5vw, 6rem);
-      left: auto;
+    .history__timeline-clip { overflow: visible; }
+    .history__timeline {
+      grid-auto-columns: minmax(0, 1fr);
+      width: 100%;
+      min-width: 0;
+      padding-inline: 0;
     }
+    .history__slide-content { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr); }
+    .history__art { min-height: 20rem; }
+    .history__art img { width: min(100%, 40rem); }
   }
 
   @media (min-width: 75rem) {
-    .history__inner {
-      width: min(calc(100% - 2.5rem), 77.5rem);
+    .history__inner { width: min(calc(100% - 2.5rem), 77.5rem); }
+    .history__slide-content {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr);
+      gap: clamp(3rem, 7vw, 7rem);
     }
-
-    .history__title {
-      font-size: 3.5rem;
-    }
-
-    .history__copy {
-      padding: 2.75rem;
-    }
-  }
-
-  @media (max-width: 39.999rem) {
-    .history__header {
-      display: grid;
-      align-items: start;
-    }
-
-    .history__skip {
-      justify-self: start;
-    }
+    .history__art { min-height: 24rem; }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .history__skip {
-      transition: none;
-    }
-
-    .history__art,
-    .history__copy {
-      will-change: auto;
-    }
+    .history[data-history-enhanced='true'] .history__carousel { transition: none; }
+    .history[data-history-enhanced='true'] .history__track { scroll-behavior: auto; }
   }
 </style>

@@ -19,15 +19,15 @@ export const HOME_NAV_LINKS = [
 ] as const;
 
 export const CONTACTS = {
-  address: 'г. Петропавловск, ул. Лермонтова, 63',
-  twoGisUrl: null as string | null,
+  address: 'г. Петропавловск, ул. Лермонтова, 63.',
+  twoGisUrl: 'https://2gis.kz/petropavlovsk/firm/70000001038755983',
   hours: 'пн–вс: 09:00–22:00',
   bakery: {
     display: '+7 (7152) 42-43-54',
     href: 'tel:+77152424354',
   },
   mobile: {
-    display: '+7 707 493-93-63',
+    display: '+7 (707) 493-93-63',
     href: 'tel:+77074939363',
   },
   whatsappNumber: '77074939363',
@@ -49,14 +49,15 @@ export const WHATSAPP_MESSAGES = {
   tendernessCake: 'Здравствуйте! Подскажите, пожалуйста, есть ли торт «Нежность» в наличии, сколько он стоит и где его можно купить?',
   bakeryAvailability: 'Здравствуйте! Подскажите, пожалуйста, какие десерты сейчас есть в наличии в пекарне ZOTOV bakery?',
   delivery: 'Здравствуйте! Хочу заказать доставку. Подскажите, пожалуйста, какие десерты есть в наличии, а также стоимость и условия доставки?',
-  selectionHelp: 'Здравствуйте! Помогите, пожалуйста, выбрать десерт. Подскажите, какие варианты есть в наличии и где их можно купить?',
+  selectionHelp: 'Здравствуйте! Помогите выбрать десерт. Что есть в наличии и где можно купить?',
 } as const;
 
 export type WhatsAppContext = keyof typeof WHATSAPP_MESSAGES;
 
-export function getWhatsAppUrl(context: WhatsAppContext): string {
-  const message = encodeURIComponent(WHATSAPP_MESSAGES[context]);
+export function getWhatsAppUrl(context?: WhatsAppContext): string {
+  if (!context) return `https://wa.me/${CONTACTS.whatsappNumber}`;
 
+  const message = encodeURIComponent(WHATSAPP_MESSAGES[context]);
   return `https://wa.me/${CONTACTS.whatsappNumber}?text=${message}`;
 }
 

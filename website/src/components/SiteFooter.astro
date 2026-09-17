@@ -9,27 +9,66 @@ import Wrapper from './Wrapper.astro';
 <div class="site-footer__surface">
   <div class="site-footer__content">
     <Wrapper
-      column="1"
+      column="1 / -1"
+      order={1}
+      at={{
+        tablet: { column: '2', row: '1' },
+        laptop: { column: '2', row: '1', width: 'calc(100% + 0.6875rem)' },
+        desktop: { column: '2', row: '1', width: '100%' },
+      }}
+    >
+      <ContactSection />
+    </Wrapper>
+
+    <Wrapper
+      column="1 / -1"
       order={2}
-      alignSelf="end"
-      width="clamp(6.875rem, 31vw, 8.5rem)"
-      at={{ desktop: { row: '1 / span 3', alignSelf: 'center', width: 'min(100%, 24.5rem)' } }}
+      display="flex"
+      dir="column"
+      align="center"
+      justify="center"
+      justifySelf="center"
+      width="9.4375rem"
+      at={{
+        tablet: { column: '1', row: '1', align: 'center', width: '9.4375rem' },
+        laptop: {
+          column: '1',
+          row: '1',
+          align: 'center',
+          justify: 'center',
+          justifySelf: 'start',
+          width: '17.6rem',
+          margin: '0 0 0 0.5625rem',
+        },
+        desktop: {
+          column: '1',
+          row: '1 / span 3',
+          align: 'center',
+          justifySelf: 'start',
+          width: '392px',
+          margin: '0',
+        },
+      }}
     >
       <FooterLogo />
     </Wrapper>
 
-    <Wrapper column="1 / -1" order={1} at={{ desktop: { column: '2', row: '1' } }}>
-      <ContactSection />
-    </Wrapper>
-
-    <Wrapper column="2" order={3} at={{ desktop: { row: '2', margin: '0.5rem 0 0' } }}>
+    <Wrapper
+      column="1 / -1"
+      order={3}
+      at={{
+        tablet: { column: '1 / -1', row: '2', margin: '2.125rem 0 0' },
+        medium: { column: '1 / -1', row: '2', margin: '2.125rem 0 0' },
+        desktop: { column: '2', row: '2', margin: '5px 0 0' },
+      }}
+    >
       <FooterNavigation variant="primary" />
     </Wrapper>
     <Wrapper
       column="1 / -1"
       order={4}
-      margin="0.5rem 0 0"
-      at={{ desktop: { column: '2', row: '3', margin: '0' } }}
+      margin="0"
+      at={{ tablet: { column: '1 / -1', row: '3' }, desktop: { column: '2', row: '3', margin: '0' } }}
     >
       <FooterNavigation variant="legal" />
     </Wrapper>
@@ -37,7 +76,7 @@ import Wrapper from './Wrapper.astro';
       column="1 / -1"
       order={5}
       margin="0.25rem 0 0"
-      at={{ desktop: { column: '2', row: '4' } }}
+      at={{ tablet: { column: '1 / -1', row: '4' }, desktop: { column: '2', row: '4' } }}
     >
       <Copyright />
     </Wrapper>
@@ -46,7 +85,8 @@ import Wrapper from './Wrapper.astro';
 
 <style>
   .site-footer__surface {
-    overflow: clip;
+    overflow: visible;
+    overflow-x: clip;
     position: relative;
     z-index: 1;
     background: transparent;
@@ -57,8 +97,8 @@ import Wrapper from './Wrapper.astro';
   .site-footer__content {
     display: grid;
     width: min(calc(100% - 2rem), 77.5rem);
-    grid-template-columns: minmax(6.5rem, 0.8fr) minmax(0, 1.2fr);
-    gap: 1.5rem 1rem;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
     margin-inline: auto;
   }
 
@@ -68,20 +108,37 @@ import Wrapper from './Wrapper.astro';
     }
 
     .site-footer__content {
-      grid-template-columns: minmax(13rem, 0.9fr) minmax(0, 1.1fr);
-      gap: 1.5rem 2.5rem;
+      width: min(calc(100% - 4.5rem), 77.5rem);
+      grid-template-columns: 9.4375rem minmax(0, calc(100% - 10.6875rem));
+      gap: 1rem;
+    }
+  }
+
+  @media (min-width: 40rem) and (max-width: 74.999rem) {
+    .site-footer__logo {
+      transform: translateY(1.625rem);
+    }
+  }
+
+  @media (min-width: 56.25rem) and (max-width: 74.999rem) {
+    .site-footer__content {
+      width: min(calc(100% - 7.5rem), 56.625rem);
+      grid-template-columns: 17.6rem minmax(0, 1fr);
+      column-gap: 5rem;
+      row-gap: 0.6875rem;
     }
   }
 
   @media (min-width: 75rem) {
     .site-footer__surface {
-      overflow: visible;
-      padding-block: 2rem 3rem;
+      padding: 44px 0 48px;
     }
 
     .site-footer__content {
-      grid-template-columns: minmax(20rem, 0.8fr) minmax(0, 1.2fr);
-      gap: 1.25rem 3rem;
+      width: min(calc(100% - 260px), 1180px);
+      grid-template-columns: 392px 662px;
+      column-gap: 84px;
+      row-gap: 17px;
     }
   }
 </style>

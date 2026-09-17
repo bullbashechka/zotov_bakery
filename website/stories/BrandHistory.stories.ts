@@ -8,7 +8,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'История бренда с семантическим вертикальным fallback и scroll-driven наложением иллюстраций и карточек.',
+          'История бренда с семантическим вертикальным fallback, временной шкалой и интерактивной каруселью.',
       },
       source: { code: '<BrandHistory />', language: 'html' },
     },

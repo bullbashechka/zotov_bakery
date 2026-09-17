@@ -27,7 +27,7 @@ const artwork = logo
       if (!head) return;
       this.media = gsap.matchMedia();
       this.media.add(
-        '(min-width: 75rem) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)',
+          '(min-width: 80rem) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)',
         () => {
           const events = new AbortController();
           gsap.set(head, { svgOrigin: '76 49' });
@@ -96,15 +96,25 @@ const artwork = logo
   }
 
   .header-mascot[data-state='compact'] {
-    width: 7.5rem;
+    width: 10rem;
   }
 
-  @media (min-width: 75rem) {
+  @media (min-width: 48rem) and (max-width: 79.999rem) {
     .header-mascot {
-      width: 20.6875rem;
+      width: 14.375rem;
+    }
+
+    .header-mascot[data-state='compact'] {
+      width: 9rem;
+    }
+  }
+
+  @media (min-width: 80rem) {
+    .header-mascot {
+      width: clamp(331px, 22.9861vw, 441.333px);
     }
     .header-mascot[data-state='compact'] {
-      width: 14.75rem;
+      width: clamp(236px, 16.3889vw, 314.667px);
     }
   }
 
