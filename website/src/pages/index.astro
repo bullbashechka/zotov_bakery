@@ -1,15 +1,14 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Assortment from '@/components/Assortment.astro';
+import BrandHistory from '@/components/BrandHistory.astro';
 import ConversionSection from '@/components/ConversionSection.astro';
 import Faq from '@/components/Faq.astro';
 import HeroAdvantagesFlow from '@/components/HeroAdvantagesFlow.astro';
 import HoneyCake from '@/components/HoneyCake.astro';
-import PlaceholderSection from '@/components/PlaceholderSection.astro';
 import SiteHeader from '@/components/SiteHeader.astro';
 import SiteFooter from '@/components/SiteFooter.astro';
 import WhereToBuy from '@/components/WhereToBuy.astro';
-import { HOME_SECTION_IDS } from '@/lib/site';
 
 const title = 'ZOTOV bakery — десерты с характером';
 const description = 'ZOTOV bakery — десерты, которые хочется разделить с близкими.';
@@ -18,9 +17,6 @@ const canonicalUrl = publicWebsiteUrl
   ? new URL(Astro.url.pathname, publicWebsiteUrl).toString()
   : undefined;
 
-const placeholderSections = {
-  history: { id: HOME_SECTION_IDS.history, title: 'Наша история' },
-};
 ---
 
 <BaseLayout {title} {description} {canonicalUrl}>
@@ -31,10 +27,7 @@ const placeholderSections = {
   <HoneyCake />
   <Assortment />
   <WhereToBuy />
-  <PlaceholderSection
-    id={placeholderSections.history.id}
-    title={placeholderSections.history.title}
-  />
+  <BrandHistory />
   <Faq />
   <ConversionSection />
 

@@ -1,0 +1,738 @@
+---
+import { Image } from 'astro:assets';
+import { HISTORY_EVENTS } from '@/lib/history';
+import { HOME_SECTION_IDS } from '@/lib/site';
+import historyLine1 from '@/assets/history/history-line-1.svg?url';
+import historyLine2 from '@/assets/history/history-line-2.svg?url';
+import historyLine3 from '@/assets/history/history-line-3.svg?url';
+---
+
+<brand-history>
+  <section
+    id={HOME_SECTION_IDS.history}
+    class="history"
+    data-history-root
+    aria-labelledby="history-title"
+  >
+    <div class="history__inner">
+      <div class="history__header">
+        <h2 id="history-title" class="history__title">С чего всё начиналось</h2>
+        <a
+          class="history__skip"
+          href={`#${HOME_SECTION_IDS.faq}`}
+          data-history-skip
+        >
+          Пропустить историю
+        </a>
+      </div>
+
+      <div class="history__stage" data-history-stage>
+        <div class="history__decoration" aria-hidden="true">
+          <img class="history__line history__line--one" src={historyLine1} width="244" height="289" alt="" loading="lazy" />
+          <img class="history__line history__line--two" src={historyLine2} width="172" height="255" alt="" loading="lazy" />
+          <img class="history__line history__line--three" src={historyLine3} width="299" height="198" alt="" loading="lazy" />
+        </div>
+        <ol class="history__events" data-history-events>
+          {
+            HISTORY_EVENTS.map((event, index) => (
+              <li
+                class="history__event"
+                data-history-event
+                data-history-index={index}
+                data-side={event.side}
+              >
+                <article class="history__event-content" aria-labelledby={`${event.id}-title`}>
+                  <div class="history__art" data-history-art>
+                    <Image
+                      src={event.image}
+                      widths={[320, 480, 640, 800]}
+                      sizes="(max-width: 639px) calc(100vw - 2rem), (max-width: 1023px) 42rem, 50rem"
+                      format="webp"
+                      alt=""
+                      aria-hidden="true"
+                      loading={index === 0 ? 'eager' : 'lazy'}
+                      draggable="false"
+                    />
+                  </div>
+
+                  <div class="history__copy" data-history-copy>
+                    <time datetime={event.date ?? event.year}>{event.year}</time>
+                    <h3 id={`${event.id}-title`}>{event.title}</h3>
+                    <div class="history__body">
+                      {event.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+                    </div>
+                  </div>
+                </article>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+
+      <div class="history__ending">
+        <span class="history__ending-squirrel" aria-hidden="true">
+          <img src="/zotov-logo.svg" alt="" width="331" height="127" loading="lazy" />
+        </span>
+        <p>Белочка осталась с нами. Просто стала немного старше и мудрее.</p>
+      </div>
+    </div>
+  </section>
+</brand-history>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  type HistoryScene = {
+    timeline: gsap.core.Timeline;
+    trigger: ScrollTrigger;
+  };
+
+  class BrandHistory extends HTMLElement {
+    private cleanup: (() => void) | null = null;
+
+    connectedCallback() {
+      if (this.cleanup) return;
+
+      const root = this.querySelector<HTMLElement>('[data-history-root]');
+      const stage = this.querySelector<HTMLElement>('[data-history-stage]');
+      const skipLink = this.querySelector<HTMLAnchorElement>('[data-history-skip]');
+      const historyLinks = Array.from(
+        document.querySelectorAll<HTMLAnchorElement>(`a[href="#${root?.id ?? 'history'}"]`),
+      );
+      const events = Array.from(this.querySelectorAll<HTMLElement>('[data-history-event]'));
+      const arts = Array.from(this.querySelectorAll<HTMLElement>('[data-history-art]'));
+      const copies = Array.from(this.querySelectorAll<HTMLElement>('[data-history-copy]'));
+
+      if (
+        !root ||
+        !stage ||
+        !skipLink ||
+        !events.length ||
+        events.length !== arts.length ||
+        events.length !== copies.length
+      )
+        return;
+
+      gsap.registerPlugin(ScrollTrigger);
+      const media = gsap.matchMedia();
+      let scene: HistoryScene | null = null;
+      let resizeObserver: ResizeObserver | null = null;
+      let rebuildFrame = 0;
+      let resumeFrame = 0;
+      let enhancementSuspended = false;
+      let resumeLocked = false;
+      let previousScrollY = window.scrollY;
+      let previousWidth = 0;
+      let previousHeight = 0;
+      const originalStageHeight = stage.style.height;
+      const prefersMotion = () => window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
+
+      const headerOffset = () => {
+        const value = getComputedStyle(document.documentElement)
+          .getPropertyValue('--header-offset')
+          .trim();
+        const match = value.match(/^(-?[\d.]+)(px|rem|em|vh|vw)?$/);
+        if (!match) return 0;
+
+        const amount = Number.parseFloat(match[1]);
+        if (!Number.isFinite(amount)) return 0;
+
+        switch (match[2]) {
+          case 'rem':
+          case 'em':
+            return amount * Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+          case 'vh':
+            return (amount / 100) * window.innerHeight;
+          case 'vw':
+            return (amount / 100) * window.innerWidth;
+          default:
+            return amount;
+        }
+      };
+
+      const resetScene = () => {
+        scene?.trigger.kill();
+        scene?.timeline.kill();
+        scene = null;
+        gsap.set([...arts, ...copies], { clearProps: 'transform,opacity,visibility' });
+      };
+
+      const destroyScene = () => {
+        resetScene();
+        stage.style.height = originalStageHeight;
+        delete root.dataset.historyEnhanced;
+      };
+
+      const buildScene = (progress = 0) => {
+        resetScene();
+        root.dataset.historyEnhanced = 'true';
+        stage.style.removeProperty('height');
+
+        const baseStageHeight = stage.clientHeight;
+        if (!baseStageHeight) return;
+
+        const copyHeights = copies.map((copy) => copy.getBoundingClientRect().height);
+        const longestCopy = Math.max(...copyHeights, 0);
+        // Very narrow screens can wrap a card beyond the viewport height. Let the
+        // pinned stage grow just enough to keep the complete copy readable.
+        const safeStageHeight = Math.max(baseStageHeight, longestCopy + 48);
+        if (safeStageHeight > baseStageHeight + 1) stage.style.height = `${safeStageHeight}px`;
+        const stageHeight = stage.clientHeight;
+        // The chapter distance is long enough for the tallest card to be read,
+        // while remaining short enough that a quick wheel/touch gesture can skip it.
+        const chapterDistance = Math.max(stageHeight * 0.82, longestCopy * 1.12 + 88);
+        const chapterDuration = 1;
+        const timeline = gsap.timeline({ paused: true, defaults: { ease: 'none' } });
+
+        gsap.set(arts, { autoAlpha: 0, y: stageHeight + 24 });
+        gsap.set(copies, { autoAlpha: 0, y: stageHeight + 32 });
+        gsap.set(arts[0], { autoAlpha: 1, y: 0 });
+
+        events.forEach((_, index) => {
+          const start = index * chapterDuration;
+          if (index > 0) {
+            timeline.to(arts[index - 1], { autoAlpha: 0, duration: 0.16 }, start);
+            timeline.to(arts[index], { autoAlpha: 1, y: 0, duration: 0.28 }, start);
+            timeline.to(copies[index - 1], { autoAlpha: 0, duration: 0.16 }, start);
+          }
+
+          const copyStart = start + (index === 0 ? 0.18 : 0.3);
+          timeline.to(copies[index], { autoAlpha: 1, y: 0, duration: 0.25 }, copyStart);
+
+          const copyRatio = Math.min(0.45, (copyHeights[index] / stageHeight) * 0.3);
+          timeline.to({}, { duration: Math.max(0.4, 0.68 - copyRatio) }, copyStart + 0.25);
+        });
+
+        const trigger = ScrollTrigger.create({
+          trigger: stage,
+          animation: timeline,
+          pin: true,
+          pinSpacing: true,
+          start: () => `top ${headerOffset()}px`,
+          end: () => `+=${chapterDistance * events.length}`,
+          scrub: 0.55,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+        });
+
+        scene = { timeline, trigger };
+        if (progress > 0) timeline.progress(progress);
+        previousWidth = stage.clientWidth;
+        previousHeight = stage.clientHeight;
+      };
+
+      const scheduleResume = () => {
+        if (!enhancementSuspended || resumeLocked || resumeFrame) return;
+
+        resumeFrame = window.requestAnimationFrame(() => {
+          resumeFrame = 0;
+          if (!enhancementSuspended || !prefersMotion()) return;
+
+          const stageRect = stage.getBoundingClientRect();
+          if (stageRect.bottom <= 0 || stageRect.top >= window.innerHeight) return;
+
+          enhancementSuspended = false;
+          buildScene();
+          ScrollTrigger.refresh();
+        });
+      };
+
+      const handleScroll = () => {
+        const currentScrollY = window.scrollY;
+        const movingBackToHistory = currentScrollY < previousScrollY - 1;
+        previousScrollY = currentScrollY;
+
+        if (movingBackToHistory && !resumeLocked) scheduleResume();
+      };
+
+      const handleNavigation = () => {
+        if (window.location.hash === `#${root.id}`) scheduleResume();
+      };
+
+      const scrollInstantlyTo = (top: number) => {
+        const previousScrollBehavior = document.documentElement.style.scrollBehavior;
+        document.documentElement.style.scrollBehavior = 'auto';
+        window.scrollTo(0, Math.max(0, top));
+        document.documentElement.style.scrollBehavior = previousScrollBehavior;
+      };
+
+      const focusSectionHeading = (section: HTMLElement) => {
+        const heading = section.querySelector<HTMLElement>('h1, h2, h3, h4, h5, h6');
+        if (!heading) return;
+
+        heading.setAttribute('tabindex', '-1');
+        heading.focus({ preventScroll: true });
+      };
+
+      const activateHistory = (pushState: boolean) => {
+        resumeLocked = true;
+
+        const top = root.getBoundingClientRect().top + window.scrollY - headerOffset();
+        if (pushState) window.history.pushState({ brandHistory: 'history' }, '', `#${root.id}`);
+        scrollInstantlyTo(top);
+
+        if (enhancementSuspended && prefersMotion()) {
+          window.requestAnimationFrame(() => {
+            enhancementSuspended = false;
+            buildScene();
+            ScrollTrigger.refresh();
+            previousScrollY = window.scrollY;
+            window.setTimeout(() => {
+              resumeLocked = false;
+            }, 0);
+          });
+        } else {
+          enhancementSuspended = false;
+          previousScrollY = window.scrollY;
+          resumeLocked = false;
+        }
+      };
+
+      const suspendAtFaq = (pushState: boolean) => {
+        const target = document.getElementById('faq');
+        if (!target) return;
+
+        enhancementSuspended = true;
+        resumeLocked = true;
+        destroyScene();
+
+        window.requestAnimationFrame(() => {
+          const top = target.getBoundingClientRect().top + window.scrollY - headerOffset();
+          if (pushState) window.history.pushState({ brandHistory: 'skipped' }, '', '#faq');
+          previousScrollY = top;
+          scrollInstantlyTo(top);
+          focusSectionHeading(target);
+
+          window.setTimeout(() => {
+            previousScrollY = window.scrollY;
+            resumeLocked = false;
+          }, 0);
+        });
+      };
+
+      const handleHistoryLink = (event: MouseEvent) => {
+        if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
+          return;
+
+        event.preventDefault();
+        activateHistory(true);
+      };
+
+      const handleSkip = (event: MouseEvent) => {
+        event.preventDefault();
+        suspendAtFaq(true);
+      };
+
+      const handlePopState = (event: PopStateEvent) => {
+        const destination = (event.state as { brandHistory?: string } | null)?.brandHistory;
+
+        if (window.location.hash === '#faq' && destination === 'skipped') {
+          suspendAtFaq(false);
+          return;
+        }
+
+        if (window.location.hash === `#${root.id}`) activateHistory(false);
+      };
+
+      const scheduleRebuild = () => {
+        if (rebuildFrame) return;
+        rebuildFrame = window.requestAnimationFrame(() => {
+          rebuildFrame = 0;
+          if (!scene) return;
+          const width = stage.clientWidth;
+          const height = stage.clientHeight;
+          if (Math.abs(width - previousWidth) < 1 && Math.abs(height - previousHeight) < 1) return;
+          const progress = scene.trigger.progress;
+          buildScene(progress);
+          ScrollTrigger.refresh();
+        });
+      };
+
+      media.add('(prefers-reduced-motion: no-preference)', () => {
+        try {
+          root.dataset.historyEnhanced = 'true';
+          buildScene();
+          resizeObserver = new ResizeObserver(scheduleRebuild);
+          resizeObserver.observe(stage);
+          window.addEventListener('resize', scheduleRebuild, { passive: true });
+
+          return () => {
+            resizeObserver?.disconnect();
+            resizeObserver = null;
+            window.removeEventListener('resize', scheduleRebuild);
+            if (rebuildFrame) window.cancelAnimationFrame(rebuildFrame);
+            rebuildFrame = 0;
+            if (resumeFrame) window.cancelAnimationFrame(resumeFrame);
+            resumeFrame = 0;
+            destroyScene();
+            stage.style.height = originalStageHeight;
+            delete root.dataset.historyEnhanced;
+          };
+        } catch {
+          // A failed enhancement leaves the semantic, fully readable fallback intact.
+          delete root.dataset.historyEnhanced;
+          resetScene();
+          return undefined;
+        }
+      });
+
+      skipLink.addEventListener('click', handleSkip);
+      historyLinks.forEach((link) => link.addEventListener('click', handleHistoryLink));
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      window.addEventListener('hashchange', handleNavigation);
+      window.addEventListener('popstate', handlePopState);
+
+      if (window.location.hash === `#${root.id}`) {
+        window.requestAnimationFrame(() => activateHistory(false));
+      }
+
+      this.cleanup = () => {
+        skipLink.removeEventListener('click', handleSkip);
+        historyLinks.forEach((link) => link.removeEventListener('click', handleHistoryLink));
+        window.removeEventListener('scroll', handleScroll);
+        window.removeEventListener('hashchange', handleNavigation);
+        window.removeEventListener('popstate', handlePopState);
+        media.revert();
+        this.cleanup = null;
+      };
+    }
+
+    disconnectedCallback() {
+      this.cleanup?.();
+    }
+  }
+
+  if (!customElements.get('brand-history')) customElements.define('brand-history', BrandHistory);
+</script>
+
+<style>
+  brand-history {
+    display: block;
+  }
+
+  .history {
+    overflow: visible;
+    border-top: 1px solid color-mix(in srgb, var(--text-primary) 10%, transparent);
+    background: var(--page);
+    padding-block: clamp(4rem, 8vw, 7rem) clamp(3.5rem, 7vw, 6rem);
+  }
+
+  .history__inner {
+    width: min(calc(100% - 2.5rem), 77.5rem);
+    margin-inline: auto;
+  }
+
+  .history__header {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1.25rem;
+  }
+
+  .history__title {
+    max-width: 42rem;
+    color: var(--text-primary);
+    font-family: 'Vetrino', Georgia, serif;
+    font-size: clamp(2rem, 8vw, 3.25rem);
+    font-weight: 400;
+    line-height: 0.98;
+    text-wrap: balance;
+  }
+
+  .history__skip {
+    flex: 0 0 auto;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
+    text-underline-offset: 0.25em;
+    transition: color var(--motion-interaction-duration) ease;
+  }
+
+  .history__skip:hover,
+  .history__skip:focus-visible {
+    color: var(--accent);
+  }
+
+  .history__stage {
+    position: relative;
+    margin-top: clamp(2.5rem, 6vw, 5rem);
+  }
+
+  .history__events {
+    display: grid;
+    gap: clamp(3.5rem, 8vw, 7rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .history__event {
+    min-width: 0;
+  }
+
+  .history__event-content {
+    display: grid;
+    gap: 1.75rem;
+  }
+
+  .history__art {
+    display: grid;
+    place-items: center;
+    min-height: 12rem;
+  }
+
+  .history__art img {
+    display: block;
+    width: min(100%, 50rem);
+    height: auto;
+    max-height: 25rem;
+    object-fit: contain;
+  }
+
+  .history__copy {
+    width: min(100%, 40rem);
+    margin-inline: auto;
+    padding: clamp(1.25rem, 4vw, 2.5rem);
+    border: 1px solid color-mix(in srgb, var(--text-primary) 11%, transparent);
+    border-radius: 1.25rem;
+    background: var(--surface-elevated);
+    box-shadow: 0 1.25rem 3rem rgb(59 38 39 / 8%);
+  }
+
+  .history__copy time {
+    display: inline-flex;
+    min-width: 4.2rem;
+    justify-content: center;
+    padding: 0.42rem 0.7rem;
+    border-radius: 999px;
+    background: var(--text-primary);
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+
+  .history__copy h3 {
+    margin-top: 1rem;
+    color: var(--text-primary);
+    font-family: 'Vetrino', Georgia, serif;
+    font-size: clamp(1.5rem, 4vw, 2.35rem);
+    font-weight: 400;
+    line-height: 1.05;
+    text-wrap: balance;
+  }
+
+  .history__body {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+    color: var(--text-muted);
+    font-size: clamp(0.9375rem, 1.7vw, 1.0625rem);
+    line-height: 1.55;
+  }
+
+  .history__body p {
+    margin: 0;
+  }
+
+  .history__decoration {
+    display: none;
+  }
+
+  .history[data-history-enhanced='true'] .history__stage {
+    height: clamp(26rem, calc(100svh - var(--header-offset) - 1rem), 44rem);
+    overflow: clip;
+    isolation: isolate;
+  }
+
+  .history[data-history-enhanced='true'] .history__events {
+    position: relative;
+    display: block;
+    height: 100%;
+    overflow: clip;
+  }
+
+  .history[data-history-enhanced='true'] .history__event {
+    position: absolute;
+    inset: 0;
+    display: block;
+  }
+
+  .history[data-history-enhanced='true'] .history__event[data-history-index='0'] { z-index: 10; }
+  .history[data-history-enhanced='true'] .history__event[data-history-index='1'] { z-index: 11; }
+  .history[data-history-enhanced='true'] .history__event[data-history-index='2'] { z-index: 12; }
+  .history[data-history-enhanced='true'] .history__event[data-history-index='3'] { z-index: 13; }
+
+  .history[data-history-enhanced='true'] .history__event-content {
+    position: relative;
+    display: block;
+    height: 100%;
+  }
+
+  .history[data-history-enhanced='true'] .history__art {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    display: grid;
+    place-items: start center;
+    overflow: clip;
+    padding: clamp(1rem, 4vw, 3rem) 1rem 4rem;
+    will-change: transform;
+  }
+
+  .history[data-history-enhanced='true'] .history__art img {
+    width: min(100%, 50rem);
+    max-height: 100%;
+  }
+
+  .history[data-history-enhanced='true'] .history__copy {
+    position: absolute;
+    z-index: 3;
+    right: 1rem;
+    bottom: 0;
+    left: 1rem;
+    width: auto;
+    margin: 0;
+    will-change: transform;
+  }
+
+  .history__ending {
+    display: grid;
+    justify-items: center;
+    gap: 0.8rem;
+    max-width: 36rem;
+    margin: clamp(3rem, 8vw, 6rem) auto 0;
+    color: var(--text-primary);
+    text-align: center;
+  }
+
+  .history__ending p {
+    margin: 0;
+    font-family: 'Vetrino', Georgia, serif;
+    font-size: clamp(1.35rem, 3vw, 2rem);
+    line-height: 1.08;
+    text-wrap: balance;
+  }
+
+  .history__ending-squirrel {
+    display: block;
+    width: 2.25rem;
+    height: 2.25rem;
+    overflow: hidden;
+  }
+
+  .history__ending-squirrel img {
+    display: block;
+    width: 6.25rem;
+    max-width: none;
+    height: auto;
+  }
+
+  .history__skip:focus-visible,
+  .history__ending-squirrel:focus-visible {
+    outline-offset: 0.25rem;
+  }
+
+  @media (min-width: 40rem) {
+    .history__inner {
+      width: min(calc(100% - 4rem), 77.5rem);
+    }
+
+    .history__header {
+      align-items: center;
+    }
+
+    .history__skip {
+      font-size: 0.8125rem;
+    }
+  }
+
+  @media (min-width: 48rem) {
+    .history[data-history-enhanced='true'] .history__decoration {
+      position: absolute;
+      z-index: 2;
+      inset: 0;
+      display: block;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .history[data-history-enhanced='true'] .history__line {
+      position: absolute;
+      display: block;
+      width: auto;
+      max-width: none;
+      height: auto;
+      opacity: 0.52;
+    }
+
+    .history[data-history-enhanced='true'] .history__line--one {
+      top: 63%;
+      left: 43%;
+      width: clamp(8rem, 16vw, 14rem);
+    }
+
+    .history[data-history-enhanced='true'] .history__line--two {
+      top: 16%;
+      left: 50%;
+      width: clamp(6rem, 11vw, 10rem);
+    }
+
+    .history[data-history-enhanced='true'] .history__line--three {
+      top: 42%;
+      left: 36%;
+      width: clamp(10rem, 19vw, 17rem);
+    }
+
+    .history[data-history-enhanced='true'] .history__copy {
+      right: auto;
+      left: clamp(1rem, 5vw, 6rem);
+      width: min(calc(100% - 2rem), 40rem);
+    }
+
+    .history[data-history-enhanced='true'] .history__event[data-side='right'] .history__copy {
+      right: clamp(1rem, 5vw, 6rem);
+      left: auto;
+    }
+  }
+
+  @media (min-width: 75rem) {
+    .history__inner {
+      width: min(calc(100% - 2.5rem), 77.5rem);
+    }
+
+    .history__title {
+      font-size: 3.5rem;
+    }
+
+    .history__copy {
+      padding: 2.75rem;
+    }
+  }
+
+  @media (max-width: 39.999rem) {
+    .history__header {
+      display: grid;
+      align-items: start;
+    }
+
+    .history__skip {
+      justify-self: start;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .history__skip {
+      transition: none;
+    }
+
+    .history__art,
+    .history__copy {
+      will-change: auto;
+    }
+  }
+</style>
