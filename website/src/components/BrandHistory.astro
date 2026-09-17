@@ -2,9 +2,6 @@
 import { Image } from 'astro:assets';
 import { HISTORY_EVENTS } from '@/lib/history';
 import { HOME_SECTION_IDS } from '@/lib/site';
-import historyLine1 from '@/assets/history/history-line-1.svg?url';
-import historyLine2 from '@/assets/history/history-line-2.svg?url';
-import historyLine3 from '@/assets/history/history-line-3.svg?url';
 ---
 
 <brand-history>
@@ -27,11 +24,6 @@ import historyLine3 from '@/assets/history/history-line-3.svg?url';
       </div>
 
       <div class="history__stage" data-history-stage>
-        <div class="history__decoration" aria-hidden="true">
-          <img class="history__line history__line--one" src={historyLine1} width="244" height="289" alt="" loading="lazy" />
-          <img class="history__line history__line--two" src={historyLine2} width="172" height="255" alt="" loading="lazy" />
-          <img class="history__line history__line--three" src={historyLine3} width="299" height="198" alt="" loading="lazy" />
-        </div>
         <ol class="history__events" data-history-events>
           {
             HISTORY_EVENTS.map((event, index) => (
@@ -413,7 +405,6 @@ import historyLine3 from '@/assets/history/history-line-3.svg?url';
 
   .history {
     overflow: visible;
-    border-top: 1px solid color-mix(in srgb, var(--text-primary) 10%, transparent);
     background: var(--page);
     padding-block: clamp(4rem, 8vw, 7rem) clamp(3.5rem, 7vw, 6rem);
   }
@@ -539,10 +530,6 @@ import historyLine3 from '@/assets/history/history-line-3.svg?url';
     margin: 0;
   }
 
-  .history__decoration {
-    display: none;
-  }
-
   .history[data-history-enhanced='true'] .history__stage {
     height: clamp(26rem, calc(100svh - var(--header-offset) - 1rem), 44rem);
     overflow: clip;
@@ -652,42 +639,6 @@ import historyLine3 from '@/assets/history/history-line-3.svg?url';
   }
 
   @media (min-width: 48rem) {
-    .history[data-history-enhanced='true'] .history__decoration {
-      position: absolute;
-      z-index: 2;
-      inset: 0;
-      display: block;
-      overflow: hidden;
-      pointer-events: none;
-    }
-
-    .history[data-history-enhanced='true'] .history__line {
-      position: absolute;
-      display: block;
-      width: auto;
-      max-width: none;
-      height: auto;
-      opacity: 0.52;
-    }
-
-    .history[data-history-enhanced='true'] .history__line--one {
-      top: 63%;
-      left: 43%;
-      width: clamp(8rem, 16vw, 14rem);
-    }
-
-    .history[data-history-enhanced='true'] .history__line--two {
-      top: 16%;
-      left: 50%;
-      width: clamp(6rem, 11vw, 10rem);
-    }
-
-    .history[data-history-enhanced='true'] .history__line--three {
-      top: 42%;
-      left: 36%;
-      width: clamp(10rem, 19vw, 17rem);
-    }
-
     .history[data-history-enhanced='true'] .history__copy {
       right: auto;
       left: clamp(1rem, 5vw, 6rem);

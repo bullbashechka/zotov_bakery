@@ -107,18 +107,23 @@
     },
     {
       "device": "desktop",
+      "label": "Компактная шапка после прокрутки",
+      "file": "desktop-22.png"
+    },
+    {
+      "device": "desktop",
       "label": "Вся страница после прохождения",
       "file": "desktop-full.png"
     },
     {
       "device": "desktop",
       "label": "Политика конфиденциальности: заглушка документа",
-      "file": "desktop-22.png"
+      "file": "desktop-23.png"
     },
     {
       "device": "desktop",
       "label": "Политика обработки данных: заглушка документа",
-      "file": "desktop-23.png"
+      "file": "desktop-24.png"
     },
     {
       "device": "mobile",

@@ -73,6 +73,11 @@ for (const [device, width, height] of [['desktop',1440,1000],['mobile',390,844]]
  await shot('Помощь в выборе → WhatsApp или ассортимент','#conversion');
  await shot('Контакты и нижняя навигация','footer');
  if(device==='desktop') links.push(...await page.locator('a[href^="https://wa.me"],a[href^="https://2gis"],a[href^="tel:"]').evaluateAll(as=>as.map(a=>({label:a.textContent.trim()||a.getAttribute('aria-label'),url:a.href}))));
+ if(device==='desktop') {
+  await page.locator('#assortment').scrollIntoViewIfNeeded();
+  await page.waitForTimeout(1200);
+  await shot('Компактная шапка после прокрутки');
+ }
  // Reveal every section before the long screenshot; return to the top for the fixed header.
  for(const id of ['advantages','honey-cake','assortment','where-to-buy','history','faq','conversion','contacts']) {
   await page.locator('#'+id).scrollIntoViewIfNeeded(); await page.waitForTimeout(800);
@@ -89,6 +94,6 @@ for (const [device, width, height] of [['desktop',1440,1000],['mobile',390,844]]
 }
 } finally { await browser.close(); }
 await writeFile(out+'manifest.json',JSON.stringify({shots,checks,links},null,2));
-const notes='Снята текущая локальная реализация 11.09.2026. Desktop 1440×1000, mobile 390×844. Путь: первый экран → ассортимент / медовик → способы покупки → WhatsApp или 2GIS. Заказ и оплата находятся вне сайта. Внешние сообщения не отправлялись. История и юридические документы — заглушки; два десерта содержат временные описания. Кнопка медовика использует общий запрос без названия товара.';
+const notes='Снята текущая локальная реализация 17.09.2026. Desktop 1440×1000, mobile 390×844. Путь: первый экран → ассортимент / медовик → способы покупки → WhatsApp или 2GIS. Заказ и оплата находятся вне сайта. Внешние сообщения не отправлялись. История и юридические документы — заглушки; два десерта содержат временные описания. Кнопка медовика использует общий запрос без названия товара.';
 await writeFile(out+'index.html',`<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>ZOTOV — весь UI flow</title><style>body{font:16px/1.5 system-ui;margin:0;background:#f3eee8;color:#392526}header{padding:32px;max-width:1000px}h1{font-size:32px}nav{position:sticky;top:0;background:#392526;padding:12px 32px;z-index:1}nav a{color:white;margin-right:24px}main{padding:24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:24px}figure{margin:0;background:white;padding:16px;border-radius:12px}figure img{width:100%;max-height:650px;object-fit:contain;object-position:top}figcaption{margin-bottom:12px;font-weight:600}section{padding:24px}a{color:inherit}details{padding:12px}li{margin:8px} .mobile img{max-height:720px}body[data-filter=desktop] .mobile,body[data-filter=mobile] .desktop{display:none}</style><header><h1>ZOTOV: пользовательский путь</h1><p>${notes}</p><p>${shots.length} скриншотов. Нажатие на кадр открывает оригинал.</p></header><nav><a href="#" onclick="document.body.dataset.filter='all';return false">Все</a><a href="#" onclick="document.body.dataset.filter='desktop';return false">Desktop</a><a href="#" onclick="document.body.dataset.filter='mobile';return false">Mobile</a><a href="#checks">Проверки</a></nav><main>${shots.map(s=>`<figure class="${s.device}"><figcaption>${s.device} · ${esc(s.label)}</figcaption><a href="${s.file}" target="_blank"><img loading="lazy" src="${s.file}" alt="${esc(s.label)}"></a></figure>`).join('')}</main><section id="checks"><h2>Проверенные переходы</h2><ul>${checks.map(c=>`<li>${esc(c)}</li>`).join('')}</ul><details><summary>Внешние точки выхода и тексты запросов</summary><ul>${links.map(l=>`<li>${esc(l.label)}<br>${esc(decodeURI(l.url))}</li>`).join('')}</ul></details></section></html>`);
 console.log(`Saved ${shots.length} screenshots; ${checks.length} checks passed. Gallery: ${out}index.html`);
