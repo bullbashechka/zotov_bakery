@@ -136,7 +136,7 @@ const { product } = Astro.props;
     }
   }
 
-  @media (min-width: 64rem) {
+  @media (min-width: 48rem) {
     .assortment__panel {
       gap: 1.25rem;
     }
@@ -163,6 +163,17 @@ const { product } = Astro.props;
     }
 
     .assortment__panel p {
+      line-height: 1.25;
+    }
+  }
+  @media (min-width: 48rem) and (max-width: 63.999rem) {
+    .assortment__panel h3,
+    .assortment__ingredients summary {
+      font-size: 1.625rem;
+    }
+
+    .assortment__panel .assortment__highlight {
+      font-size: 1rem;
       line-height: 1.25;
     }
   }

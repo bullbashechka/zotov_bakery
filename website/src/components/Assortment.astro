@@ -16,7 +16,7 @@ import { HOME_SECTION_IDS } from '@/lib/site';
             <Image
               src={product.image}
               widths={[240, 400, 600, 800]}
-              sizes="(max-width: 639px) 65vw, (max-width: 1023px) 397px, 400px"
+              sizes="(max-width: 767px) min(calc(65vw - 26px), 397px), (max-width: 1023px) calc(32.5vw - 20.8px), 400px"
               format="webp"
               alt={product.alt}
               loading="lazy"
@@ -26,12 +26,6 @@ import { HOME_SECTION_IDS } from '@/lib/site';
         ))
       }
     </div>
-
-    <nav class="assortment__controls" aria-label="Переключение десертов">
-      <button type="button" data-direction="-1" aria-label="Предыдущий десерт">←</button>
-      <span data-counter aria-hidden="true">01 / {String(ASSORTMENT.length).padStart(2, '0')}</span>
-      <button type="button" data-direction="1" aria-label="Следующий десерт">→</button>
-    </nav>
 
     <div id="assortment-products" class="assortment__panels" data-content-deck>
       {ASSORTMENT.map((product) => <ProductDetails {product} />)}
@@ -72,7 +66,7 @@ import { HOME_SECTION_IDS } from '@/lib/site';
     private movement: gsap.core.Tween | null = null;
     private transition: gsap.core.Timeline | null = null;
     private reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-    private desktop = window.matchMedia('(min-width: 64rem)');
+    private expandedIngredients = window.matchMedia('(min-width: 48rem)');
     private gesture: Gesture | null = null;
     private suppressClickUntil = 0;
 
@@ -114,7 +108,7 @@ import { HOME_SECTION_IDS } from '@/lib/site';
         details.addEventListener(
           'toggle',
           () => {
-            if (this.desktop.matches || !this.panels[this.active].contains(details)) return;
+            if (this.expandedIngredients.matches || !this.panels[this.active].contains(details)) return;
             this.ingredients.forEach((item) => {
               item.open = details.open;
             });
@@ -122,7 +116,7 @@ import { HOME_SECTION_IDS } from '@/lib/site';
           { signal },
         ),
       );
-      this.desktop.addEventListener('change', this.syncIngredients, { signal });
+      this.expandedIngredients.addEventListener('change', this.syncIngredients, { signal });
       this.reduced.addEventListener(
         'change',
         () => {
@@ -151,8 +145,8 @@ import { HOME_SECTION_IDS } from '@/lib/site';
 
     private syncIngredients = () => {
       this.ingredients.forEach((details) => {
-        details.open = this.desktop.matches;
-        details.querySelector('summary')!.tabIndex = this.desktop.matches ? -1 : 0;
+        details.open = this.expandedIngredients.matches;
+        details.querySelector('summary')!.tabIndex = this.expandedIngredients.matches ? -1 : 0;
       });
     };
 
@@ -206,9 +200,6 @@ import { HOME_SECTION_IDS } from '@/lib/site';
         this.photos[index].setAttribute('aria-pressed', String(active));
         this.photos[index].dataset.slot = active ? 'active' : 'side';
       });
-      const counter = this.querySelector('[data-counter]');
-      if (counter)
-        counter.textContent = `${String(this.active + 1).padStart(2, '0')} / ${String(this.products.length).padStart(2, '0')}`;
       if (previous !== undefined)
         this.querySelector('[data-announcement]')!.textContent =
           `${this.products[this.active].dataset.name}. ${this.active + 1} из ${this.products.length}`;
@@ -229,21 +220,20 @@ import { HOME_SECTION_IDS } from '@/lib/site';
     private onClick = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
       if (target.closest('summary')) {
-        if (this.desktop.matches) event.preventDefault();
+        if (this.expandedIngredients.matches) event.preventDefault();
         return;
       }
-      const control = target.closest<HTMLElement>('[data-direction]');
-      if (control) return this.select(this.target + Number(control.dataset.direction));
       const photo = target.closest<HTMLButtonElement>('[data-photo]');
       if (!photo || performance.now() < this.suppressClickUntil) return;
       const count = this.photos.length;
       const index = Number(photo.dataset.index);
+      if (index === this.active) return;
       const distance = this.wrap(index - this.motion.position + count / 2) - count / 2;
       this.select(Math.round(this.motion.position + distance));
     };
 
     private onKeydown = (event: KeyboardEvent) => {
-      if (!(event.target as HTMLElement).closest('[data-photo], [data-direction]')) return;
+      if (!(event.target as HTMLElement).closest('[data-photo]')) return;
       if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
         event.preventDefault();
         this.select(this.target + (event.key === 'ArrowRight' ? 1 : -1));
@@ -379,10 +369,6 @@ import { HOME_SECTION_IDS } from '@/lib/site';
     margin-top: 1.5rem;
   }
 
-  .assortment__controls {
-    display: none;
-  }
-
   .assortment__carousel[data-enhanced] {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
@@ -431,39 +417,33 @@ import { HOME_SECTION_IDS } from '@/lib/site';
     cursor: grabbing;
   }
 
-  [data-enhanced] .assortment__controls {
-    display: flex;
-    grid-area: 3 / 1;
-    align-items: center;
-    justify-content: center;
-    gap: 1.25rem;
-  }
-
-  .assortment__controls button {
-    display: grid;
-    place-items: center;
-    width: 2.75rem;
-    height: 2.75rem;
-    padding: 0;
-    border: 1px solid rgb(59 38 39 / 35%);
-    border-radius: 50%;
-    background: transparent;
-    color: var(--text-primary);
-    font-size: 1.25rem;
-    cursor: pointer;
-  }
-
-  .assortment__controls span {
-    font-size: 0.875rem;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.1em;
-  }
-
   [data-enhanced] .assortment__panels {
     display: grid;
-    grid-area: 4 / 1;
+    grid-area: 3 / 1;
     margin: 0;
     min-width: 0;
+  }
+
+  @media (min-width: 48rem) and (max-width: 63.999rem) {
+    .assortment__carousel[data-enhanced] {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 1.5rem;
+      align-items: start;
+    }
+
+    [data-enhanced] .assortment__title {
+      justify-self: start;
+      font-size: 2rem;
+    }
+
+    [data-enhanced] .assortment__media {
+      grid-area: 2 / 2;
+      align-self: start;
+    }
+
+    [data-enhanced] .assortment__panels {
+      grid-area: 2 / 1;
+    }
   }
 
   @media (min-width: 64rem) {
@@ -490,10 +470,6 @@ import { HOME_SECTION_IDS } from '@/lib/site';
     [data-enhanced] .assortment__panels {
       grid-area: 2 / 1;
       margin-left: 8.5%;
-    }
-
-    [data-enhanced] .assortment__controls {
-      display: none;
     }
   }
 </style>
