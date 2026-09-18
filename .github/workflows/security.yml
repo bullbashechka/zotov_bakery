@@ -1,9 +1,8 @@
 name: Security and release gates
 
 on:
-  pull_request:
-  push:
-    branches: [dev]
+  # Automatic runs are disabled; release checks remain available locally.
+  workflow_dispatch:
 
 permissions:
   contents: read

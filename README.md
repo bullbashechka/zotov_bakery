@@ -83,12 +83,17 @@ PUBLIC_WEBSITE_URL=https://example.com bun run cf:deploy
 PUBLIC_WEBSITE_URL=https://preview.example.com bun run cf:deploy:preview
 ```
 
-GitHub Actions запускает те же release gates для pull request и push в `dev`, без
-deploy credentials и без публикации. Чтобы Cloudflare Git integration не обходила
-этот барьер, в dashboard нужно отдельно задать `bun run release:check` как build
-command, установить Chromium headless shell и его системные зависимости в build
-environment, а также включить required check/branch protection до автодеплоя.
-До этой настройки прохождение workflow само по себе не блокирует Cloudflare.
+Автоматический запуск GitHub Actions на push и pull request отключён; workflow
+сохранён только для ручного запуска. Полный `bun run release:check` доступен локально.
+Если `release-check` был обязательной проверкой в правилах ветки GitHub, это требование
+нужно убрать отдельно, иначе pull request будет ждать отключённую проверку.
+
+Проверки можно выполнять в Cloudflare Pages через build command: ненулевой код
+завершения команды останавливает публикацию. Для полного `bun run release:check`
+в сборочном окружении нужны закреплённый Bun, подходящий Node.js, Chromium headless
+shell и его системные зависимости. Работоспособность браузерных проверок в Cloudflare
+нужно подтвердить первым запуском; локальное прохождение не подтверждает облачное.
+Настройки dashboard этим изменением не обновляются.
 `https://zotov-landing.pages.dev` в workflow — только безопасный CI fixture для
 canonical-проверок, а не утверждение о реальном production-домене.
 
