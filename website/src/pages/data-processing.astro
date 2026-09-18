@@ -1,11 +1,9 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import LegalPlaceholder from '@/components/LegalPlaceholder.astro';
+import { getCanonicalUrl } from '@/lib/site-origin.mjs';
 
-const publicWebsiteUrl = import.meta.env.PUBLIC_WEBSITE_URL;
-const canonicalUrl = publicWebsiteUrl
-  ? new URL(Astro.url.pathname, publicWebsiteUrl).toString()
-  : undefined;
+const canonicalUrl = getCanonicalUrl(import.meta.env.PUBLIC_WEBSITE_URL, Astro.url.pathname);
 ---
 
 <BaseLayout

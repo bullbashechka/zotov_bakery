@@ -9,13 +9,11 @@ import HoneyCake from '@/components/HoneyCake.astro';
 import SiteHeader from '@/components/SiteHeader.astro';
 import SiteFooter from '@/components/SiteFooter.astro';
 import WhereToBuy from '@/components/WhereToBuy.astro';
+import { getCanonicalUrl } from '@/lib/site-origin.mjs';
 
 const title = 'ZOTOV bakery — десерты с характером';
 const description = 'ZOTOV bakery — десерты, которые хочется разделить с близкими.';
-const publicWebsiteUrl = import.meta.env.PUBLIC_WEBSITE_URL;
-const canonicalUrl = publicWebsiteUrl
-  ? new URL(Astro.url.pathname, publicWebsiteUrl).toString()
-  : undefined;
+const canonicalUrl = getCanonicalUrl(import.meta.env.PUBLIC_WEBSITE_URL, Astro.url.pathname);
 
 ---
 

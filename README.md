@@ -25,9 +25,30 @@ bun run dev
 
 ```bash
 bun run check:ui
-bun run typecheck
-bun run build
+bun run security:check  # audit, установленные версии, секреты и SVG
+bun run release:check   # полный локальный барьер перед публикацией
 ```
+
+`release:check` требует `PUBLIC_WEBSITE_URL` с HTTPS-origin без пути, проверяет
+закреплённую версию Bun, выполняет frozen install, security checks, Node-тесты,
+typecheck, новую production-сборку, проверку артефакта и browser smoke.
+
+Для browser smoke один раз установите Chromium из закреплённой версии Playwright:
+
+```bash
+node node_modules/playwright/cli.js install --only-shell chromium
+```
+
+На Linux/CI добавьте `--with-deps` для системных библиотек. Сканер секретов
+автоматически загружает закреплённый Gitleaks с проверкой SHA-256, проверяет
+текущие исходники и доступную Git-историю; ему нужен доступ к GitHub.
+
+```bash
+PUBLIC_WEBSITE_URL=https://example.com bun run release:check
+```
+
+[Исходный аудит](docs/security-audit-2026-09-18.md) и
+[статус исправлений и оставшиеся проверки production](docs/security-remediation-2026-09-18.md).
 
 ## Библиотека компонентов
 
@@ -42,15 +63,22 @@ bun run build:storybook  # автономная библиотека в website/
 
 ## Cloudflare Pages
 
-Подключите GitHub-репозиторий в Cloudflare Pages и укажите:
+Конфигурация Pages хранится в `wrangler.jsonc`. Production-деплой разрешён только
+из чистой ветки `dev`; preview — из отдельной feature-ветки и публикуется под
+branch alias `preview`. Обе команды сначала повторно выполняют полный release check:
 
-| Настройка | Значение |
-| --- | --- |
-| Production branch | `dev` |
-| Build command | `bun install --frozen-lockfile && bun run build` |
-| Build output directory | `website/dist` |
-| Root directory | оставить пустым |
+```bash
+PUBLIC_WEBSITE_URL=https://example.com bun run cf:deploy
+PUBLIC_WEBSITE_URL=https://preview.example.com bun run cf:deploy:preview
+```
 
-Каждый push в `dev` публикует production-версию, а pull request получает отдельный preview URL. Перед ручным деплоем соберите проект (`bun run build`), затем используйте `bun run cf:deploy` или `bun run cf:deploy:preview`.
+GitHub Actions запускает те же release gates для pull request и push в `dev`, без
+deploy credentials и без публикации. Чтобы Cloudflare Git integration не обходила
+этот барьер, в dashboard нужно отдельно задать `bun run release:check` как build
+command, установить Chromium headless shell и его системные зависимости в build
+environment, а также включить required check/branch protection до автодеплоя.
+До этой настройки прохождение workflow само по себе не блокирует Cloudflare.
+`https://zotov-landing.pages.dev` в workflow — только безопасный CI fixture для
+canonical-проверок, а не утверждение о реальном production-домене.
 
 После создания проекта в Cloudflare Pages замените значение `name` в `wrangler.jsonc` на имя Pages-проекта, если оно будет отличаться от `zotov-landing`.

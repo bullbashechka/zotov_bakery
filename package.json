@@ -17,13 +17,24 @@
     "typecheck:website": "bun run --cwd website typecheck",
     "preview": "bun run --cwd website preview",
     "cf:dev": "bunx wrangler pages dev website/dist",
-    "cf:deploy": "bunx wrangler pages deploy website/dist",
-    "cf:deploy:preview": "bunx wrangler pages deploy website/dist --branch=preview",
+    "cf:deploy": "node scripts/security/release-deploy.mjs production",
+    "cf:deploy:preview": "node scripts/security/release-deploy.mjs preview",
     "storybook": "bun run --cwd website storybook",
     "build:storybook": "bun run --cwd website build:storybook",
-    "check:ui": "bun run --cwd website check:ui"
+    "check:ui": "bun run --cwd website check:ui",
+    "security:check": "node scripts/security/security-check.mjs",
+    "release:check": "node scripts/security/release-check.mjs"
   },
   "devDependencies": {
-    "wrangler": "^4.70.0"
+    "parse5": "7.3.0",
+    "playwright": "1.62.1",
+    "wrangler": "4.124.0"
+  },
+  "overrides": {
+    "devalue": "5.9.2",
+    "fast-uri": "3.1.6",
+    "js-yaml": "4.3.2",
+    "sharp": "0.35.4",
+    "svgo": "4.1.0"
   }
 }

@@ -1,0 +1,51 @@
+---
+import ActionLink from './ActionLink.astro';
+---
+
+<section class="not-found" aria-labelledby="not-found-title">
+  <div class="not-found__content">
+    <p class="not-found__code" aria-hidden="true">404</p>
+    <h1 id="not-found-title">Страница не найдена</h1>
+    <p class="not-found__message">Проверьте адрес или вернитесь на главную.</p>
+    <ActionLink href="/" variant="primary">На главную</ActionLink>
+  </div>
+</section>
+
+<style>
+  .not-found {
+    display: grid;
+    min-height: 100vh;
+    place-items: center;
+    background: var(--page);
+    padding: 4rem 1rem;
+  }
+
+  .not-found__content {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .not-found__code {
+    color: var(--accent);
+    font-family: 'Bergamasco', Georgia, serif;
+    font-size: clamp(5rem, 24vw, 11rem);
+    line-height: 0.75;
+  }
+
+  h1 {
+    margin-top: 2rem;
+    font-family: 'Vetrino', Georgia, serif;
+    font-size: clamp(2.25rem, 7vw, 4rem);
+    font-weight: 400;
+    line-height: 1;
+  }
+
+  .not-found__message {
+    max-width: 30rem;
+    margin-block: 1.25rem 2rem;
+    color: var(--text-muted);
+    font-size: 1.125rem;
+    line-height: 1.4;
+  }
+</style>

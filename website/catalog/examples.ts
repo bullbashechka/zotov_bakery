@@ -25,6 +25,7 @@ type Components = {
   HoneyCake: typeof import('../src/components/HoneyCake.astro').default;
   HoneyCakeIllustration: typeof import('../src/components/HoneyCakeIllustration.astro').default;
   LegalPlaceholder: typeof import('../src/components/LegalPlaceholder.astro').default;
+  NotFound: typeof import('../src/components/NotFound.astro').default;
   PageFrame: typeof import('../src/components/PageFrame.astro').default;
   PlaceholderSection: typeof import('../src/components/PlaceholderSection.astro').default;
   ProductDetails: typeof import('../src/components/ProductDetails.astro').default;
@@ -161,6 +162,7 @@ const fixedExamples: Example[] = [
     props: { title: 'Политика конфиденциальности' },
     text: '',
   },
+  { component: 'NotFound', name: 'default', props: {}, text: '' },
   { component: 'PageFrame', name: 'default', props: {}, text: '' },
   {
     component: 'PlaceholderSection',
