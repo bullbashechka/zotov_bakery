@@ -5,9 +5,9 @@ import { FAQ_ITEMS } from '@/lib/faq';
 import { HOME_SECTION_IDS } from '@/lib/site';
 ---
 
-<section id={HOME_SECTION_IDS.faq} class="faq" aria-labelledby="faq-title">
+<section id={HOME_SECTION_IDS.faq} class="faq" data-section-spacing-target aria-labelledby="faq-title">
   <div class="faq__container">
-    <h2 id="faq-title" class="faq__title" data-motion="heading">Частые вопросы</h2>
+    <h2 id="faq-title" class="faq__title" data-section-title data-motion="heading">Частые вопросы</h2>
 
     <Wrapper margin="2rem 0 0">
       <FaqAccordion items={FAQ_ITEMS} />

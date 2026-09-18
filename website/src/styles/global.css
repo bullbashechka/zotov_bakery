@@ -76,8 +76,46 @@
   --header-offset: calc(var(--header-compact-height) + 1rem);
   --header-shadow: rgb(59 38 39 / 8%);
   --hero-background: #efedeb;
+  /* Perceived space from the final content fragment to the next section title. */
+  --section-heading-gap: 60px;
   /* Preserve the 1920px composition while allowing browser zoom to shrink it. */
   --layout-viewport: min(100vw, 1920px);
+}
+
+@media (min-width: 390px) {
+  :root {
+    --section-heading-gap: calc(39.3651px + 5.291vw);
+  }
+}
+
+@media (min-width: 768px) {
+  :root {
+    --section-heading-gap: calc(20px + 7.8125vw);
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --section-heading-gap: calc(53.2308px + 4.5673vw);
+  }
+}
+
+@media (min-width: 1440px) {
+  :root {
+    --section-heading-gap: 119px;
+  }
+}
+
+[data-section-spacing-target] {
+  margin-block-start: var(--section-heading-gap-adjust, 0px);
+}
+
+.section-spacing-probe {
+  position: absolute;
+  width: 0;
+  height: var(--section-heading-gap);
+  visibility: hidden;
+  pointer-events: none;
 }
 
 @media (min-width: 48rem) and (max-width: 79.999rem) {

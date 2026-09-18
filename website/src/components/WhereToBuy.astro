@@ -5,14 +5,15 @@ import { PURCHASE_OPTIONS } from '@/lib/purchase';
 import { HOME_SECTION_IDS } from '@/lib/site';
 ---
 
-<section id={HOME_SECTION_IDS.whereToBuy} class="where-to-buy" aria-labelledby="where-to-buy-title">
+<section id={HOME_SECTION_IDS.whereToBuy} class="where-to-buy" data-section-spacing-target aria-labelledby="where-to-buy-title">
   <div class="where-to-buy__inner">
-    <h2 id="where-to-buy-title" class="where-to-buy__title" data-motion="heading">
+    <h2 id="where-to-buy-title" class="where-to-buy__title" data-section-title data-motion="heading">
       Где купить торты и десерты от ZOTOV bakery
     </h2>
 
     <div
       class="where-to-buy__track"
+      data-section-end
       aria-label="Способы покупки тортов и десертов ZOTOV bakery"
     >
       {

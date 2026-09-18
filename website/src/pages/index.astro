@@ -36,10 +36,13 @@ const canonicalUrl = publicWebsiteUrl
 
 <script>
   import { initPageMotion } from '@/lib/motion';
+  import { initSectionSpacing } from '@/lib/section-spacing';
 
   const cleanup = initPageMotion(document);
+  const cleanupSectionSpacing = initSectionSpacing(document);
   if (import.meta.hot)
     import.meta.hot.dispose(() => {
       cleanup();
+      cleanupSectionSpacing();
     });
 </script>

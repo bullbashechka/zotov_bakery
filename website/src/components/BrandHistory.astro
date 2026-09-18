@@ -10,12 +10,13 @@ const historyCount = HISTORY_EVENTS.length;
   <section
     id={HOME_SECTION_IDS.history}
     class="history"
+    data-section-spacing-target
     data-history-root
     aria-labelledby="history-title"
   >
     <div class="history__inner">
       <header class="history__header">
-        <h2 id="history-title" class="history__title">С чего всё начиналось</h2>
+        <h2 id="history-title" class="history__title" data-section-title>С чего всё начиналось</h2>
       </header>
 
       <div class="history__timeline-clip" data-history-timeline-clip>
@@ -45,7 +46,7 @@ const historyCount = HISTORY_EVENTS.length;
         </div>
       </div>
 
-      <div class="history__carousel" data-history-carousel>
+      <div class="history__carousel" data-history-carousel data-section-end>
         <ol class="history__track" data-history-track>
           {
             HISTORY_EVENTS.map((event, index) => (

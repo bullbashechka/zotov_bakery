@@ -7,7 +7,7 @@ interface Props {
 const { items, id = 'zotov-faq' } = Astro.props;
 ---
 
-<faq-accordion class="faq__list">
+<faq-accordion class="faq__list" data-section-end>
   {
     items.map((item, index) => (
       <FaqItem

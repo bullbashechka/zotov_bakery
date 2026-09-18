@@ -12,12 +12,13 @@ const whatsappUrl = getWhatsAppUrl('selectionHelp');
 <section
   id={HOME_SECTION_IDS.conversion}
   class="conversion-section"
+  data-section-spacing-target
   data-motion-group
   aria-labelledby="conversion-title"
 >
   <div class="conversion-section__line" aria-hidden="true" set:html={selectionFlow} />
   <div class="conversion-section__inner">
-    <h2 id="conversion-title" class="conversion-section__title" data-motion="heading">
+    <h2 id="conversion-title" class="conversion-section__title" data-section-title data-motion="heading">
       Не знаете что выбрать?
     </h2>
 

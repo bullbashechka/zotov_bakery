@@ -5,9 +5,9 @@ import { ASSORTMENT } from '@/lib/assortment';
 import { HOME_SECTION_IDS } from '@/lib/site';
 ---
 
-<section id={HOME_SECTION_IDS.assortment} class="assortment" aria-labelledby="assortment-title">
-  <cake-carousel class="assortment__carousel" aria-labelledby="assortment-title">
-    <h2 id="assortment-title" class="assortment__title">Торты и десерты</h2>
+<section id={HOME_SECTION_IDS.assortment} class="assortment" data-section-spacing-target aria-labelledby="assortment-title">
+  <cake-carousel class="assortment__carousel" data-section-end aria-labelledby="assortment-title">
+    <h2 id="assortment-title" class="assortment__title" data-section-title>Торты и десерты</h2>
 
     <div class="assortment__media" data-media-deck>
       {
