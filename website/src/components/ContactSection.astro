@@ -112,22 +112,15 @@ const whatsappUrl = getWhatsAppUrl();
   }
 
   .contact-section__card {
-    --scallop-radius: 1.0625rem;
+    --contact-card-background: url('/footer/contacts-background-390.svg');
+    --contact-card-min-height: 226px;
     position: relative;
     isolation: isolate;
+    box-sizing: border-box;
+    min-height: var(--contact-card-min-height);
     margin-inline: -0.75rem;
     padding: 19px 1.5rem 11px 1.25rem;
-    background:
-      radial-gradient(circle closest-side, var(--surface) 98%, transparent 100%)
-        top left / calc(var(--scallop-radius) * 2) calc(var(--scallop-radius) * 2) repeat-x,
-      radial-gradient(circle closest-side, var(--surface) 98%, transparent 100%)
-        bottom left / calc(var(--scallop-radius) * 2) calc(var(--scallop-radius) * 2) repeat-x,
-      radial-gradient(circle closest-side, var(--surface) 98%, transparent 100%)
-        left top / calc(var(--scallop-radius) * 2) calc(var(--scallop-radius) * 2) repeat-y,
-      radial-gradient(circle closest-side, var(--surface) 98%, transparent 100%)
-        right top / calc(var(--scallop-radius) * 2) calc(var(--scallop-radius) * 2) repeat-y,
-      linear-gradient(var(--surface), var(--surface)) center / calc(100% - var(--scallop-radius) * 2)
-        calc(100% - var(--scallop-radius) * 2) no-repeat;
+    background: var(--contact-card-background) center / 100% 100% no-repeat;
   }
 
   .contact-section__content {
@@ -261,7 +254,8 @@ const whatsappUrl = getWhatsAppUrl();
     }
 
     .contact-section__card {
-      --scallop-radius: 1.45rem;
+      --contact-card-background: url('/footer/contacts-background-768.svg');
+      --contact-card-min-height: 310px;
       width: 100%;
       margin-inline: 0;
       padding: 2.5rem 2rem 1rem;
@@ -335,7 +329,8 @@ const whatsappUrl = getWhatsAppUrl();
     }
 
     .contact-section__card {
-      --scallop-radius: 1.53125rem;
+      --contact-card-background: url('/footer/contacts-background-1024.svg');
+      --contact-card-min-height: 327px;
       padding: 2.875rem 2.796875rem 29px 3.125rem;
     }
 
@@ -387,7 +382,8 @@ const whatsappUrl = getWhatsAppUrl();
     }
 
     .contact-section__card {
-      --scallop-radius: 27px;
+      --contact-card-background: url('/footer/contacts-background-1440.svg');
+      --contact-card-min-height: 408px;
       padding: 54px 122px 41px 49px;
     }
 
