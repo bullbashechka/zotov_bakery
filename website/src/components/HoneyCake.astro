@@ -19,7 +19,8 @@ const whatsappUrl = getWhatsAppUrl('general');
         width="min(100%, 42rem)"
         margin="0 auto"
         at={{
-          large: { column: '1', row: '1', width: 'min(100%, 43rem)', margin: '0' },
+          medium: { column: '1', row: '1', alignSelf: 'end' },
+          large: { column: '1', row: '1', width: 'min(100%, 43rem)', margin: '0', alignSelf: 'center' },
           cinema: { width: '43rem' },
         }}
       >
@@ -39,7 +40,7 @@ const whatsappUrl = getWhatsAppUrl('general');
           Этот медовик Светлана Зотова пекла для семьи и близких. Со временем домашний рецепт стал
           ассоциироваться с брендом.
         </p>
-        <Wrapper margin="1.5rem 0 0" at={{ large: { margin: '2.25rem 0 0' } }}>
+        <Wrapper margin="1.5rem 0 0" at={{ medium: { margin: '0.75rem 0 0' }, large: { margin: '2.25rem 0 0' } }}>
           <ActionLink variant="primary" href={whatsappUrl} fullWidth external>
             Узнать цену и наличие
           </ActionLink>
@@ -179,6 +180,44 @@ const whatsappUrl = getWhatsAppUrl('general');
     .honey-cake__copy p {
       font-size: 1rem;
       line-height: 1.21;
+    }
+  }
+
+  @media (48rem <= width < 64rem) {
+    .honey-cake {
+      --honey-cake-surface-start: 4.75rem;
+
+      padding-block: 1.5rem 2rem;
+    }
+
+    .honey-cake__title {
+      font-size: 2rem;
+    }
+
+    .honey-cake__content {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.5rem;
+      margin-top: 2.75rem;
+    }
+
+    .honey-cake__copy {
+      position: relative;
+      z-index: 1;
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .honey-cake__copy h3 {
+      font-size: 1.625rem;
+    }
+
+    .honey-cake__copy p {
+      margin-top: 0.75rem;
+    }
+
+    .honey-cake__hint {
+      grid-column: 1 / -1;
+      grid-row: 2;
     }
   }
 
