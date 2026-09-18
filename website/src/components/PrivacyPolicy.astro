@@ -1,0 +1,164 @@
+---
+import { CONTACTS, PRIVACY_UPDATED_AT, SITE_OWNER, getWhatsAppUrl } from '@/lib/site';
+
+const whatsappUrl = getWhatsAppUrl();
+const analyticsEnabled = Boolean(import.meta.env.PUBLIC_YANDEX_METRIKA_ID?.trim());
+---
+
+<article class="privacy-policy">
+  <div class="privacy-policy__content">
+    <a class="privacy-policy__logo" href="/" aria-label="ZOTOV bakery, на главную страницу">
+      <img src="/zotov-logo.svg" width="331" height="127" alt="ZOTOV bakery" />
+    </a>
+    <h1>Конфиденциальность и использование данных</h1>
+    <p class="privacy-policy__updated">Актуально с {PRIVACY_UPDATED_AT}</p>
+
+    <section>
+      <h2>Кто отвечает за сайт</h2>
+      <p>
+        Владельцем сайта является {SITE_OWNER}. По вопросам использования данных напишите нам в{' '}
+        <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">WhatsApp</a>{' '}по номеру{' '}
+        {CONTACTS.mobile.display}.
+      </p>
+    </section>
+
+    <section>
+      <h2>Какие данные обрабатывает сайт</h2>
+      <p>
+        На сайте нет регистрации, личного кабинета, собственных форм и онлайн-оплаты. При открытии
+        страниц сервер и браузер технически обрабатывают IP-адрес, тип устройства и браузера, время
+        запроса, адрес открытой страницы и сведения, необходимые для безопасной доставки сайта.
+      </p>
+      <p>
+        Если вы переходите в WhatsApp, Instagram или 2ГИС, данные обрабатываются соответствующим
+        внешним сервисом по его правилам. Сайт не получает текст отправленного сообщения.
+      </p>
+    </section>
+
+    <section>
+      <h2>Яндекс Метрика и cookie</h2>
+      <p>
+        С вашего разрешения сайт загружает Яндекс Метрику. Она помогает оценивать посещаемость и
+        переходы к способам связи: WhatsApp, телефону, картам и Instagram. Нажатие не считается
+        заказом или покупкой. Вебвизор и запись действий на странице отключены.
+      </p>
+      <p>
+        До нажатия «Разрешить» Метрика не загружается. Ваш выбор хранится в браузере 180 дней. При
+        отказе сайт продолжает работать полностью.
+      </p>
+    </section>
+
+    <section>
+      <h2>Как изменить выбор</h2>
+      <p>
+        Откройте «Настройки cookie» ниже или в подвале главной страницы. Отзыв согласия прекращает дальнейшую
+        отправку аналитических событий и удаляет доступные сайту cookie Метрики. Ранее отправленные
+        данные и cookie внешних доменов автоматически не удаляются.
+      </p>
+    </section>
+
+    <section>
+      <h2>Для чего нужны данные</h2>
+      <p>
+        Технические данные нужны для работы и защиты сайта. Аналитика используется, чтобы понимать,
+        какие разделы и способы связи полезны посетителям, и улучшать сайт.
+      </p>
+    </section>
+
+    <div class="privacy-policy__actions">
+      <a class="privacy-policy__home" href="/">Вернуться на главную</a>
+      {analyticsEnabled && <button type="button" data-cookie-settings>Настройки cookie</button>}
+    </div>
+  </div>
+</article>
+
+<style>
+  .privacy-policy {
+    min-height: 100vh;
+    background: var(--page);
+    padding: clamp(3rem, 8vw, 7rem) 1rem 5rem;
+  }
+
+  .privacy-policy__content {
+    width: min(100%, 48rem);
+    margin-inline: auto;
+  }
+
+  .privacy-policy__logo {
+    display: block;
+    width: min(12rem, 52vw);
+    border-radius: 0.5rem;
+  }
+
+  .privacy-policy__logo img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  h1 {
+    margin-top: 2rem;
+    font-family: 'Vetrino', Georgia, serif;
+    font-size: clamp(2.25rem, 7vw, 4rem);
+    font-weight: 400;
+    line-height: 1;
+    text-wrap: balance;
+  }
+
+  .privacy-policy__updated {
+    margin-top: 1rem;
+    color: var(--text-muted);
+  }
+
+  section {
+    margin-top: 2.25rem;
+  }
+
+  h2 {
+    font-family: 'Vetrino', Georgia, serif;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 400;
+    line-height: 1.1;
+  }
+
+  p {
+    margin-top: 0.75rem;
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+
+  a {
+    color: inherit;
+    text-underline-offset: 0.2em;
+  }
+
+  .privacy-policy__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 3rem;
+  }
+
+  .privacy-policy__home,
+  .privacy-policy__actions button {
+    display: inline-flex;
+    min-height: 3rem;
+    align-items: center;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font: inherit;
+  }
+
+  .privacy-policy__home {
+    background: var(--text-primary);
+    color: var(--surface-elevated);
+    text-decoration: none;
+  }
+
+  .privacy-policy__actions button {
+    border: 1px solid var(--text-primary);
+    background: transparent;
+    color: var(--text-primary);
+  }
+</style>

@@ -4,6 +4,8 @@ import FooterLogo from './FooterLogo.astro';
 import FooterNavigation from './FooterNavigation.astro';
 import Copyright from './Copyright.astro';
 import Wrapper from './Wrapper.astro';
+
+const analyticsEnabled = Boolean(import.meta.env.PUBLIC_YANDEX_METRIKA_ID?.trim());
 ---
 
 <div class="site-footer__surface">
@@ -72,11 +74,25 @@ import Wrapper from './Wrapper.astro';
     >
       <FooterNavigation variant="legal" />
     </Wrapper>
+    {
+      analyticsEnabled && (
+        <Wrapper
+          column="1 / -1"
+          order={5}
+          margin="0"
+          at={{ tablet: { column: '1 / -1', row: '4' }, desktop: { column: '2', row: '4' } }}
+        >
+          <button class="site-footer__cookie-settings" type="button" data-cookie-settings>
+            Настройки cookie
+          </button>
+        </Wrapper>
+      )
+    }
     <Wrapper
       column="1 / -1"
-      order={5}
+      order={6}
       margin="0.25rem 0 0"
-      at={{ tablet: { column: '1 / -1', row: '4' }, desktop: { column: '2', row: '4' } }}
+      at={{ tablet: { column: '1 / -1', row: '5' }, desktop: { column: '2', row: '5' } }}
     >
       <Copyright />
     </Wrapper>
@@ -92,6 +108,20 @@ import Wrapper from './Wrapper.astro';
     background: transparent;
     color: var(--text-primary);
     padding: 1rem 0 2.5rem;
+  }
+
+  .site-footer__cookie-settings {
+    display: block;
+    min-height: 1.75rem;
+    margin-inline: auto;
+    border: 0;
+    border-radius: 0.25rem;
+    background: transparent;
+    color: inherit;
+    padding: 0.25rem;
+    font: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
   }
 
   .site-footer__content {
@@ -139,6 +169,10 @@ import Wrapper from './Wrapper.astro';
       grid-template-columns: 392px 662px;
       column-gap: 84px;
       row-gap: 17px;
+    }
+
+    .site-footer__cookie-settings {
+      margin-left: 48px;
     }
   }
 </style>

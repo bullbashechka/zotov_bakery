@@ -10,14 +10,42 @@ import SiteHeader from '@/components/SiteHeader.astro';
 import SiteFooter from '@/components/SiteFooter.astro';
 import WhereToBuy from '@/components/WhereToBuy.astro';
 import { getCanonicalUrl } from '@/lib/site-origin.mjs';
+import { CONTACTS, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE } from '@/lib/site';
 
-const title = 'ZOTOV bakery — десерты с характером';
-const description = 'ZOTOV bakery — десерты, которые хочется разделить с близкими.';
+const title = SITE_TITLE;
+const description = SITE_DESCRIPTION;
 const canonicalUrl = getCanonicalUrl(import.meta.env.PUBLIC_WEBSITE_URL, Astro.url.pathname);
+const socialImageUrl = canonicalUrl ? new URL('/social-preview.jpg', canonicalUrl).toString() : undefined;
+const websiteOrigin = canonicalUrl ? new URL(canonicalUrl).origin : undefined;
+const structuredData = websiteOrigin
+  ? {
+      '@context': 'https://schema.org',
+      '@type': ['Bakery', 'LocalBusiness'],
+      name: SITE_NAME,
+      url: websiteOrigin,
+      image: socialImageUrl,
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: 'ул. Лермонтова, 63',
+        addressLocality: 'Петропавловск',
+        addressCountry: 'KZ',
+      },
+      telephone: [CONTACTS.bakery.display, CONTACTS.mobile.display],
+      openingHoursSpecification: [
+        {
+          '@type': 'OpeningHoursSpecification',
+          dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+          opens: '09:00',
+          closes: '22:00',
+        },
+      ],
+      sameAs: [CONTACTS.instagramUrl],
+    }
+  : undefined;
 
 ---
 
-<BaseLayout {title} {description} {canonicalUrl}>
+<BaseLayout {title} {description} {canonicalUrl} {socialImageUrl} {structuredData}>
   <SiteHeader slot="header" />
 
   <HeroAdvantagesFlow />

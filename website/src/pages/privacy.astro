@@ -1,16 +1,15 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import LegalPlaceholder from '@/components/LegalPlaceholder.astro';
+import PrivacyPolicy from '@/components/PrivacyPolicy.astro';
 import { getCanonicalUrl } from '@/lib/site-origin.mjs';
 
 const canonicalUrl = getCanonicalUrl(import.meta.env.PUBLIC_WEBSITE_URL, Astro.url.pathname);
 ---
 
 <BaseLayout
-  title="Политика конфиденциальности"
-  description="Временная страница политики конфиденциальности ZOTOV bakery."
+  title="Конфиденциальность — ZOTOV bakery"
+  description="Как ZOTOV bakery использует технические данные, cookie и Яндекс Метрику на сайте."
   {canonicalUrl}
-  robots="noindex,follow"
 >
-  <LegalPlaceholder title="Политика конфиденциальности" />
+  <PrivacyPolicy />
 </BaseLayout>

@@ -65,7 +65,7 @@ try {
     await delay(250);
   }
   assert(ready, 'Local Pages did not become ready');
-  for (const [path, status] of [['/', 200], ['/privacy/', 200], ['/data-processing/', 200], ['/missing-security-page', 404], ['/.env', 404], ['/.git/config', 404], ['/api/test', 404], ['/_astro/missing-security.js', 404], ['/missing-security.png', 404]]) {
+  for (const [path, status] of [['/', 200], ['/privacy/', 200], ['/data-processing/', 404], ['/missing-security-page', 404], ['/.env', 404], ['/.git/config', 404], ['/api/test', 404], ['/_astro/missing-security.js', 404], ['/missing-security.png', 404]]) {
     const response = await fetch(origin + path);
     assert.equal(response.status, status, `${path}: wrong HTTP status`);
     assert.equal(response.headers.get('x-content-type-options'), 'nosniff', `${path}: missing nosniff`);
@@ -104,6 +104,13 @@ try {
       });
       await page.goto(origin, { waitUntil: 'networkidle' });
       await page.evaluate(() => document.fonts.ready);
+      const consent = page.locator('[data-cookie-consent]');
+      if (await consent.count()) {
+        assert.equal(await consent.isVisible(), true, 'Consent banner should be visible before a choice');
+        assert.deepEqual(external, [], 'Analytics loaded before consent');
+        await page.locator('[data-cookie-deny]').click();
+        assert.equal(await consent.isHidden(), true, 'Consent banner did not close after refusal');
+      }
       // Section spacing settles after font and ResizeObserver callbacks. Avoid
       // capturing the intermediate unadjusted layout or restored scroll offset.
       await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
@@ -147,7 +154,7 @@ try {
         assert.deepEqual(external, [], 'CSP allowed an external script request to leave the page');
       }
       requests.length = 0; // Intentional blocked script probes are not normal page failures.
-      for (const path of ['/privacy/', '/data-processing/', '/missing-security-page']) {
+      for (const path of ['/privacy/', '/missing-security-page']) {
         await page.goto(origin + path);
         await page.evaluate(() => document.fonts.ready);
         assert.deepEqual(await page.evaluate(() => window.__securityViolations), [], `${path}: CSP violations`);
@@ -174,6 +181,30 @@ try {
   assert.deepEqual(animationErrors, [], 'Animation runtime errors');
   assert.deepEqual(await page.evaluate(() => window.__animationViolations), [], 'CSP blocked animations');
   await page.close();
+
+  if (process.env.PUBLIC_YANDEX_METRIKA_ID) {
+    const consentContext = await browser.newContext({ viewport: { width: 390, height: 900 } });
+    const consentPage = await consentContext.newPage();
+    const yandexRequests = [];
+    await consentPage.route('https://mc.yandex.ru/**', async (route) => {
+      yandexRequests.push(route.request().url());
+      if (route.request().resourceType() === 'script') {
+        await route.fulfill({ status: 200, contentType: 'application/javascript', body: '' });
+      } else {
+        await route.fulfill({ status: 204, body: '' });
+      }
+    });
+    await consentPage.goto(origin);
+    assert.deepEqual(yandexRequests, [], 'Analytics loaded before explicit consent');
+    await consentPage.locator('[data-cookie-allow]').click();
+    await consentPage.waitForFunction(() => Boolean(document.querySelector('[data-yandex-metrika]')));
+    assert(yandexRequests.some((url) => url.includes('/metrika/tag.js')), 'Metrika did not load after consent');
+    await consentPage.locator('[data-cookie-settings]').first().click();
+    await consentPage.locator('[data-cookie-deny]').click();
+    await consentPage.waitForLoadState('domcontentloaded');
+    assert.equal(await consentPage.locator('[data-cookie-consent]').isHidden(), true, 'Refused consent was not retained');
+    await consentContext.close();
+  }
 } finally {
   process.removeListener('SIGINT', interrupted);
   process.removeListener('SIGTERM', interrupted);

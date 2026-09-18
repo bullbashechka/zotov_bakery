@@ -47,6 +47,17 @@ node node_modules/playwright/cli.js install --only-shell chromium
 PUBLIC_WEBSITE_URL=https://example.com bun run release:check
 ```
 
+Яндекс Метрика подключается только после согласия посетителя. Перед production-сборкой
+задайте публичный номер счётчика; пустое значение полностью отключает Метрику и баннер:
+
+```bash
+PUBLIC_WEBSITE_URL=https://example.com PUBLIC_YANDEX_METRIKA_ID=12345678 bun run release:check
+```
+
+В интерфейсе Метрики создайте JavaScript-события `whatsapp_click`, `phone_click`,
+`map_bakery_click`, `map_aimer_click` и `instagram_click`. Вебвизор и автоматическое
+отслеживание ссылок для счётчика должны быть выключены.
+
 [Исходный аудит](docs/security-audit-2026-09-18.md) и
 [статус исправлений и оставшиеся проверки production](docs/security-remediation-2026-09-18.md).
 

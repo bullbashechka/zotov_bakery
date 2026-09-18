@@ -24,17 +24,19 @@ export default defineConfig({
       directives: [
         "default-src 'self'",
         "base-uri 'none'",
-        "connect-src 'self'",
+        "connect-src 'self' https://mc.yandex.ru https://mc.yandex.com",
         "font-src 'self'",
         "form-action 'none'",
         "frame-src 'none'",
-        "img-src 'self'",
+        "img-src 'self' data: https://mc.yandex.ru https://mc.yandex.com",
         "object-src 'none'",
       ],
       scriptDirective: {
         hashes: inlineScriptHashes,
         resources: [
           { resource: "'self'", kind: 'element' },
+          { resource: 'https://mc.yandex.ru', kind: 'element' },
+          { resource: 'https://yastatic.net', kind: 'element' },
           { resource: "'none'", kind: 'attribute' },
         ],
       },

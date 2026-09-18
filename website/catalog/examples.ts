@@ -13,6 +13,7 @@ type Components = {
   Assortment: typeof import('../src/components/Assortment.astro').default;
   ContactSection: typeof import('../src/components/ContactSection.astro').default;
   ConversionSection: typeof import('../src/components/ConversionSection.astro').default;
+  CookieConsent: typeof import('../src/components/CookieConsent.astro').default;
   Copyright: typeof import('../src/components/Copyright.astro').default;
   Faq: typeof import('../src/components/Faq.astro').default;
   FaqAccordion: typeof import('../src/components/FaqAccordion.astro').default;
@@ -24,9 +25,9 @@ type Components = {
   HeroAdvantagesFlow: typeof import('../src/components/HeroAdvantagesFlow.astro').default;
   HoneyCake: typeof import('../src/components/HoneyCake.astro').default;
   HoneyCakeIllustration: typeof import('../src/components/HoneyCakeIllustration.astro').default;
-  LegalPlaceholder: typeof import('../src/components/LegalPlaceholder.astro').default;
   NotFound: typeof import('../src/components/NotFound.astro').default;
   PageFrame: typeof import('../src/components/PageFrame.astro').default;
+  PrivacyPolicy: typeof import('../src/components/PrivacyPolicy.astro').default;
   PlaceholderSection: typeof import('../src/components/PlaceholderSection.astro').default;
   ProductDetails: typeof import('../src/components/ProductDetails.astro').default;
   PurchaseCard: typeof import('../src/components/PurchaseCard.astro').default;
@@ -112,6 +113,7 @@ const fixedExamples: Example[] = [
   { component: 'Assortment', name: 'default', props: {}, text: '' },
   { component: 'ContactSection', name: 'default', props: {}, text: '' },
   { component: 'ConversionSection', name: 'default', props: {}, text: '' },
+  { component: 'CookieConsent', name: 'default', props: { counterId: '12345678' }, text: '' },
   { component: 'Copyright', name: 'default', props: {}, text: '' },
   { component: 'Faq', name: 'default', props: {}, text: '' },
   { component: 'FaqAccordion', name: 'default', props: { items: FAQ_ITEMS }, text: '' },
@@ -156,14 +158,9 @@ const fixedExamples: Example[] = [
   { component: 'HeroAdvantagesFlow', name: 'default', props: {}, text: '' },
   { component: 'HoneyCake', name: 'default', props: {}, text: '' },
   { component: 'HoneyCakeIllustration', name: 'default', props: {}, text: '' },
-  {
-    component: 'LegalPlaceholder',
-    name: 'default',
-    props: { title: 'Политика конфиденциальности' },
-    text: '',
-  },
   { component: 'NotFound', name: 'default', props: {}, text: '' },
   { component: 'PageFrame', name: 'default', props: {}, text: '' },
+  { component: 'PrivacyPolicy', name: 'default', props: {}, text: '' },
   {
     component: 'PlaceholderSection',
     name: 'default',

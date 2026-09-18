@@ -36,12 +36,14 @@ test('permits the deliberate style-only inline exception but models hash precede
 test('artifact scanner catches accidental secrets and source maps in publication directory', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'zotov-artifact-test-'));
   try {
-    for (const route of ['privacy', 'data-processing']) {
+    for (const route of ['privacy']) {
       await mkdir(join(dir, route));
       await writeFile(join(dir, route, 'index.html'), html('', policy, `/${route}/`));
     }
     await writeFile(join(dir, 'index.html'), html());
     await writeFile(join(dir, '404.html'), html());
+    await writeFile(join(dir, 'robots.txt'), 'User-agent: *\nAllow: /\n');
+    await writeFile(join(dir, 'sitemap.xml'), '<?xml version="1.0"?><urlset></urlset>');
     await writeFile(join(dir, '_headers'), "/*\n  Content-Security-Policy: frame-ancestors 'none';\n");
     await checkArtifacts(dir, 'https://test.pages.dev');
     await writeFile(join(dir, '.env'), 'SYNTHETIC_EXAMPLE=not-a-secret');
