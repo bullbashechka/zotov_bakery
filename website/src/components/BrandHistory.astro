@@ -126,30 +126,23 @@ const historyCount = HISTORY_EVENTS.length;
       if (this.cleanup) return;
 
       const root = this.querySelector<HTMLElement>('[data-history-root]');
-      const carousel = this.querySelector<HTMLElement>('[data-history-carousel]');
+      const timelineClip = this.querySelector<HTMLElement>('[data-history-timeline-clip]');
       const track = this.querySelector<HTMLElement>('[data-history-track]');
       const tabs = Array.from(this.querySelectorAll<HTMLButtonElement>('[data-history-tab]'));
       const slides = Array.from(this.querySelectorAll<HTMLElement>('[data-history-slide]'));
-      const slideContents = Array.from(
-        this.querySelectorAll<HTMLElement>('.history__slide-content'),
-      );
-      const details = Array.from(this.querySelectorAll<HTMLDetailsElement>('[data-history-details]'));
 
       if (
         !root ||
-        !carousel ||
+        !timelineClip ||
         !track ||
         !tabs.length ||
-        tabs.length !== slides.length ||
-        slides.length !== slideContents.length
+        tabs.length !== slides.length
       )
         return;
 
       let activeIndex = 0;
       let resizeFrame = 0;
-      let transitionFrame = 0;
       let settleTimer = 0;
-      let scrolling = false;
       let targetIndex: number | null = null;
       let trackWidth = track.clientWidth;
       const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -163,12 +156,9 @@ const historyCount = HISTORY_EVENTS.length;
 
           if (widthChanged) {
             window.clearTimeout(settleTimer);
-            scrolling = false;
             targetIndex = null;
             alignToActive();
-            syncHeight(true);
-          } else if (!scrolling) {
-            syncHeight();
+            centerTimelineTab(activeIndex);
           }
         });
       });
@@ -176,34 +166,18 @@ const historyCount = HISTORY_EVENTS.length;
       const clampIndex = (index: number) => Math.min(Math.max(index, 0), slides.length - 1);
       const shouldReduceMotion = () => reducedMotion.matches;
 
-      const getSlideHeight = (index = activeIndex) => {
-        const content = slideContents[index];
-        return Math.ceil(content?.getBoundingClientRect().height ?? 0);
-      };
+      const centerTimelineTab = (index: number) => {
+        const tab = tabs[index];
+        if (!tab) return;
 
-      const syncHeight = (instant = false) => {
-        const height = getSlideHeight();
-        if (height <= 0) return;
+        const tabBounds = tab.getBoundingClientRect();
+        const clipBounds = timelineClip.getBoundingClientRect();
+        const tabCenter = tabBounds.left + tabBounds.width / 2;
+        const clipCenter = clipBounds.left + clipBounds.width / 2;
 
-        if (instant) {
-          root.dataset.historyResizing = 'true';
-          if (transitionFrame) window.cancelAnimationFrame(transitionFrame);
-          transitionFrame = window.requestAnimationFrame(() => {
-            transitionFrame = window.requestAnimationFrame(() => {
-              delete root.dataset.historyResizing;
-              transitionFrame = 0;
-            });
-          });
-        }
-
-        carousel.style.height = `${height}px`;
-      };
-
-      const scrollTabIntoView = (index: number) => {
-        tabs[index]?.scrollIntoView({
+        timelineClip.scrollTo({
+          left: timelineClip.scrollLeft + tabCenter - clipCenter,
           behavior: shouldReduceMotion() ? 'auto' : 'smooth',
-          block: 'nearest',
-          inline: 'center',
         });
       };
 
@@ -218,8 +192,7 @@ const historyCount = HISTORY_EVENTS.length;
         });
 
         if (focusTab) tabs[activeIndex]?.focus({ preventScroll: true });
-        scrollTabIntoView(activeIndex);
-        window.requestAnimationFrame(() => syncHeight());
+        centerTimelineTab(activeIndex);
       };
 
       const setTabSelection = (index: number) => {
@@ -252,7 +225,6 @@ const historyCount = HISTORY_EVENTS.length;
         const targetLeft = track.clientWidth * nextIndex;
 
         if (nextIndex === activeIndex && Math.abs(track.scrollLeft - targetLeft) <= 2) {
-          scrolling = false;
           targetIndex = null;
           setActive(nextIndex, focusTab);
           return;
@@ -260,8 +232,6 @@ const historyCount = HISTORY_EVENTS.length;
 
         const behavior: ScrollBehavior = shouldReduceMotion() ? 'auto' : 'smooth';
         window.clearTimeout(settleTimer);
-        syncHeight();
-        scrolling = !shouldReduceMotion();
         targetIndex = shouldReduceMotion() ? null : nextIndex;
         track.scrollTo({ left: targetLeft, behavior });
 
@@ -283,7 +253,6 @@ const historyCount = HISTORY_EVENTS.length;
         }
 
         window.clearTimeout(settleTimer);
-        scrolling = false;
         targetIndex = null;
         setActive(Math.round(track.scrollLeft / width));
       };
@@ -294,7 +263,6 @@ const historyCount = HISTORY_EVENTS.length;
       };
 
       const handleTrackScroll = () => {
-        scrolling = true;
         selectTabNearSnapPoint();
         scheduleCommit();
       };
@@ -327,17 +295,9 @@ const historyCount = HISTORY_EVENTS.length;
         selectIndex(next, true);
       };
 
-      const handleDetailsToggle = (event: Event) => {
-        const detail = event.currentTarget as HTMLDetailsElement;
-        const slide = detail.closest<HTMLElement>('[data-history-slide]');
-        if (slide?.dataset.historyIndex === String(activeIndex) && !scrolling)
-          window.requestAnimationFrame(() => syncHeight());
-      };
-
       root.dataset.historyEnhanced = 'true';
       setActive(0);
       resizeObserver.observe(track);
-      slideContents.forEach((content) => resizeObserver.observe(content));
       track.addEventListener('scroll', handleTrackScroll, { passive: true });
       track.addEventListener('scrollend', commitNearestSlide);
       track.addEventListener('pointerdown', cancelProgrammaticScroll, { passive: true });
@@ -346,15 +306,10 @@ const historyCount = HISTORY_EVENTS.length;
         tab.addEventListener('click', handleTabClick);
         tab.addEventListener('keydown', handleTabKeydown);
       });
-      details.forEach((detail) => detail.addEventListener('toggle', handleDetailsToggle));
-      document.fonts?.ready.then(() => {
-        if (this.isConnected && !scrolling) syncHeight(true);
-      });
 
       this.cleanup = () => {
         window.clearTimeout(settleTimer);
         if (resizeFrame) window.cancelAnimationFrame(resizeFrame);
-        if (transitionFrame) window.cancelAnimationFrame(transitionFrame);
         resizeObserver.disconnect();
         track.removeEventListener('scroll', handleTrackScroll);
         track.removeEventListener('scrollend', commitNearestSlide);
@@ -364,13 +319,10 @@ const historyCount = HISTORY_EVENTS.length;
           tab.removeEventListener('click', handleTabClick);
           tab.removeEventListener('keydown', handleTabKeydown);
         });
-        details.forEach((detail) => detail.removeEventListener('toggle', handleDetailsToggle));
         slides.forEach((slide) => {
           slide.removeAttribute('inert');
           slide.removeAttribute('aria-hidden');
         });
-        carousel.style.removeProperty('height');
-        delete root.dataset.historyResizing;
         delete root.dataset.historyEnhanced;
         this.cleanup = null;
       };
@@ -600,12 +552,7 @@ const historyCount = HISTORY_EVENTS.length;
 
   .history[data-history-enhanced='true'] .history__timeline-clip { display: block; }
 
-  .history[data-history-enhanced='true'] .history__carousel {
-    overflow: clip;
-    transition: height var(--motion-interaction-duration) var(--motion-ease);
-  }
-
-  .history[data-history-resizing='true'] .history__carousel { transition: none; }
+  .history[data-history-enhanced='true'] .history__carousel { overflow: clip; }
 
   .history[data-history-enhanced='true'] .history__track {
     display: flex;
@@ -622,8 +569,14 @@ const historyCount = HISTORY_EVENTS.length;
 
   .history[data-history-enhanced='true'] .history__slide {
     flex: 0 0 100%;
+    min-block-size: 0;
+    block-size: 0;
     scroll-snap-align: start;
     scroll-snap-stop: normal;
+  }
+
+  .history[data-history-enhanced='true'] .history__slide[aria-hidden='false'] {
+    block-size: auto;
   }
 
   @media (min-width: 40rem) {
