@@ -34,15 +34,21 @@ export function initSectionSpacing(root: ParentNode): () => void {
   let frame = 0;
   const apply = () => {
     frame = 0;
-    pairs.forEach(({ target }) => target.style.setProperty('--section-heading-gap-adjust', '0px'));
-
-    // Force the zeroed baseline to be laid out before every pair is measured.
-    void probe.offsetHeight;
     const desiredGap = probe.getBoundingClientRect().height;
 
-    pairs.forEach(({ end, title, target }) => {
+    // Measure the current layout without temporarily moving sections above the viewport.
+    // Complete all reads before writing margins to avoid intermediate layout changes.
+    const updates = pairs.map(({ end, title, target }) => {
+      const currentAdjustment = Number.parseFloat(
+        getComputedStyle(target).getPropertyValue('--section-heading-gap-adjust'),
+      ) || 0;
       const actualGap = title.getBoundingClientRect().top - end.getBoundingClientRect().bottom;
-      const adjustment = Math.round((desiredGap - actualGap) * 1000) / 1000;
+      const adjustment = Math.round((currentAdjustment + desiredGap - actualGap) * 1000) / 1000;
+      return { target, currentAdjustment, adjustment };
+    });
+
+    updates.forEach(({ target, currentAdjustment, adjustment }) => {
+      if (Math.abs(adjustment - currentAdjustment) < 0.5) return;
       target.style.setProperty('--section-heading-gap-adjust', `${adjustment}px`);
     });
   };
