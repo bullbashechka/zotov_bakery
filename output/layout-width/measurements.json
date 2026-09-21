@@ -1,0 +1,164 @@
+[
+  {
+    "viewport": 390,
+    "root": "16px",
+    "overflow": false,
+    "boxes": [
+      {
+        "selector": ".site-header__content",
+        "x": 16,
+        "width": 358
+      },
+      {
+        "selector": ".advantages__content",
+        "x": 0,
+        "width": 390
+      },
+      {
+        "selector": ".hero__cake",
+        "x": 48.75,
+        "width": 292.5
+      },
+      {
+        "selector": ".conversion-section__line",
+        "x": 0,
+        "width": 390
+      }
+    ]
+  },
+  {
+    "viewport": 1440,
+    "root": "16.4571px",
+    "overflow": false,
+    "boxes": [
+      {
+        "selector": ".site-header__content",
+        "x": 82.28125,
+        "width": 1275.421875
+      },
+      {
+        "selector": ".advantages__content",
+        "x": 82.28125,
+        "width": 1275.421875
+      },
+      {
+        "selector": ".hero__cake",
+        "x": 884.591552734375,
+        "width": 633.59375
+      },
+      {
+        "selector": ".conversion-section__line",
+        "x": 0,
+        "width": 1440
+      }
+    ]
+  },
+  {
+    "viewport": 1920,
+    "root": "21.9429px",
+    "overflow": false,
+    "boxes": [
+      {
+        "selector": ".site-header__content",
+        "x": 109.71875,
+        "width": 1700.5625
+      },
+      {
+        "selector": ".advantages__content",
+        "x": 109.71875,
+        "width": 1700.5625
+      },
+      {
+        "selector": ".hero__cake",
+        "x": 1179.439697265625,
+        "width": 844.796875
+      },
+      {
+        "selector": ".conversion-section__line",
+        "x": 0,
+        "width": 1920
+      }
+    ]
+  },
+  {
+    "viewport": 2400,
+    "root": "21.9429px",
+    "overflow": false,
+    "boxes": [
+      {
+        "selector": ".site-header__content",
+        "x": 349.71875,
+        "width": 1700.5625
+      },
+      {
+        "selector": ".advantages__content",
+        "x": 349.71875,
+        "width": 1700.5625
+      },
+      {
+        "selector": ".hero__cake",
+        "x": 1424.924072265625,
+        "width": 844.796875
+      },
+      {
+        "selector": ".conversion-section__line",
+        "x": 240,
+        "width": 1920
+      }
+    ]
+  },
+  {
+    "viewport": 2560,
+    "root": "21.9429px",
+    "overflow": false,
+    "boxes": [
+      {
+        "selector": ".site-header__content",
+        "x": 429.71875,
+        "width": 1700.5625
+      },
+      {
+        "selector": ".advantages__content",
+        "x": 429.71875,
+        "width": 1700.5625
+      },
+      {
+        "selector": ".hero__cake",
+        "x": 1504.924072265625,
+        "width": 844.796875
+      },
+      {
+        "selector": ".conversion-section__line",
+        "x": 320,
+        "width": 1920
+      }
+    ]
+  },
+  {
+    "viewport": 3840,
+    "root": "21.9429px",
+    "overflow": false,
+    "boxes": [
+      {
+        "selector": ".site-header__content",
+        "x": 1069.71875,
+        "width": 1700.5625
+      },
+      {
+        "selector": ".advantages__content",
+        "x": 1069.71875,
+        "width": 1700.5625
+      },
+      {
+        "selector": ".hero__cake",
+        "x": 2144.924072265625,
+        "width": 844.796875
+      },
+      {
+        "selector": ".conversion-section__line",
+        "x": 960,
+        "width": 1920
+      }
+    ]
+  }
+]

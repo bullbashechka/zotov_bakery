@@ -2,24 +2,25 @@
 import HoneyCakeIllustration from './HoneyCakeIllustration.astro';
 import Wrapper from './Wrapper.astro';
 import ActionLink from '@/components/ActionLink.astro';
-import { getWhatsAppUrl, HOME_SECTION_IDS } from '@/lib/site';
+import { CONTACTS, getWhatsAppUrl, HOME_SECTION_IDS } from '@/lib/site';
 
-const whatsappUrl = getWhatsAppUrl('general');
+const whatsappUrl = getWhatsAppUrl('honeyCake');
 ---
 
-<section id={HOME_SECTION_IDS.honeyCake} class="honey-cake" aria-labelledby="honey-cake-title">
+<section id={HOME_SECTION_IDS.honeyCake} class="honey-cake" data-section-spacing-target aria-labelledby="honey-cake-title">
   <div class="honey-cake__surface" aria-hidden="true"></div>
   <div class="honey-cake__container">
-    <h2 id="honey-cake-title" class="honey-cake__title" data-motion="heading">
+    <h2 id="honey-cake-title" class="honey-cake__title" data-section-title data-motion="heading">
       Медовик от <span class="honey-cake__brand-z">Z</span>OTOV bakery
     </h2>
 
-    <div class="honey-cake__content">
+    <div class="honey-cake__content" data-section-end>
       <Wrapper
         width="min(100%, 42rem)"
         margin="0 auto"
         at={{
-          large: { column: '1', row: '1', width: 'min(100%, 43rem)', margin: '0' },
+          medium: { column: '1', row: '1', alignSelf: 'end' },
+          large: { column: '1', row: '1', width: 'min(100%, 43rem)', margin: '0', alignSelf: 'center' },
           cinema: { width: '43rem' },
         }}
       >
@@ -39,10 +40,11 @@ const whatsappUrl = getWhatsAppUrl('general');
           Этот медовик Светлана Зотова пекла для семьи и близких. Со временем домашний рецепт стал
           ассоциироваться с брендом.
         </p>
-        <Wrapper margin="1.5rem 0 0" at={{ large: { margin: '2.25rem 0 0' } }}>
+        <Wrapper margin="1.5rem 0 0" at={{ medium: { margin: '0.75rem 0 0' }, large: { margin: '2.25rem 0 0' } }}>
           <ActionLink variant="primary" href={whatsappUrl} fullWidth external>
             Узнать цену и наличие
           </ActionLink>
+          <p><a href={CONTACTS.mobile.href}>Или позвоните нам: {CONTACTS.mobile.display}</a></p>
         </Wrapper>
       </div>
     </div>
@@ -182,6 +184,44 @@ const whatsappUrl = getWhatsAppUrl('general');
     }
   }
 
+  @media (48rem <= width < 64rem) {
+    .honey-cake {
+      --honey-cake-surface-start: 4.75rem;
+
+      padding-block: 1.5rem 2rem;
+    }
+
+    .honey-cake__title {
+      font-size: 2rem;
+    }
+
+    .honey-cake__content {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.5rem;
+      margin-top: 2.75rem;
+    }
+
+    .honey-cake__copy {
+      position: relative;
+      z-index: 1;
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .honey-cake__copy h3 {
+      font-size: 1.625rem;
+    }
+
+    .honey-cake__copy p {
+      margin-top: 0.75rem;
+    }
+
+    .honey-cake__hint {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+  }
+
   @media (min-width: 56.25rem) {
     .honey-cake {
       --honey-cake-scallop-height: 1.44625rem;
@@ -192,7 +232,7 @@ const whatsappUrl = getWhatsAppUrl('general');
 
   @media (min-width: 64rem) {
     .honey-cake {
-      --honey-cake-surface-start: 12.3125rem;
+      --honey-cake-surface-start: 4rem;
 
       min-height: 48.5625rem;
       padding-block: 7.4375rem 2.25rem;
@@ -206,7 +246,7 @@ const whatsappUrl = getWhatsAppUrl('general');
       grid-template-columns: minmax(0, 1fr) 24.1875rem;
       column-gap: clamp(2rem, 6vw, 6.25rem);
       row-gap: 0;
-      margin-top: 6.625rem;
+      margin-top: 1.6rem;
     }
 
     .honey-cake__hint {

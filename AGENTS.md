@@ -6,7 +6,7 @@ This is a Bun workspace with one Astro site in `website/`. Global styles and des
 
 Keep public, SEO-critical content in `.astro` files. Use React only for isolated client interactions. Follow the style of the existing code.
 
-Use `$code-scout` for non-trivial repository discovery: delegate code search and broad code reading to a GPT-5.3 Spark subagent to keep irrelevant file contents out of the primary agent's context.
+Use `$code-scout` for non-trivial repository discovery to delegate broad code reading to a lower-cost subagent scout and keep irrelevant file contents out of the primary agent's context.
 
 ## Commands & Verification
 

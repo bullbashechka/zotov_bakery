@@ -8,7 +8,7 @@ interface Props {
 const { option } = Astro.props;
 ---
 
-<article class="where-to-buy__card" data-motion="card">
+<article class="where-to-buy__card" data-kind={option.kind} data-motion="card">
   <div class="where-to-buy__image-wrap" aria-hidden="true">
     <img
       class="where-to-buy__image"
@@ -132,41 +132,66 @@ const { option } = Astro.props;
 
   @media (min-width: 40rem) and (max-width: 74.999rem) {
     .where-to-buy__card {
-      height: 514px;
+      height: 100%;
     }
 
     .where-to-buy__content {
-      min-height: 0;
-      padding: 16px 16px 8px;
+      padding: 1rem 1rem 0.5rem;
     }
 
     .where-to-buy__content h3 {
-      font-size: 30px;
+      font-size: 1.875rem;
     }
 
     .where-to-buy__content p {
-      font-size: 16px;
+      font-size: 1rem;
       line-height: 1.2;
+    }
+
+    .where-to-buy__card[data-kind='delivery'] {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-rows: 1fr auto;
+      height: auto;
+    }
+
+    .where-to-buy__card[data-kind='delivery'] .where-to-buy__image-wrap {
+      grid-column: 1;
+      grid-row: 1 / -1;
+      min-height: 11rem;
+      aspect-ratio: auto;
+    }
+
+    .where-to-buy__card[data-kind='delivery'] .where-to-buy__image {
+      object-fit: contain;
+    }
+
+    .where-to-buy__card[data-kind='delivery'] .where-to-buy__content {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .where-to-buy__card[data-kind='delivery'] > [data-wrapper] {
+      grid-column: 2;
+      grid-row: 2;
     }
   }
 
   @media (min-width: 75rem) {
     .where-to-buy__card {
-      height: 514px;
+      min-height: 32.125rem;
     }
 
     .where-to-buy__content {
-      min-height: 0;
-      gap: 18px;
-      padding: 16px 16px 8px;
+      gap: 1.125rem;
+      padding: 1rem 1rem 0.5rem;
     }
 
     .where-to-buy__content h3 {
-      font-size: 30px;
+      font-size: 1.875rem;
     }
 
     .where-to-buy__content p {
-      font-size: 16px;
+      font-size: 1rem;
       line-height: 1.2;
     }
   }

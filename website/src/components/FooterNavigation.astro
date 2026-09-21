@@ -12,32 +12,29 @@ const links = variant === 'primary' ? HOME_NAV_LINKS : POLICY_LINKS;
   data-variant={variant}
   aria-label={variant === 'primary' ? 'Навигация в подвале' : 'Юридическая информация'}
 >
-  {links.map((link) => <a href={link.href}>{link.label}</a>)}
+  {links.map((link) => <a href={link.href.startsWith('#') ? `/${link.href}` : link.href}>{link.label}</a>)}
 </nav>
 
 <style>
   .footer-navigation[data-variant='primary'],
   .footer-navigation[data-variant='legal'] {
-    display: grid;
+    display: flex;
+    flex-wrap: wrap;
     align-content: start;
-    gap: 0.25rem;
-  }
-
-  .footer-navigation[data-variant='primary'] {
-  }
-
-  .footer-navigation[data-variant='legal'] {
+    justify-content: center;
+    column-gap: 1.5rem;
+    row-gap: 0.25rem;
   }
 
   .footer-navigation[data-variant='primary'] a,
   .footer-navigation[data-variant='legal'] a {
     display: inline-flex;
-    min-height: 2.75rem;
+    min-height: 1.25rem;
     align-items: center;
     border-radius: 0.25rem;
     color: inherit;
-    font-size: 0.9375rem;
-    line-height: 1.15;
+    font-size: 1rem;
+    line-height: 1;
     text-decoration: underline;
     text-decoration-color: transparent;
     text-underline-offset: 0.2em;
@@ -52,27 +49,42 @@ const links = variant === 'primary' ? HOME_NAV_LINKS : POLICY_LINKS;
   @media (min-width: 40rem) {
     .footer-navigation[data-variant='primary'],
     .footer-navigation[data-variant='legal'] {
-      grid-auto-flow: column;
-      justify-content: start;
-      gap: 1.25rem;
+      column-gap: 1.25rem;
+    }
+
+    .footer-navigation[data-variant='primary'] {
+      column-gap: 30px;
     }
 
     .footer-navigation[data-variant='legal'] {
-      gap: 2rem;
+      column-gap: 2rem;
     }
   }
 
-  @media (min-width: 75rem) {
-    .footer-navigation[data-variant='primary'] {
-    }
-
+  @media (max-width: 39.999rem) {
+    .footer-navigation[data-variant='primary'],
     .footer-navigation[data-variant='legal'] {
+      row-gap: 10px;
     }
 
     .footer-navigation[data-variant='primary'] a,
     .footer-navigation[data-variant='legal'] a {
-      min-height: 2rem;
-      font-size: 1rem;
+      min-height: 16px;
+      line-height: 16px;
+    }
+  }
+
+  @media (min-width: 75rem) {
+    .footer-navigation[data-variant='primary'] a,
+    .footer-navigation[data-variant='legal'] a {
+      min-height: 1.25rem;
+      font-size: 16px;
+    }
+
+    .footer-navigation[data-variant='primary'],
+    .footer-navigation[data-variant='legal'] {
+      justify-content: flex-start;
+      padding-left: 52px;
     }
   }
 </style>

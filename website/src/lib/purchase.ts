@@ -24,7 +24,7 @@ export const PURCHASE_OPTIONS = [
   {
     title: 'В супермаркетах aimer',
     description:
-      'Продукцию ZOTOV bakery можно найти в магазинах сети в Петропавловске. Ассортимент может отличаться.',
+      'Продукцию ZOTOV bakery можно найти в магазинах сети в Петропавловске. Ассортимент может отличаться. Наличие конкретного десерта уточняйте в выбранном магазине AIMER.',
     action: 'Посмотреть адреса',
     href: PURCHASE_LINKS.aimerTwoGisUrl,
     image: '/where-to-buy/aimer.png',
@@ -34,7 +34,7 @@ export const PURCHASE_OPTIONS = [
   {
     title: 'С доставкой на дом или в офис',
     description:
-      'Напишите нам в WhatsApp. Подскажем, что есть в наличии, и уточним стоимость и условия доставки.',
+      'Наличие, адрес и время доставки согласуем в WhatsApp. Подскажем стоимость и условия доставки.',
     action: 'Заказать доставку',
     href: getWhatsAppUrl('delivery'),
     image: '/where-to-buy/delivery.png',

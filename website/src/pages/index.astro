@@ -1,29 +1,51 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Assortment from '@/components/Assortment.astro';
+import BrandHistory from '@/components/BrandHistory.astro';
 import ConversionSection from '@/components/ConversionSection.astro';
 import Faq from '@/components/Faq.astro';
 import HeroAdvantagesFlow from '@/components/HeroAdvantagesFlow.astro';
 import HoneyCake from '@/components/HoneyCake.astro';
-import PlaceholderSection from '@/components/PlaceholderSection.astro';
 import SiteHeader from '@/components/SiteHeader.astro';
 import SiteFooter from '@/components/SiteFooter.astro';
 import WhereToBuy from '@/components/WhereToBuy.astro';
-import { HOME_SECTION_IDS } from '@/lib/site';
+import { getCanonicalUrl } from '@/lib/site-origin.mjs';
+import { CONTACTS, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE } from '@/lib/site';
 
-const title = 'ZOTOV bakery — десерты с характером';
-const description = 'ZOTOV bakery — десерты, которые хочется разделить с близкими.';
-const publicWebsiteUrl = import.meta.env.PUBLIC_WEBSITE_URL;
-const canonicalUrl = publicWebsiteUrl
-  ? new URL(Astro.url.pathname, publicWebsiteUrl).toString()
+const title = SITE_TITLE;
+const description = SITE_DESCRIPTION;
+const canonicalUrl = getCanonicalUrl(import.meta.env.PUBLIC_WEBSITE_URL, Astro.url.pathname);
+const socialImageUrl = canonicalUrl ? new URL('/social-preview.jpg', canonicalUrl).toString() : undefined;
+const websiteOrigin = canonicalUrl ? new URL(canonicalUrl).origin : undefined;
+const structuredData = websiteOrigin
+  ? {
+      '@context': 'https://schema.org',
+      '@type': ['Bakery', 'LocalBusiness'],
+      name: SITE_NAME,
+      url: websiteOrigin,
+      image: socialImageUrl,
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: 'ул. Лермонтова, 63',
+        addressLocality: 'Петропавловск',
+        addressCountry: 'KZ',
+      },
+      telephone: [CONTACTS.bakery.display, CONTACTS.mobile.display],
+      openingHoursSpecification: [
+        {
+          '@type': 'OpeningHoursSpecification',
+          dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+          opens: '09:00',
+          closes: '22:00',
+        },
+      ],
+      sameAs: [CONTACTS.instagramUrl],
+    }
   : undefined;
 
-const placeholderSections = {
-  history: { id: HOME_SECTION_IDS.history, title: 'Наша история' },
-};
 ---
 
-<BaseLayout {title} {description} {canonicalUrl}>
+<BaseLayout {title} {description} {canonicalUrl} {socialImageUrl} {structuredData}>
   <SiteHeader slot="header" />
 
   <HeroAdvantagesFlow />
@@ -31,10 +53,7 @@ const placeholderSections = {
   <HoneyCake />
   <Assortment />
   <WhereToBuy />
-  <PlaceholderSection
-    id={placeholderSections.history.id}
-    title={placeholderSections.history.title}
-  />
+  <BrandHistory />
   <Faq />
   <ConversionSection />
 
@@ -43,10 +62,13 @@ const placeholderSections = {
 
 <script>
   import { initPageMotion } from '@/lib/motion';
+  import { initSectionSpacing } from '@/lib/section-spacing';
 
   const cleanup = initPageMotion(document);
+  const cleanupSectionSpacing = initSectionSpacing(document);
   if (import.meta.hot)
     import.meta.hot.dispose(() => {
       cleanup();
+      cleanupSectionSpacing();
     });
 </script>

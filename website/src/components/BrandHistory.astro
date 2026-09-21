@@ -1,0 +1,623 @@
+---
+import { Image } from 'astro:assets';
+import { HISTORY_EVENTS } from '@/lib/history';
+import { HOME_SECTION_IDS } from '@/lib/site';
+
+const historyCount = HISTORY_EVENTS.length;
+---
+
+<brand-history>
+  <section
+    id={HOME_SECTION_IDS.history}
+    class="history"
+    data-section-spacing-target
+    data-history-root
+    aria-labelledby="history-title"
+  >
+    <div class="history__inner">
+      <header class="history__header">
+        <h2 id="history-title" class="history__title" data-section-title>С чего всё начиналось</h2>
+      </header>
+
+      <div class="history__timeline-clip" data-history-timeline-clip>
+        <div class="history__timeline" role="tablist" aria-label="История ZOTOV Bakery">
+          {
+            HISTORY_EVENTS.map((event, index) => (
+              <button
+                id={`${event.id}-tab`}
+                class="history__timeline-tab"
+                type="button"
+                role="tab"
+                aria-controls={`${event.id}-panel`}
+                aria-selected={index === 0 ? 'true' : 'false'}
+                tabindex={index === 0 ? 0 : -1}
+                data-history-tab
+                data-history-index={index}
+              >
+                <span class="history__timeline-marker">
+                  <span class="history__timeline-line" aria-hidden="true"></span>
+                  <span class="history__timeline-year">{event.year}</span>
+                  <span class="history__timeline-line" aria-hidden="true"></span>
+                </span>
+                <span class="history__timeline-label">{event.navLabel}</span>
+              </button>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="history__carousel" data-history-carousel data-section-end>
+        <ol role="presentation" class="history__track" data-history-track>
+          {
+            HISTORY_EVENTS.map((event, index) => (
+              <li
+                id={`${event.id}-panel`}
+                class="history__slide"
+                role="tabpanel"
+                aria-labelledby={`${event.id}-tab`}
+                data-history-slide
+                data-history-index={index}
+              >
+                <article class="history__slide-content">
+                  <div class="history__art">
+                    <Image
+                      src={event.image}
+                      widths={[320, 480, 640, 800]}
+                      sizes="(max-width: 47.999rem) calc(100vw - 2.5rem), (max-width: 77.499rem) 42vw, 40rem"
+                      format="webp"
+                      alt=""
+                      aria-hidden="true"
+                      loading="lazy"
+                      draggable="false"
+                    />
+                  </div>
+
+                  <div class="history__copy">
+                    <p class="history__meta">
+                      <time datetime={event.date ?? event.year}>{event.year}</time>
+                      <span aria-hidden="true"> · </span>
+                      <span>{index + 1} / {historyCount}</span>
+                    </p>
+                    <h3>{event.title}</h3>
+                    <div class="history__body">
+                      <p>{event.summary}</p>
+                      <details class="history__details" data-history-details>
+                        <summary>
+                          <span class="history__details-open">Читать далее</span>
+                          <span class="history__details-close">Свернуть</span>
+                        </summary>
+                        <div class="history__details-content">
+                          {event.details.map((paragraph) => <p>{paragraph}</p>)}
+                          {
+                            event.ending && (
+                              <div class="history__ending">
+                                <span class="history__ending-squirrel" aria-hidden="true">
+                                  <img
+                                    src="/zotov-logo.svg"
+                                    alt=""
+                                    width="331"
+                                    height="127"
+                                    loading="lazy"
+                                  />
+                                </span>
+                                <p>{event.ending}</p>
+                              </div>
+                            )
+                          }
+                        </div>
+                      </details>
+                    </div>
+                  </div>
+                </article>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </div>
+  </section>
+</brand-history>
+
+<script>
+  class BrandHistory extends HTMLElement {
+    private cleanup: (() => void) | null = null;
+
+    connectedCallback() {
+      if (this.cleanup) return;
+
+      const root = this.querySelector<HTMLElement>('[data-history-root]');
+      const timelineClip = this.querySelector<HTMLElement>('[data-history-timeline-clip]');
+      const track = this.querySelector<HTMLElement>('[data-history-track]');
+      const tabs = Array.from(this.querySelectorAll<HTMLButtonElement>('[data-history-tab]'));
+      const slides = Array.from(this.querySelectorAll<HTMLElement>('[data-history-slide]'));
+
+      if (
+        !root ||
+        !timelineClip ||
+        !track ||
+        !tabs.length ||
+        tabs.length !== slides.length
+      )
+        return;
+
+      let activeIndex = 0;
+      let resizeFrame = 0;
+      let settleTimer = 0;
+      let targetIndex: number | null = null;
+      let trackWidth = track.clientWidth;
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const resizeObserver = new ResizeObserver(() => {
+        if (resizeFrame) return;
+        resizeFrame = window.requestAnimationFrame(() => {
+          resizeFrame = 0;
+          const nextWidth = track.clientWidth;
+          const widthChanged = Math.abs(nextWidth - trackWidth) > 0.5;
+          trackWidth = nextWidth;
+
+          if (widthChanged) {
+            window.clearTimeout(settleTimer);
+            targetIndex = null;
+            alignToActive();
+            centerTimelineTab(activeIndex);
+          }
+        });
+      });
+
+      const clampIndex = (index: number) => Math.min(Math.max(index, 0), slides.length - 1);
+      const shouldReduceMotion = () => reducedMotion.matches;
+
+      const centerTimelineTab = (index: number) => {
+        const tab = tabs[index];
+        if (!tab) return;
+
+        const tabBounds = tab.getBoundingClientRect();
+        const clipBounds = timelineClip.getBoundingClientRect();
+        const tabCenter = tabBounds.left + tabBounds.width / 2;
+        const clipCenter = clipBounds.left + clipBounds.width / 2;
+
+        timelineClip.scrollTo({
+          left: timelineClip.scrollLeft + tabCenter - clipCenter,
+          behavior: shouldReduceMotion() ? 'auto' : 'smooth',
+        });
+      };
+
+      const setActive = (index: number, focusTab = false) => {
+        activeIndex = clampIndex(index);
+        setTabSelection(activeIndex);
+
+        slides.forEach((slide, slideIndex) => {
+          const selected = slideIndex === activeIndex;
+          slide.toggleAttribute('inert', !selected);
+          slide.setAttribute('aria-hidden', String(!selected));
+        });
+
+        if (focusTab) tabs[activeIndex]?.focus({ preventScroll: true });
+        centerTimelineTab(activeIndex);
+      };
+
+      const setTabSelection = (index: number) => {
+        const selectedIndex = clampIndex(index);
+
+        tabs.forEach((tab, tabIndex) => {
+          const selected = tabIndex === selectedIndex;
+          tab.setAttribute('aria-selected', String(selected));
+          tab.tabIndex = selected ? 0 : -1;
+        });
+      };
+
+      const selectTabNearSnapPoint = () => {
+        const width = track.clientWidth;
+        if (!width) return;
+
+        const nearestIndex = clampIndex(Math.round(track.scrollLeft / width));
+        const nearestLeft = width * nearestIndex;
+        const snapThreshold = Math.max(8, width * 0.015);
+        if (Math.abs(track.scrollLeft - nearestLeft) <= snapThreshold)
+          setTabSelection(nearestIndex);
+      };
+
+      const alignToActive = () => {
+        track.scrollTo({ left: track.clientWidth * activeIndex, behavior: 'auto' });
+      };
+
+      const selectIndex = (index: number, focusTab = false) => {
+        const nextIndex = clampIndex(index);
+        const targetLeft = track.clientWidth * nextIndex;
+
+        if (nextIndex === activeIndex && Math.abs(track.scrollLeft - targetLeft) <= 2) {
+          targetIndex = null;
+          setActive(nextIndex, focusTab);
+          return;
+        }
+
+        const behavior: ScrollBehavior = shouldReduceMotion() ? 'auto' : 'smooth';
+        window.clearTimeout(settleTimer);
+        targetIndex = shouldReduceMotion() ? null : nextIndex;
+        track.scrollTo({ left: targetLeft, behavior });
+
+        if (shouldReduceMotion()) {
+          setActive(nextIndex, focusTab);
+          return;
+        }
+
+        if (focusTab) tabs[nextIndex]?.focus({ preventScroll: true });
+      };
+
+      const commitNearestSlide = () => {
+        const width = track.clientWidth;
+        if (!width) return;
+
+        if (targetIndex !== null) {
+          const targetLeft = width * targetIndex;
+          if (Math.abs(track.scrollLeft - targetLeft) > 2) return;
+        }
+
+        window.clearTimeout(settleTimer);
+        targetIndex = null;
+        setActive(Math.round(track.scrollLeft / width));
+      };
+
+      const scheduleCommit = () => {
+        window.clearTimeout(settleTimer);
+        settleTimer = window.setTimeout(commitNearestSlide, 72);
+      };
+
+      const handleTrackScroll = () => {
+        selectTabNearSnapPoint();
+        scheduleCommit();
+      };
+
+      const cancelProgrammaticScroll = () => {
+        if (targetIndex === null) return;
+        targetIndex = null;
+        window.clearTimeout(settleTimer);
+        track.scrollTo({ left: track.scrollLeft, behavior: 'auto' });
+      };
+
+      const handleTabClick = (event: MouseEvent) => {
+        const tab = event.currentTarget as HTMLButtonElement;
+        const index = Number(tab.dataset.historyIndex);
+        if (Number.isFinite(index)) selectIndex(index);
+      };
+
+      const handleTabKeydown = (event: KeyboardEvent) => {
+        const current = tabs.indexOf(event.currentTarget as HTMLButtonElement);
+        if (current < 0) return;
+
+        let next: number | null = null;
+        if (event.key === 'ArrowRight') next = current + 1;
+        if (event.key === 'ArrowLeft') next = current - 1;
+        if (event.key === 'Home') next = 0;
+        if (event.key === 'End') next = tabs.length - 1;
+        if (next === null) return;
+
+        event.preventDefault();
+        selectIndex(next, true);
+      };
+
+      root.dataset.historyEnhanced = 'true';
+      setActive(0);
+      resizeObserver.observe(track);
+      track.addEventListener('scroll', handleTrackScroll, { passive: true });
+      track.addEventListener('scrollend', commitNearestSlide);
+      track.addEventListener('pointerdown', cancelProgrammaticScroll, { passive: true });
+      track.addEventListener('wheel', cancelProgrammaticScroll, { passive: true });
+      tabs.forEach((tab) => {
+        tab.addEventListener('click', handleTabClick);
+        tab.addEventListener('keydown', handleTabKeydown);
+      });
+
+      this.cleanup = () => {
+        window.clearTimeout(settleTimer);
+        if (resizeFrame) window.cancelAnimationFrame(resizeFrame);
+        resizeObserver.disconnect();
+        track.removeEventListener('scroll', handleTrackScroll);
+        track.removeEventListener('scrollend', commitNearestSlide);
+        track.removeEventListener('pointerdown', cancelProgrammaticScroll);
+        track.removeEventListener('wheel', cancelProgrammaticScroll);
+        tabs.forEach((tab) => {
+          tab.removeEventListener('click', handleTabClick);
+          tab.removeEventListener('keydown', handleTabKeydown);
+        });
+        slides.forEach((slide) => {
+          slide.removeAttribute('inert');
+          slide.removeAttribute('aria-hidden');
+        });
+        delete root.dataset.historyEnhanced;
+        this.cleanup = null;
+      };
+    }
+
+    disconnectedCallback() {
+      this.cleanup?.();
+    }
+  }
+
+  if (!customElements.get('brand-history')) customElements.define('brand-history', BrandHistory);
+</script>
+
+<style>
+  brand-history { display: block; }
+
+  .history {
+    background: var(--page);
+    padding-block: clamp(4rem, 8vw, 7rem) 2.5rem;
+  }
+
+  .history__inner { width: min(calc(100% - 2.5rem), 77.5rem); margin-inline: auto; }
+
+  .history__header {
+    display: grid;
+    justify-items: center;
+    gap: 1.25rem;
+    text-align: center;
+  }
+
+  .history__title {
+    max-width: 48rem;
+    margin: 0;
+    padding: 0.08em 0.15em;
+    color: var(--text-primary);
+    font-family: 'Vetrino', Georgia, serif;
+    font-size: clamp(2.25rem, 7vw, 4rem);
+    font-weight: 400;
+    line-height: 0.98;
+    text-wrap: balance;
+  }
+
+  .history__timeline-clip {
+    display: none;
+    margin-top: clamp(2.75rem, 6vw, 5rem);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+
+  .history__timeline-clip::-webkit-scrollbar,
+  .history__track::-webkit-scrollbar { display: none; }
+
+  .history__timeline {
+    display: grid;
+    grid-auto-columns: minmax(9rem, 44vw);
+    grid-auto-flow: column;
+    min-width: max-content;
+    padding-inline: max(0.75rem, calc((100% - 44vw) / 2));
+  }
+
+  .history__timeline-tab {
+    display: grid;
+    grid-template-rows: auto auto;
+    gap: 0.85rem;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--text-primary);
+    font: inherit;
+    text-align: center;
+  }
+
+  .history__timeline-marker {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .history__timeline-line {
+    display: block;
+    width: 100%;
+    height: 1px;
+    background: color-mix(in srgb, var(--text-muted) 27%, transparent);
+  }
+
+  .history__timeline-tab:first-child .history__timeline-line:first-child,
+  .history__timeline-tab:last-child .history__timeline-line:last-child { visibility: hidden; }
+
+  .history__timeline-year {
+    padding: 0.2rem 0.42rem 0.24rem;
+    color: inherit;
+    font-family: 'Vetrino', Georgia, serif;
+    font-size: clamp(2rem, 7vw, 2.7rem);
+    line-height: 1;
+  }
+
+  .history__timeline-tab[aria-selected='true'] .history__timeline-year {
+    background: var(--text-primary);
+    color: #ffffff;
+  }
+
+  .history__timeline-label {
+    justify-self: center;
+    color: var(--text-primary);
+    font-size: clamp(0.78rem, 2.8vw, 0.98rem);
+    line-height: 1.15;
+  }
+
+  .history__carousel { margin-top: clamp(2.75rem, 6vw, 5rem); }
+
+  .history__track {
+    display: grid;
+    gap: clamp(3.5rem, 8vw, 7rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .history__slide { min-width: 0; }
+
+  .history__slide-content {
+    display: grid;
+    gap: clamp(1.75rem, 4vw, 3rem);
+    align-items: center;
+  }
+
+  .history__art {
+    display: grid;
+    min-height: 14rem;
+    place-items: center;
+  }
+
+  .history__art img {
+    display: block;
+    width: min(100%, 34rem);
+    height: auto;
+    max-height: 28rem;
+    object-fit: contain;
+  }
+
+  .history__copy { min-width: 0; }
+
+  .history__meta {
+    margin: 0;
+    color: var(--accent);
+    font-size: clamp(0.9rem, 2vw, 1.15rem);
+    letter-spacing: 0.04em;
+  }
+
+  .history__copy h3 {
+    max-width: 40rem;
+    margin: 0.85rem 0 0;
+    color: var(--text-primary);
+    font-family: 'Vetrino', Georgia, serif;
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    font-weight: 400;
+    line-height: 1;
+    text-wrap: balance;
+  }
+
+  .history__body {
+    display: grid;
+    gap: 1rem;
+    max-width: 42rem;
+    margin-top: 1.35rem;
+    color: var(--text-muted);
+    font-size: clamp(1rem, 2vw, 1.35rem);
+    line-height: 1.48;
+  }
+
+  .history__body p { margin: 0; }
+  .history__details { display: block; }
+
+  .history__details summary {
+    width: fit-content;
+    margin-top: 0.15rem;
+    color: var(--accent);
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 700;
+    list-style: none;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, currentColor 42%, transparent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.24em;
+  }
+
+  .history__details summary::-webkit-details-marker { display: none; }
+  .history__details-close, .history__details[open] .history__details-open { display: none; }
+  .history__details[open] .history__details-close { display: inline; }
+
+  .history__details-content {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .history__ending {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+    color: var(--text-primary);
+    font-family: 'Vetrino', Georgia, serif;
+    font-size: clamp(1.2rem, 2.5vw, 1.7rem);
+    line-height: 1.05;
+  }
+
+  .history__ending-squirrel {
+    display: block;
+    width: 2.3rem;
+    height: 2.3rem;
+    overflow: hidden;
+  }
+
+  .history__ending-squirrel img {
+    display: block;
+    width: 6.4rem;
+    max-width: none;
+    height: auto;
+  }
+
+  .history[data-history-enhanced='true'] .history__timeline-clip { display: block; }
+
+  .history[data-history-enhanced='true'] .history__carousel { overflow: clip; }
+
+  .history[data-history-enhanced='true'] .history__track {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    touch-action: pan-x pan-y;
+  }
+
+  .history[data-history-enhanced='true'] .history__slide {
+    flex: 0 0 100%;
+    min-block-size: 0;
+    block-size: 0;
+    scroll-snap-align: start;
+    scroll-snap-stop: normal;
+  }
+
+  .history[data-history-enhanced='true'] .history__slide[aria-hidden='false'] {
+    block-size: auto;
+  }
+
+  @media (min-width: 40rem) {
+    .history__inner { width: min(calc(100% - 4rem), 77.5rem); }
+    .history__timeline {
+      grid-auto-columns: minmax(10rem, 11rem);
+      padding-inline: max(1rem, calc((100% - 11rem) / 2));
+    }
+  }
+
+  @media (min-width: 48rem) {
+    .history { padding-bottom: 3.5rem; }
+    .history__title {
+      max-width: 100%;
+      font-size: clamp(2.9rem, 6vw, 4rem);
+      text-wrap: nowrap;
+      white-space: nowrap;
+    }
+    .history__timeline-clip { overflow: visible; }
+    .history__timeline {
+      grid-auto-columns: minmax(0, 1fr);
+      width: 100%;
+      min-width: 0;
+      padding-inline: 0;
+    }
+    .history__slide-content { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr); }
+    .history__art { min-height: 20rem; }
+    .history__art img { width: min(100%, 40rem); }
+  }
+
+  @media (min-width: 75rem) {
+    .history__inner { width: min(calc(100% - 2.5rem), 77.5rem); }
+    .history__slide-content {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr);
+      gap: clamp(3rem, 7vw, 7rem);
+    }
+    .history__art { min-height: 24rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .history[data-history-enhanced='true'] .history__carousel { transition: none; }
+    .history[data-history-enhanced='true'] .history__track { scroll-behavior: auto; }
+  }
+</style>

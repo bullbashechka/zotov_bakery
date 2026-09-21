@@ -15,8 +15,8 @@ import tenderness from '@/assets/assortment/tenderness.png';
 import celebration from '@/assets/assortment/celebration.png';
 import caramel from '@/assets/assortment/caramel.png';
 
-// The client approved temporary copy for the additional products on 2026-09-10.
-// Replace draft names/descriptions and confirm photo-to-product mapping before release.
+// The client confirmed all three products, photos, descriptions and ingredients
+// during the stage 15 readiness discussion (September 2026).
 // Ingredients must come from the bakery; never infer them from the photographs.
 export const ASSORTMENT = [
   {
@@ -31,22 +31,22 @@ export const ASSORTMENT = [
   },
   {
     id: 'caramel',
-    name: 'Десерт «Карамельное облако»',
+    name: 'Торт «Дамские пальчики»',
     image: caramel,
     alt: 'Десерт с белым покрытием и золотистой сеточкой на керамической тарелке',
-    description: 'Маленький повод устроить себе праздник. Белоснежный десерт с золотистой сеточкой украсит паузу на чай и встречу с близкими.',
-    highlight: 'к чаю · для маленьких праздников',
-    ingredients: null,
-    draft: true,
+    description: 'Гармоничный, легкий и воздушный десерт. Состоит из заварного теста, окутанный сливками и подчеркнутый сгущенкой. Выполненный из качественных, натуральных продуктов.',
+    highlight: 'нежный крем · кокос · грецкий орех',
+    ingredients: 'мука пшеничная в/с, яйцо, маргарин, сливки — 27%, сгущенка вареная.',
+    draft: false,
   },
   {
     id: 'celebration',
-    name: 'Торт «Праздничный букет»',
+    name: 'Торт «Медовый»',
     image: celebration,
     alt: 'Круглые торты с розовыми и белыми цветами, зелёными листьями и светлым бордюром',
-    description: 'Торт с цветочным оформлением для самых тёплых встреч. Розовые и белые цветы напоминают о домашних праздниках, которые хочется повторять.',
-    highlight: 'цветочное оформление · к общему столу',
-    ingredients: null,
-    draft: true,
+    description: 'Популярный, сбалансированный медовый торт. Его тонкий вкус знаком еще с детских лет. Хорошо пропитанный, выполненный из качественных, натуральных продуктов.',
+    highlight: 'нежный крем · кокос · грецкий орех',
+    ingredients: 'мука пшеничная в/с, сахар, меланж, мед, маргарин, масло сливочное, какао, пищевая сода.',
+    draft: false,
   },
 ] as const satisfies readonly Product[];

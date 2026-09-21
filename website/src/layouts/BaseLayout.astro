@@ -1,5 +1,6 @@
 ---
 import PageFrame from '@/components/PageFrame.astro';
+import CookieConsent from '@/components/CookieConsent.astro';
 import '@/styles/global.css';
 
 interface Props {
@@ -7,9 +8,16 @@ interface Props {
   description: string;
   canonicalUrl?: string;
   robots?: string;
+  socialImageUrl?: string;
+  structuredData?: object;
 }
 
-const { title, description, canonicalUrl, robots } = Astro.props;
+const { title, description, canonicalUrl, robots, socialImageUrl, structuredData } = Astro.props;
+const rawMetrikaId = import.meta.env.PUBLIC_YANDEX_METRIKA_ID?.trim();
+if (rawMetrikaId && !/^\d+$/.test(rawMetrikaId)) {
+  throw new TypeError('PUBLIC_YANDEX_METRIKA_ID must contain digits only.');
+}
+const metrikaId = rawMetrikaId || undefined;
 ---
 
 <!doctype html>
@@ -20,6 +28,8 @@ const { title, description, canonicalUrl, robots } = Astro.props;
     <meta name="generator" content={Astro.generator} />
     <meta name="theme-color" content="#f4ece6" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link
       rel="preload"
       href="/fonts/Montserrat-Variable.woff2"
@@ -46,10 +56,20 @@ const { title, description, canonicalUrl, robots } = Astro.props;
     {robots && <meta name="robots" content={robots} />}
     {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
     <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:site_name" content="ZOTOV bakery" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
-    <meta name="twitter:card" content="summary" />
+    {socialImageUrl && <meta property="og:image" content={socialImageUrl} />}
+    {socialImageUrl && <meta property="og:image:width" content="1200" />}
+    {socialImageUrl && <meta property="og:image:height" content="630" />}
+    {socialImageUrl && <meta property="og:image:alt" content="Торт ZOTOV bakery" />}
+    <meta name="twitter:card" content={socialImageUrl ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {socialImageUrl && <meta name="twitter:image" content={socialImageUrl} />}
+    {structuredData && <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />}
   </head>
   <body>
     <PageFrame>
@@ -57,5 +77,6 @@ const { title, description, canonicalUrl, robots } = Astro.props;
       <slot />
       <slot name="footer" slot="footer" />
     </PageFrame>
+    <CookieConsent counterId={metrikaId} />
   </body>
 </html>

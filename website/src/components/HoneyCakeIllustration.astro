@@ -32,7 +32,7 @@ const hotspots: Hotspot[] = [
     src={honeyCake}
     formats={['avif', 'webp']}
     widths={[320, 480, 640, 768, 934]}
-    sizes="(max-width: 47.999rem) min(100vw - 2.5rem, 35rem), (max-width: 63.999rem) min(78vw, 38rem), min(54vw, 43rem)"
+    sizes="(max-width: 47.999rem) min(100vw - 2.5rem, 35rem), (max-width: 63.999rem) calc((100vw - 4rem) * 0.65), min(54vw, 43rem)"
     alt="Медовик ZOTOV bakery с белковым кремом и цветочным оформлением"
     loading="lazy"
   />
@@ -342,6 +342,30 @@ const hotspots: Hotspot[] = [
     }
   }
 
+  @media (48rem <= width < 64rem) {
+    .honey-cake__media {
+      /* Compensate for the transparent margins around the cake artwork. */
+      width: 130%;
+      margin-inline: -15%;
+    }
+
+    .honey-cake__hotspot[data-ingredient] .honey-cake__hotspot-panel {
+      top: auto;
+      right: -3.5rem;
+      bottom: 1.125rem;
+      left: auto;
+      width: 14rem;
+      padding: 0.625rem 0.75rem;
+      transform: none;
+    }
+
+    .honey-cake__hotspot-panel h3,
+    .honey-cake__hotspot-panel p {
+      font-size: 0.8125rem;
+      line-height: 1.2;
+    }
+  }
+
   @media (min-width: 64rem) {
     .honey-cake__media {
       position: relative;
@@ -349,7 +373,7 @@ const hotspots: Hotspot[] = [
     }
 
     .honey-cake__hotspot-panel {
-      width: clamp(var(--hotspot-width), 20vw, 26rem);
+      width: clamp(var(--hotspot-width), calc(var(--layout-viewport) * 0.2), 26rem);
     }
   }
 

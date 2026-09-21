@@ -1,0 +1,42 @@
+name: Security and release gates
+
+on:
+  # Automatic runs are disabled; release checks remain available locally.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      # CI fixture only. The production domain must be supplied deliberately at release time.
+      PUBLIC_WEBSITE_URL: https://zotov-landing.pages.dev
+      CI: '1'
+      CLOUDFLARE_SEND_METRICS: 'false'
+    steps:
+      - name: Check out full history
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Use Node.js 24
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version: 24
+      - name: Use pinned Bun
+        uses: oven-sh/setup-bun@735343b667d3e6f658f44d0eca948eb6282f2b76 # v2.0.2
+        with:
+          bun-version-file: .bun-version
+      - name: Install frozen dependencies
+        run: bun install --frozen-lockfile
+      - name: Install Chromium and system dependencies
+        run: node node_modules/playwright/cli.js install --with-deps chromium --only-shell
+      - name: Run release gates
+        run: bun run release:check

@@ -5,28 +5,34 @@ import { PURCHASE_OPTIONS } from '@/lib/purchase';
 import { HOME_SECTION_IDS } from '@/lib/site';
 ---
 
-<section id={HOME_SECTION_IDS.whereToBuy} class="where-to-buy" aria-labelledby="where-to-buy-title">
+<section id={HOME_SECTION_IDS.whereToBuy} class="where-to-buy" data-section-spacing-target aria-labelledby="where-to-buy-title">
   <div class="where-to-buy__inner">
-    <h2 id="where-to-buy-title" class="where-to-buy__title" data-motion="heading">
+    <h2 id="where-to-buy-title" class="where-to-buy__title" data-section-title data-motion="heading">
       Где купить торты и десерты от ZOTOV bakery
     </h2>
 
     <div
       class="where-to-buy__track"
-      tabindex="0"
+      data-section-end
       aria-label="Способы покупки тортов и десертов ZOTOV bakery"
     >
       {
-        PURCHASE_OPTIONS.map((option, index) => (
+        PURCHASE_OPTIONS.map((option) => (
           <Wrapper
             at={{
               tablet: {
-                flex: '0 0 25rem',
-                alignSelf: 'start',
-                snap: 'start',
-                margin: `${index * 2.6875}rem 0 0`,
+                display: 'flex',
+                dir: 'column',
+                alignSelf: 'stretch',
+                column: option.kind === 'delivery' ? '1 / -1' : 'auto',
+                height: '100%',
+                margin: '0',
               },
-              desktop: { flex: '0 1 auto' },
+              desktop: {
+                display: 'block',
+                height: 'auto',
+                column: 'auto',
+              },
             }}
           >
             <PurchaseCard option={option} />
@@ -78,43 +84,32 @@ import { HOME_SECTION_IDS } from '@/lib/site';
     }
 
     .where-to-buy__track {
-      display: flex;
-      width: 100%;
-      min-height: 35.75rem;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      width: min(calc(100% - 4rem), 52.5rem);
       margin-top: 2.5rem;
-      overflow-x: auto;
-      overflow-y: visible;
-      padding: 0 2rem 1rem;
-      scroll-padding-inline: 2rem;
-      scroll-snap-type: x proximity;
-      scrollbar-color: var(--accent) transparent;
-      scrollbar-width: thin;
-    }
-
-    .where-to-buy__track::-webkit-scrollbar {
-      height: 0.5rem;
-    }
-
-    .where-to-buy__track::-webkit-scrollbar-thumb {
-      border-radius: 999px;
-      background: var(--accent);
+      align-items: stretch;
+      overflow: visible;
     }
   }
 
   @media (min-width: 75rem) {
     .where-to-buy {
-      padding-block: 95px 120px;
+      padding-block: 5.9375rem 7.5rem;
     }
 
     .where-to-buy__inner {
-      width: min(calc(100% - 2rem), 1240px);
+      width: min(calc(100% - 2.5rem), 77.5rem);
     }
 
     .where-to-buy__track {
       grid-template-columns: repeat(3, minmax(0, 1fr));
       width: 100%;
-      gap: 20px;
-      margin-top: 39px;
+      gap: 1.25rem;
+      margin-top: 2.4375rem;
+    }
+
+    .where-to-buy__title {
+      font-size: 3rem;
     }
   }
 </style>
