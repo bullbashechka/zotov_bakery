@@ -110,6 +110,13 @@
   margin-block-start: var(--section-heading-gap-adjust, 0px);
 }
 
+@media (max-width: 47.999rem) {
+  [data-section-spacing-target] {
+    position: relative;
+    z-index: 6;
+  }
+}
+
 .section-spacing-probe {
   position: absolute;
   width: 0;

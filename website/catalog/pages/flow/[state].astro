@@ -1,0 +1,59 @@
+---
+import '@/styles/global.css';
+import Assortment from '@/components/Assortment.astro';
+import SiteHeader from '@/components/SiteHeader.astro';
+
+export function getStaticPaths() {
+  return ['menu-open', 'assortment-2', 'assortment-3', 'ingredients-open'].map((state) => ({
+    params: { state },
+    props: { state },
+  }));
+}
+
+const { state } = Astro.props;
+const isHeaderState = state === 'menu-open';
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>UI flow — {state}</title>
+  </head>
+  <body data-flow-state={state}>
+    {isHeaderState ? <main class="header-state"><SiteHeader /></main> : <Assortment />}
+  </body>
+</html>
+
+<script>
+  const state = document.body.dataset.flowState;
+
+  if (state === 'menu-open') {
+    await customElements.whenDefined('site-header');
+    const header = document.querySelector('site-header');
+    const toggle = header?.querySelector('.site-header__menu-toggle');
+    header?.setAttribute('data-menu-open', 'true');
+    toggle?.setAttribute('aria-expanded', 'true');
+  } else {
+    await customElements.whenDefined('cake-carousel');
+    const index = state === 'assortment-2' ? 1 : 2;
+    const photo = document.querySelector(`[data-photo][data-index="${index}"]`);
+    photo?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    if (state === 'ingredients-open') {
+      window.setTimeout(() => {
+        document.querySelector('[data-panel][data-active] details summary')?.dispatchEvent(
+          new MouseEvent('click', { bubbles: true }),
+        );
+      }, 900);
+    }
+  }
+</script>
+
+<style>
+  .header-state {
+    min-height: 100vh;
+    background: var(--page);
+  }
+</style>
