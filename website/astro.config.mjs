@@ -8,7 +8,7 @@ const inlineScriptHashes = [
   './src/scripts/hero-preparation.inline.js',
   './src/scripts/site-header.inline.js',
 ].map((path) => {
-  const source = readFileSync(new URL(path, import.meta.url), 'utf8');
+  const source = readFileSync(new URL(path, import.meta.url), 'utf8').replace(/\r\n?/g, '\n');
   return {
     hash: `sha256-${createHash('sha256').update(source).digest('base64')}`,
     kind: 'element',
