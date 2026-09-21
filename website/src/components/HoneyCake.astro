@@ -2,9 +2,9 @@
 import HoneyCakeIllustration from './HoneyCakeIllustration.astro';
 import Wrapper from './Wrapper.astro';
 import ActionLink from '@/components/ActionLink.astro';
-import { getWhatsAppUrl, HOME_SECTION_IDS } from '@/lib/site';
+import { CONTACTS, getWhatsAppUrl, HOME_SECTION_IDS } from '@/lib/site';
 
-const whatsappUrl = getWhatsAppUrl('general');
+const whatsappUrl = getWhatsAppUrl('honeyCake');
 ---
 
 <section id={HOME_SECTION_IDS.honeyCake} class="honey-cake" data-section-spacing-target aria-labelledby="honey-cake-title">
@@ -44,6 +44,7 @@ const whatsappUrl = getWhatsAppUrl('general');
           <ActionLink variant="primary" href={whatsappUrl} fullWidth external>
             Узнать цену и наличие
           </ActionLink>
+          <p><a href={CONTACTS.mobile.href}>Или позвоните нам: {CONTACTS.mobile.display}</a></p>
         </Wrapper>
       </div>
     </div>

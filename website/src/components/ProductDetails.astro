@@ -2,7 +2,7 @@
 import ActionLink from './ActionLink.astro';
 import Wrapper from './Wrapper.astro';
 import type { Product } from '@/lib/assortment';
-import { getProductWhatsAppUrl } from '@/lib/site';
+import { CONTACTS, getProductWhatsAppUrl } from '@/lib/site';
 interface Props {
   product: Product;
 }
@@ -37,6 +37,7 @@ const { product } = Astro.props;
     >
       Узнать цену и наличие
     </ActionLink>
+    <p><a href={CONTACTS.mobile.href}>Или позвоните нам: {CONTACTS.mobile.display}</a></p>
   </Wrapper>
 </article>
 

@@ -47,7 +47,7 @@ const historyCount = HISTORY_EVENTS.length;
       </div>
 
       <div class="history__carousel" data-history-carousel data-section-end>
-        <ol class="history__track" data-history-track>
+        <ol role="presentation" class="history__track" data-history-track>
           {
             HISTORY_EVENTS.map((event, index) => (
               <li
@@ -67,7 +67,7 @@ const historyCount = HISTORY_EVENTS.length;
                       format="webp"
                       alt=""
                       aria-hidden="true"
-                      loading={index === 0 ? 'eager' : 'lazy'}
+                      loading="lazy"
                       draggable="false"
                     />
                   </div>

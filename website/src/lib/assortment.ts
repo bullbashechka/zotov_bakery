@@ -15,8 +15,8 @@ import tenderness from '@/assets/assortment/tenderness.png';
 import celebration from '@/assets/assortment/celebration.png';
 import caramel from '@/assets/assortment/caramel.png';
 
-// The client approved temporary copy for the additional products on 2026-09-10.
-// Replace draft names/descriptions and confirm photo-to-product mapping before release.
+// The client confirmed all three products, photos, descriptions and ingredients
+// during the stage 15 readiness discussion (September 2026).
 // Ingredients must come from the bakery; never infer them from the photographs.
 export const ASSORTMENT = [
   {

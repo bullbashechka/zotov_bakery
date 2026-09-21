@@ -1,5 +1,5 @@
 ---
-import { CONTACTS, PRIVACY_UPDATED_AT, SITE_OWNER, getWhatsAppUrl } from '@/lib/site';
+import { CONTACTS, HOME_NAV_LINKS, PRIVACY_UPDATED_AT, SITE_OWNER, getWhatsAppUrl } from '@/lib/site';
 
 const whatsappUrl = getWhatsAppUrl();
 const analyticsEnabled = Boolean(import.meta.env.PUBLIC_YANDEX_METRIKA_ID?.trim());
@@ -64,6 +64,10 @@ const analyticsEnabled = Boolean(import.meta.env.PUBLIC_YANDEX_METRIKA_ID?.trim(
         какие разделы и способы связи полезны посетителям, и улучшать сайт.
       </p>
     </section>
+
+    <nav class="privacy-policy__navigation" aria-label="Разделы главной страницы">
+      {HOME_NAV_LINKS.map((link) => <a href={`/${link.href}`}>{link.label}</a>)}
+    </nav>
 
     <div class="privacy-policy__actions">
       <a class="privacy-policy__home" href="/">Вернуться на главную</a>
