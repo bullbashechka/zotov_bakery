@@ -32,7 +32,7 @@ bun run dev
 | --- | --- |
 | `bun run dev` | Запустить сайт в режиме разработки. |
 | `bun run typecheck` | Проверить UI-границы и TypeScript/Astro-диагностику. |
-| `bun run build` | Собрать production-версию в `website/dist/`. |
+| `PUBLIC_WEBSITE_URL=… PUBLIC_ALLOW_INDEXING=… bun run build` | Собрать production-версию в `website/dist/`; обе SEO-переменные обязательны. |
 | `bun run preview` | Открыть собранный сайт локально. |
 | `bun run check:ui` | Проверить правила устройства UI-компонентов и наличие Storybook-историй. |
 | `bun run security:check` | Проверить аудит зависимостей, секреты и SVG-файлы. |
@@ -44,21 +44,26 @@ bun run dev
 
 ```bash
 bun run typecheck
-bun run build
+PUBLIC_WEBSITE_URL=https://zotov-landing.pages.dev PUBLIC_ALLOW_INDEXING=false bun run build
 ```
 
 ## Переменные окружения
 
-`PUBLIC_WEBSITE_URL` задаёт публичный HTTPS-origin сайта. Он используется для canonical URL, sitemap, Open Graph и структурированных данных. Значение должно быть origin без пути, query-параметров, fragment и учётных данных.
+`PUBLIC_WEBSITE_URL` задаёт публичный HTTPS-origin сайта. Он используется для canonical URL, sitemap, Open Graph и структурированных данных. Значение должно быть origin без пути, query-параметров, fragment и учётных данных. Production-сборка требует переменную.
+
+`PUBLIC_ALLOW_INDEXING` принимает только `true` или `false`. Production-сборка требует явный выбор: при `false` страницы получают `noindex,follow`, robots.txt не объявляет sitemap, а sitemap остаётся пустым. Для preview и временных технических доменов используйте `false`.
 
 ```bash
-PUBLIC_WEBSITE_URL=https://example.com bun run release:check
+PUBLIC_WEBSITE_URL=https://example.com \
+PUBLIC_ALLOW_INDEXING=true \
+bun run release:check
 ```
 
 `PUBLIC_YANDEX_METRIKA_ID` включает Яндекс Метрику и баннер согласия. Значение должно состоять только из цифр; пустая переменная отключает оба элемента.
 
 ```bash
 PUBLIC_WEBSITE_URL=https://example.com \
+PUBLIC_ALLOW_INDEXING=true \
 PUBLIC_YANDEX_METRIKA_ID=12345678 \
 bun run release:check
 ```
@@ -98,8 +103,8 @@ docs/               аудиты и технические отчёты
 bun run cf:dev
 
 # Production и preview-публикация
-PUBLIC_WEBSITE_URL=https://example.com bun run cf:deploy
-PUBLIC_WEBSITE_URL=https://preview.example.com bun run cf:deploy:preview
+PUBLIC_WEBSITE_URL=https://example.com PUBLIC_ALLOW_INDEXING=true bun run cf:deploy
+PUBLIC_WEBSITE_URL=https://preview.example.com PUBLIC_ALLOW_INDEXING=false bun run cf:deploy:preview
 ```
 
 Команды публикации сначала выполняют `release:check`. Production-публикация разрешена из чистой ветки `dev`, preview — из отдельной feature-ветки с alias `preview`.

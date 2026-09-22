@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 
-import { getCanonicalUrl, validateWebsiteOrigin } from './site-origin.mjs';
+import { getCanonicalUrl, validateSearchIndexing, validateWebsiteOrigin } from './site-origin.mjs';
 
 describe('validateWebsiteOrigin', () => {
   test('allows an absent optional origin', () => {
@@ -78,5 +78,26 @@ describe('getCanonicalUrl', () => {
     assert.throws(() => getCanonicalUrl('https://example.com', '/\\attacker.example/path'), TypeError);
     assert.throws(() => getCanonicalUrl('https://example.com', '/privacy/?query=value'), TypeError);
     assert.throws(() => getCanonicalUrl('https://example.com', '/privacy/#fragment'), TypeError);
+  });
+});
+
+describe('validateSearchIndexing', () => {
+  test('defaults to noindex outside an explicit release decision', () => {
+    assert.equal(validateSearchIndexing(undefined), false);
+  });
+
+  test('requires an explicit release decision when requested', () => {
+    assert.throws(() => validateSearchIndexing(undefined, { required: true }), {
+      name: 'TypeError',
+      message: 'PUBLIC_ALLOW_INDEXING is required for this operation.',
+    });
+  });
+
+  test('accepts only explicit true and false values', () => {
+    assert.equal(validateSearchIndexing('true'), true);
+    assert.equal(validateSearchIndexing('false'), false);
+    for (const value of ['TRUE', '1', true, false, 'yes']) {
+      assert.throws(() => validateSearchIndexing(value), TypeError);
+    }
   });
 });

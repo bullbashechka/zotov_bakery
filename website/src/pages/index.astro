@@ -9,12 +9,14 @@ import HoneyCake from '@/components/HoneyCake.astro';
 import SiteHeader from '@/components/SiteHeader.astro';
 import SiteFooter from '@/components/SiteFooter.astro';
 import WhereToBuy from '@/components/WhereToBuy.astro';
-import { getCanonicalUrl } from '@/lib/site-origin.mjs';
+import { getCanonicalUrl, validateSearchIndexing } from '@/lib/site-origin.mjs';
 import { CONTACTS, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE } from '@/lib/site';
 
 const title = SITE_TITLE;
 const description = SITE_DESCRIPTION;
-const canonicalUrl = getCanonicalUrl(import.meta.env.PUBLIC_WEBSITE_URL, Astro.url.pathname);
+const production = import.meta.env.PROD;
+const allowIndexing = validateSearchIndexing(import.meta.env.PUBLIC_ALLOW_INDEXING, { required: production });
+const canonicalUrl = getCanonicalUrl(import.meta.env.PUBLIC_WEBSITE_URL, Astro.url.pathname, { required: production });
 const socialImageUrl = canonicalUrl ? new URL('/social-preview.jpg', canonicalUrl).toString() : undefined;
 const websiteOrigin = canonicalUrl ? new URL(canonicalUrl).origin : undefined;
 const structuredData = websiteOrigin
@@ -45,7 +47,14 @@ const structuredData = websiteOrigin
 
 ---
 
-<BaseLayout {title} {description} {canonicalUrl} {socialImageUrl} {structuredData}>
+<BaseLayout
+  {title}
+  {description}
+  {canonicalUrl}
+  robots={allowIndexing ? undefined : 'noindex,follow'}
+  {socialImageUrl}
+  {structuredData}
+>
   <SiteHeader slot="header" />
 
   <HeroAdvantagesFlow />
@@ -63,11 +72,14 @@ const structuredData = websiteOrigin
 <script>
   import { initPageMotion } from '@/lib/motion';
   import { initSectionSpacing } from '@/lib/section-spacing';
+  import { initSmoothScroll } from '@/lib/smooth-scroll';
 
+  const cleanupSmoothScroll = initSmoothScroll(document);
   const cleanup = initPageMotion(document);
   const cleanupSectionSpacing = initSectionSpacing(document);
   if (import.meta.hot)
     import.meta.hot.dispose(() => {
+      cleanupSmoothScroll();
       cleanup();
       cleanupSectionSpacing();
     });
