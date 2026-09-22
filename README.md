@@ -53,6 +53,8 @@ PUBLIC_WEBSITE_URL=https://zotov-landing.pages.dev PUBLIC_ALLOW_INDEXING=false b
 
 `PUBLIC_ALLOW_INDEXING` принимает только `true` или `false`. Production-сборка требует явный выбор: при `false` страницы получают `noindex,follow`, robots.txt не объявляет sitemap, а sitemap остаётся пустым. Для preview и временных технических доменов используйте `false`.
 
+Для Cloudflare Pages безопасные значения временного запуска также явно закреплены в `wrangler.jsonc` для Preview и Production: домен `zotov-landing.pages.dev`, индексация выключена. При подключении брендового домена обновите Wrangler-конфигурацию вместе с переменными окружения и только после проверки переключите индексацию на `true`.
+
 ```bash
 PUBLIC_WEBSITE_URL=https://example.com \
 PUBLIC_ALLOW_INDEXING=true \
