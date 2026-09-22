@@ -359,9 +359,9 @@ const historyCount = HISTORY_EVENTS.length;
     padding: 0.08em 0.15em;
     color: var(--text-primary);
     font-family: 'Vetrino', Georgia, serif;
-    font-size: clamp(2.25rem, 7vw, 4rem);
+    font-size: clamp(1.5rem, calc(1.1131rem + 1.5873vw), 1.875rem);
     font-weight: 400;
-    line-height: 0.98;
+    line-height: 1.05;
     text-wrap: balance;
   }
 
@@ -419,7 +419,7 @@ const historyCount = HISTORY_EVENTS.length;
     padding: 0.2rem 0.42rem 0.24rem;
     color: inherit;
     font-family: 'Vetrino', Georgia, serif;
-    font-size: clamp(2rem, 7vw, 2.7rem);
+    font-size: clamp(2rem, calc(1.4841rem + 2.1164vw), 2.5rem);
     line-height: 1;
   }
 
@@ -481,7 +481,7 @@ const historyCount = HISTORY_EVENTS.length;
     margin: 0.85rem 0 0;
     color: var(--text-primary);
     font-family: 'Vetrino', Georgia, serif;
-    font-size: clamp(2rem, 5vw, 3.4rem);
+    font-size: clamp(1.5rem, calc(1.2421rem + 1.0582vw), 1.75rem);
     font-weight: 400;
     line-height: 1;
     text-wrap: balance;
@@ -493,8 +493,8 @@ const historyCount = HISTORY_EVENTS.length;
     max-width: 42rem;
     margin-top: 1.35rem;
     color: var(--text-muted);
-    font-size: clamp(1rem, 2vw, 1.35rem);
-    line-height: 1.48;
+    font-size: 1rem;
+    line-height: 1.35;
   }
 
   .history__body p { margin: 0; }
@@ -532,7 +532,7 @@ const historyCount = HISTORY_EVENTS.length;
     margin-top: 0.5rem;
     color: var(--text-primary);
     font-family: 'Vetrino', Georgia, serif;
-    font-size: clamp(1.2rem, 2.5vw, 1.7rem);
+    font-size: clamp(1.125rem, calc(0.996rem + 0.5291vw), 1.25rem);
     line-height: 1.05;
   }
 
@@ -591,9 +591,18 @@ const historyCount = HISTORY_EVENTS.length;
     .history { padding-bottom: 3.5rem; }
     .history__title {
       max-width: 100%;
-      font-size: clamp(2.9rem, 6vw, 4rem);
+      font-size: clamp(1.875rem, 3.9063vw, 2.5rem);
       text-wrap: nowrap;
       white-space: nowrap;
+    }
+    .history__timeline-year {
+      font-size: clamp(2.5rem, calc(1.75rem + 1.5625vw), 2.75rem);
+    }
+    .history__copy h3 {
+      font-size: clamp(1.75rem, calc(1rem + 1.5625vw), 2rem);
+    }
+    .history__ending {
+      font-size: clamp(1.25rem, calc(0.875rem + 0.7813vw), 1.375rem);
     }
     .history__timeline-clip { overflow: visible; }
     .history__timeline {
@@ -614,6 +623,33 @@ const historyCount = HISTORY_EVENTS.length;
       gap: clamp(3rem, 7vw, 7rem);
     }
     .history__art { min-height: 24rem; }
+  }
+
+  @media (min-width: 64rem) and (max-width: 79.999rem) {
+    .history__title {
+      font-size: clamp(2.5rem, calc(-3.5rem + 9.375vw), 4rem);
+      line-height: 1;
+    }
+    .history__timeline-year {
+      font-size: clamp(2.7rem, calc(2.95rem - 0.3125vw), 2.75rem);
+    }
+    .history__copy h3 {
+      font-size: clamp(2rem, calc(-3.6rem + 8.75vw), 3.4rem);
+    }
+    .history__body {
+      font-size: clamp(1rem, calc(-0.4rem + 2.1875vw), 1.35rem);
+    }
+    .history__ending {
+      font-size: clamp(1.375rem, calc(0.075rem + 2.0313vw), 1.7rem);
+    }
+  }
+
+  @media (min-width: 80rem) {
+    .history__title { font-size: 4rem; line-height: 0.98; }
+    .history__timeline-year { font-size: 2.7rem; }
+    .history__copy h3 { font-size: 3.4rem; }
+    .history__body { font-size: 1.35rem; line-height: 1.48; }
+    .history__ending { font-size: 1.7rem; }
   }
 
   @media (prefers-reduced-motion: reduce) {

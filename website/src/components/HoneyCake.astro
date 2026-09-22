@@ -41,7 +41,7 @@ const whatsappUrl = getWhatsAppUrl('honeyCake');
           ассоциироваться с брендом.
         </p>
         <Wrapper margin="1.5rem 0 0" at={{ medium: { margin: '0.75rem 0 0' }, large: { margin: '2.25rem 0 0' } }}>
-          <ActionLink variant="primary" href={whatsappUrl} fullWidth external>
+          <ActionLink variant="primary" size="compact" href={whatsappUrl} fullWidth external>
             Узнать цену и наличие
           </ActionLink>
           <p><a href={CONTACTS.mobile.href}>Или позвоните нам: {CONTACTS.mobile.display}</a></p>
@@ -83,9 +83,9 @@ const whatsappUrl = getWhatsAppUrl('honeyCake');
 
   .honey-cake__title {
     font-family: 'Vetrino', Georgia, serif;
-    font-size: clamp(2.25rem, 5vw, 3rem);
+    font-size: clamp(1.5rem, calc(1.1131rem + 1.5873vw), 1.875rem);
     font-weight: 400;
-    line-height: 1;
+    line-height: 1.05;
     text-align: center;
     text-wrap: balance;
   }
@@ -192,7 +192,8 @@ const whatsappUrl = getWhatsAppUrl('honeyCake');
     }
 
     .honey-cake__title {
-      font-size: 2rem;
+      font-size: clamp(1.875rem, 3.9063vw, 2.5rem);
+      line-height: 1;
     }
 
     .honey-cake__content {
@@ -239,7 +240,8 @@ const whatsappUrl = getWhatsAppUrl('honeyCake');
     }
 
     .honey-cake__title {
-      font-size: 3rem;
+      font-size: clamp(2.5rem, calc(-0.4091rem + 4.5455vw), 3rem);
+      line-height: 1;
     }
 
     .honey-cake__content {
