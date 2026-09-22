@@ -43,11 +43,25 @@ import { HOME_SECTION_IDS } from '@/lib/site';
 
   .faq__title {
     font-family: 'Vetrino', Georgia, serif;
-    font-size: clamp(2rem, 9vw, 2.5rem);
+    font-size: clamp(1.5rem, calc(1.1131rem + 1.5873vw), 1.875rem);
     font-weight: 400;
-    line-height: 1;
+    line-height: 1.05;
     text-align: center;
     text-wrap: balance;
+  }
+
+  @media (min-width: 48rem) and (max-width: 63.999rem) {
+    .faq__title {
+      font-size: clamp(1.875rem, 3.9063vw, 2.5rem);
+      line-height: 1;
+    }
+  }
+
+  @media (min-width: 64rem) and (max-width: 79.999rem) {
+    .faq__title {
+      font-size: clamp(2.5rem, calc(0.5rem + 3.125vw), 3rem);
+      line-height: 1;
+    }
   }
 
   @media (min-width: 80rem) {

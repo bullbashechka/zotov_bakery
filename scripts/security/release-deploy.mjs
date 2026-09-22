@@ -66,7 +66,7 @@ export function deployRelease({
   if (status) throw new Error('Deployment requires a clean worktree, including no untracked files');
   const branch = capturedGit(runCommand, cwd, ['branch', '--show-current'], 'Git branch check');
   if (!branch) throw new Error('Deployment is not allowed from a detached HEAD');
-  if (mode === 'production' && branch !== 'dev') throw new Error('Production deployment is only allowed from dev');
+  if (mode === 'production' && branch !== 'main') throw new Error('Production deployment is only allowed from main');
   if (mode === 'preview' && ['dev', 'main'].includes(branch)) {
     throw new Error('Preview deployment requires a separate feature branch');
   }
@@ -90,7 +90,7 @@ export function deployRelease({
     throw new Error('Repository state changed during release checks; refusing deployment');
   }
 
-  const deploymentBranch = mode === 'production' ? 'dev' : 'preview';
+  const deploymentBranch = mode === 'production' ? 'main' : 'preview';
   const wrangler = resolve(cwd, 'node_modules/wrangler/bin/wrangler.js');
   const args = [
     wrangler,

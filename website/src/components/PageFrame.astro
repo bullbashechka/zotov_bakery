@@ -7,8 +7,12 @@ import Wrapper from './Wrapper.astro';
 <Wrapper position="absolute" inset="0 0 auto" height="var(--header-expanded-height)" zIndex={40}>
   <header><slot name="header" /></header>
 </Wrapper>
-<main id="main-content"><slot /></main>
-<footer><slot name="footer" /></footer>
+<div id="smooth-wrapper">
+  <div id="smooth-content">
+    <main id="main-content"><slot /></main>
+    <footer><slot name="footer" /></footer>
+  </div>
+</div>
 
 <style>
   header {

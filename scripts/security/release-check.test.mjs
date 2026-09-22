@@ -18,11 +18,21 @@ test('release check validates the origin before running commands', () => {
   assert.equal(calls, 0);
 });
 
+test('release check requires an explicit indexing decision before running commands', () => {
+  let calls = 0;
+  assert.throws(() => runReleaseCheck({
+    cwd: root,
+    env: { PUBLIC_WEBSITE_URL: 'https://ci.example' },
+    runCommand() { calls += 1; return { status: 0, stdout: bunVersion }; },
+  }), /PUBLIC_ALLOW_INDEXING is required/);
+  assert.equal(calls, 0);
+});
+
 test('release check stops immediately when an injected step fails', () => {
   const calls = [];
   assert.throws(() => runReleaseCheck({
     cwd: root,
-    env: { PUBLIC_WEBSITE_URL: 'https://ci.example' },
+    env: { PUBLIC_WEBSITE_URL: 'https://ci.example', PUBLIC_ALLOW_INDEXING: 'false' },
     runCommand(command, args) {
       calls.push([command, ...args]);
       if (args[0] === '--version') return { status: 0, stdout: `${bunVersion}\n` };

@@ -2,5 +2,23 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "zotov-landing",
   "pages_build_output_dir": "./website/dist",
-  "compatibility_date": "2026-08-19"
+  "compatibility_date": "2026-08-19",
+  "vars": {
+    "PUBLIC_WEBSITE_URL": "https://zotov-landing.pages.dev",
+    "PUBLIC_ALLOW_INDEXING": "false"
+  },
+  "env": {
+    "preview": {
+      "vars": {
+        "PUBLIC_WEBSITE_URL": "https://zotov-landing.pages.dev",
+        "PUBLIC_ALLOW_INDEXING": "false"
+      }
+    },
+    "production": {
+      "vars": {
+        "PUBLIC_WEBSITE_URL": "https://zotov-landing.pages.dev",
+        "PUBLIC_ALLOW_INDEXING": "false"
+      }
+    }
+  }
 }

@@ -12,3 +12,8 @@ export declare function getCanonicalUrl(
   pathname: string,
   options?: WebsiteOriginOptions,
 ): string | undefined;
+
+export declare function validateSearchIndexing(
+  value: unknown,
+  options?: WebsiteOriginOptions,
+): boolean;

@@ -135,7 +135,7 @@
 @media (min-width: 80rem) {
   :root {
     --header-expanded-height: clamp(179px, 12.4306vw, 239px);
-    --header-compact-height: clamp(112px, 7.7778vw, 149.333px);
+    --header-compact-height: clamp(80px, 5.5556vw, 106.667px);
   }
 }
 
@@ -166,6 +166,10 @@
 
   html {
     scroll-behavior: smooth;
+  }
+
+  html[data-smooth-scroll='true'] {
+    scroll-behavior: auto;
   }
 
   body {

@@ -4,7 +4,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-import { validateWebsiteOrigin } from '../../website/src/lib/site-origin.mjs';
+import { validateSearchIndexing, validateWebsiteOrigin } from '../../website/src/lib/site-origin.mjs';
 import { requireSuccess, runCommand as defaultRunCommand } from './command.mjs';
 
 const scriptDirectory = dirname(fileURLToPath(import.meta.url));
@@ -42,6 +42,7 @@ export function runReleaseCheck({
   runCommand = defaultRunCommand,
 } = {}) {
   const origin = validateWebsiteOrigin(env.PUBLIC_WEBSITE_URL, { required: true });
+  const allowIndexing = validateSearchIndexing(env.PUBLIC_ALLOW_INDEXING, { required: true });
   const expectedBun = readPinnedBunVersion(cwd);
   const versionResult = runCommand('bun', ['--version'], { cwd, env, capture: true });
   requireSuccess(versionResult, 'Bun version check');
@@ -49,7 +50,11 @@ export function runReleaseCheck({
     throw new Error(`Bun ${expectedBun} is required`);
   }
 
-  const releaseEnv = { ...env, PUBLIC_WEBSITE_URL: origin };
+  const releaseEnv = {
+    ...env,
+    PUBLIC_WEBSITE_URL: origin,
+    PUBLIC_ALLOW_INDEXING: String(allowIndexing),
+  };
   const steps = [
     ['frozen dependency install', 'bun', ['install', '--frozen-lockfile']],
     ['security checks', process.execPath, ['scripts/security/security-check.mjs']],

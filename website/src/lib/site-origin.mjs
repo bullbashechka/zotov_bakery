@@ -1,6 +1,8 @@
 const INVALID_ORIGIN_MESSAGE =
   'PUBLIC_WEBSITE_URL must be an HTTPS origin without credentials, a path, query, or fragment.';
 const REQUIRED_ORIGIN_MESSAGE = 'PUBLIC_WEBSITE_URL is required for this operation.';
+const INVALID_INDEXING_MESSAGE = 'PUBLIC_ALLOW_INDEXING must be "true" or "false".';
+const REQUIRED_INDEXING_MESSAGE = 'PUBLIC_ALLOW_INDEXING is required for this operation.';
 
 /**
  * Validate and normalize the public website origin.
@@ -62,4 +64,25 @@ export function getCanonicalUrl(value, pathname, options) {
     throw new TypeError('Canonical pathname must stay within the configured origin without a query or fragment.');
   }
   return canonical.toString();
+}
+
+/**
+ * Validate whether production pages may be indexed by search engines.
+ *
+ * An omitted value is deliberately safe for development and previews: no indexing.
+ * Release commands require an explicit choice so a public deployment cannot silently
+ * switch its search visibility.
+ *
+ * @param {unknown} value
+ * @param {{ required?: boolean }} [options]
+ * @returns {boolean}
+ */
+export function validateSearchIndexing(value, { required = false } = {}) {
+  if (value === undefined || value === null || value === '') {
+    if (required) throw new TypeError(REQUIRED_INDEXING_MESSAGE);
+    return false;
+  }
+  if (value === 'true') return true;
+  if (value === 'false') return false;
+  throw new TypeError(INVALID_INDEXING_MESSAGE);
 }

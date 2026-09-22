@@ -52,7 +52,7 @@ const { product } = Astro.props;
   .assortment__panel h3 {
     margin: 0 0 0.25rem;
     font:
-      400 1.875rem/1.1 'Vetrino',
+      400 clamp(1.25rem, calc(0.9921rem + 1.0582vw), 1.5rem)/1.1 'Vetrino',
       Georgia,
       serif;
     text-wrap: balance;
@@ -75,7 +75,7 @@ const { product } = Astro.props;
     min-height: 2.75rem;
     list-style: none;
     font:
-      400 1.5rem/1.2 'Vetrino',
+      400 clamp(1.25rem, calc(0.9921rem + 1.0582vw), 1.5rem)/1.2 'Vetrino',
       Georgia,
       serif;
   }
@@ -104,7 +104,7 @@ const { product } = Astro.props;
     border: 1px solid currentColor;
     border-radius: 0.5rem;
     padding: 0.5rem 0.625rem;
-    font-size: 0.875rem;
+    font-size: 1rem;
     line-height: 1.4;
   }
 
@@ -142,11 +142,11 @@ const { product } = Astro.props;
     }
 
     .assortment__panel h3 {
-      font-size: 1.875rem;
+      font-size: clamp(1.5rem, calc(1.125rem + 0.7813vw), 1.625rem);
     }
 
     .assortment__ingredients summary {
-      font-size: 1.875rem;
+      font-size: clamp(1.5rem, calc(1.125rem + 0.7813vw), 1.625rem);
     }
 
     .assortment__panel[data-carousel] .assortment__ingredients summary {
@@ -169,12 +169,19 @@ const { product } = Astro.props;
   @media (min-width: 48rem) and (max-width: 63.999rem) {
     .assortment__panel h3,
     .assortment__ingredients summary {
-      font-size: 1.625rem;
+      font-size: clamp(1.5rem, calc(1.125rem + 0.7813vw), 1.625rem);
     }
 
     .assortment__panel .assortment__highlight {
       font-size: 1rem;
       line-height: 1.25;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .assortment__panel h3,
+    .assortment__ingredients summary {
+      font-size: clamp(1.625rem, calc(0.1705rem + 2.2727vw), 1.875rem);
     }
   }
 </style>

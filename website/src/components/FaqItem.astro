@@ -309,7 +309,7 @@ const answerId = `${id}-answer`;
     display: block;
     overflow-wrap: anywhere;
     font-family: 'Vetrino', Georgia, serif;
-    font-size: 1.375rem;
+    font-size: clamp(1.25rem, calc(0.9921rem + 1.0582vw), 1.5rem);
     font-weight: 400;
     line-height: 1.05;
   }
@@ -386,7 +386,7 @@ const answerId = `${id}-answer`;
     }
 
     .faq__question {
-      font-size: clamp(1.625rem, 2.5vw, 1.875rem);
+      font-size: clamp(1.5rem, calc(1.125rem + 0.7813vw), 1.625rem);
       line-height: 1;
     }
 
@@ -408,6 +408,12 @@ const answerId = `${id}-answer`;
   @media (min-width: 80rem) {
     .faq__summary {
       padding-inline: 1.875rem 5.25rem;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .faq__question {
+      font-size: clamp(1.625rem, calc(0.1705rem + 2.2727vw), 1.875rem);
     }
   }
 </style>
