@@ -245,7 +245,7 @@ Lighthouse и визуальных проверок ниже относятся 
 ### Временный запуск на `pages.dev` без индексации
 
 - [ ] Дождаться успешных проверок PR и merge в `main`.
-- [ ] Синхронизировать production-ветку с фактическим Git-процессом: сейчас PR вливается в `main`, а `scripts/security/release-deploy.mjs` разрешает production-deploy только из `dev`.
+- [x] Синхронизировать production-ветку с фактическим Git-процессом: Cloudflare Pages и `scripts/security/release-deploy.mjs` используют `main` для production, а `dev` — для preview.
 - [ ] Получить отдельное явное разрешение на публикацию в Cloudflare Pages.
 - [ ] После выбора production-ветки опубликовать сборку с `PUBLIC_WEBSITE_URL=https://zotov-landing.pages.dev` и `PUBLIC_ALLOW_INDEXING=false`.
 - [ ] Проверить на опубликованном сайте canonical, Open Graph, Schema.org и `noindex,follow` на главной, странице политики и 404.

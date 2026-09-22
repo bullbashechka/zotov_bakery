@@ -6,7 +6,7 @@ import { deployRelease } from './release-deploy.mjs';
 
 const root = resolve(import.meta.dirname, '../..');
 
-function fakeRepository({ branch = 'dev', releaseStatus = 0 } = {}) {
+function fakeRepository({ branch = 'main', releaseStatus = 0 } = {}) {
   const calls = [];
   function runCommand(command, args) {
     calls.push([command, ...args]);
@@ -49,11 +49,11 @@ test('production deploy uses the configured project and fixed artifact directory
   assert(deploy);
   assert(deploy.includes('website/dist'));
   assert(deploy.includes('--project-name=zotov-landing'));
-  assert(deploy.includes('--branch=dev'));
+  assert(deploy.includes('--branch=main'));
 });
 
 test('preview deploy requires a separate branch and uses the preview alias', () => {
-  assert.throws(() => deployRelease({ mode: 'preview', cwd: root, runCommand: fakeRepository().runCommand }), /separate feature branch/);
+  assert.throws(() => deployRelease({ mode: 'preview', cwd: root, runCommand: fakeRepository({ branch: 'dev' }).runCommand }), /separate feature branch/);
   const fake = fakeRepository({ branch: 'release-review' });
   deployRelease({ mode: 'preview', cwd: root, runCommand: fake.runCommand });
   assert(fake.calls.find((call) => call.includes('deploy')).includes('--branch=preview'));
