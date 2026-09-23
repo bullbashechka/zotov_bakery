@@ -81,7 +81,7 @@ export function checkHtml(html, file, origin, { allowIndexing = true, requireHom
     const ogUrl = nodes.find((node) => node.tagName === 'meta' && attribute(node, 'property') === 'og:url');
     const ogImage = nodes.find((node) => node.tagName === 'meta' && attribute(node, 'property') === 'og:image');
     assert.equal(attribute(ogUrl ?? {}, 'content'), new URL('/', origin).href, 'index.html: wrong Open Graph URL');
-    assert.equal(attribute(ogImage ?? {}, 'content'), new URL('/social-preview.jpg', origin).href, 'index.html: wrong Open Graph image');
+    assert.equal(attribute(ogImage ?? {}, 'content'), new URL('/social-preview.png', origin).href, 'index.html: wrong Open Graph image');
     const schema = nodes.find((node) => node.tagName === 'script' && attribute(node, 'type') === 'application/ld+json');
     assert(schema, 'index.html: missing LocalBusiness JSON-LD');
     const structuredData = JSON.parse((schema.childNodes ?? []).map((node) => node.value ?? '').join(''));

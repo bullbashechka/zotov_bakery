@@ -17,7 +17,7 @@ const description = SITE_DESCRIPTION;
 const production = import.meta.env.PROD;
 const allowIndexing = validateSearchIndexing(import.meta.env.PUBLIC_ALLOW_INDEXING, { required: production });
 const canonicalUrl = getCanonicalUrl(import.meta.env.PUBLIC_WEBSITE_URL, Astro.url.pathname, { required: production });
-const socialImageUrl = canonicalUrl ? new URL('/social-preview.jpg', canonicalUrl).toString() : undefined;
+const socialImageUrl = canonicalUrl ? new URL('/social-preview.png', canonicalUrl).toString() : undefined;
 const websiteOrigin = canonicalUrl ? new URL(canonicalUrl).origin : undefined;
 const structuredData = websiteOrigin
   ? {
