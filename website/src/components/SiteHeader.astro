@@ -3,7 +3,7 @@ import { CONTACTS, HOME_NAV_LINKS } from '@/lib/site';
 import HeaderMascot from '@/components/HeaderMascot.astro';
 import siteHeaderScript from '@/scripts/site-header.inline.js?raw';
 
-const desktopLeftLinks = HOME_NAV_LINKS.slice(0, 3);
+const desktopLeftLinks = [HOME_NAV_LINKS[1], HOME_NAV_LINKS[0], HOME_NAV_LINKS[2]];
 const desktopRightLinks = HOME_NAV_LINKS.slice(3);
 ---
 
