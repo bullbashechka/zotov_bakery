@@ -1,5 +1,5 @@
 ---
-import { CONTACTS, HOME_NAV_LINKS, PRIVACY_UPDATED_AT, SITE_OWNER, getWhatsAppUrl } from '@/lib/site';
+import { CONTACTS, HOME_NAV_LINKS, PRIVACY_UPDATED_AT, SITE_OWNER, SITE_OWNER_EMAIL, SITE_OWNER_LEGAL_ADDRESS, getWhatsAppUrl } from '@/lib/site';
 
 const whatsappUrl = getWhatsAppUrl();
 const analyticsEnabled = Boolean(import.meta.env.PUBLIC_YANDEX_METRIKA_ID?.trim());
@@ -16,7 +16,9 @@ const analyticsEnabled = Boolean(import.meta.env.PUBLIC_YANDEX_METRIKA_ID?.trim(
     <section>
       <h2>Кто отвечает за сайт</h2>
       <p>
-        Владельцем сайта является {SITE_OWNER}. По вопросам использования данных напишите нам в{' '}
+        Владельцем сайта является {SITE_OWNER}. Юридический адрес: {SITE_OWNER_LEGAL_ADDRESS}.
+        По вопросам использования данных напишите на{' '}
+        <a href={`mailto:${SITE_OWNER_EMAIL}`}>{SITE_OWNER_EMAIL}</a> или в{' '}
         <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">WhatsApp</a>{' '}по номеру{' '}
         {CONTACTS.mobile.display}.
       </p>
@@ -86,6 +88,7 @@ const analyticsEnabled = Boolean(import.meta.env.PUBLIC_YANDEX_METRIKA_ID?.trim(
   .privacy-policy__content {
     width: min(100%, 48rem);
     margin-inline: auto;
+    overflow-wrap: anywhere;
   }
 
   .privacy-policy__logo {

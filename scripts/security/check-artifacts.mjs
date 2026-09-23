@@ -4,6 +4,7 @@ import { readdir, readFile, lstat } from 'node:fs/promises';
 import { resolve, relative, basename } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { parse } from 'parse5';
+import sax from 'sax';
 
 export function parsePolicy(value) {
   const entries = value.split(';').map((part) => {
@@ -22,9 +23,56 @@ function elements(node, result = []) {
 }
 const attribute = (node, name) => node.attrs?.find((item) => item.name === name)?.value;
 const sources = (policy, name, fallback) => policy.get(name) ?? policy.get(fallback) ?? policy.get('default-src') ?? [];
+const textContent = (node) => node.nodeName === '#text' ? node.value : (node.childNodes ?? []).map(textContent).join('');
+const normalizedText = (value) => value.replace(/\s+/g, ' ').trim();
+
+export function checkSitemap(xml, origin, allowIndexing) {
+  const parser = sax.parser(true, { xmlns: true });
+  const namespace = 'http://www.sitemaps.org/schemas/sitemap/0.9';
+  const stack = [];
+  const urls = [];
+  let location = '';
+  let rootCount = 0;
+  let locCount = 0;
+  parser.ondoctype = () => { throw new Error('sitemap.xml: DTD is not allowed'); };
+  parser.onopentag = (node) => {
+    assert.equal(node.uri, namespace, 'sitemap.xml: wrong namespace');
+    const expected = ['urlset', 'url', 'loc'][stack.length];
+    assert.equal(node.local, expected, 'sitemap.xml: unexpected element');
+    if (stack.length === 0) rootCount++;
+    if (node.local === 'url') locCount = 0;
+    if (node.local === 'loc') { locCount++; location = ''; }
+    stack.push(node.local);
+  };
+  const readText = (text) => {
+    if (stack.at(-1) === 'loc') location += text;
+    else assert(!text.trim(), 'sitemap.xml: unexpected text');
+  };
+  parser.ontext = readText;
+  parser.oncdata = readText;
+  parser.onclosetag = () => {
+    const tag = stack.pop();
+    if (tag === 'loc') urls.push(location.trim());
+    if (tag === 'url') assert.equal(locCount, 1, 'sitemap.xml: expected one loc per url');
+  };
+  parser.write(xml).close();
+  assert.equal(rootCount, 1, 'sitemap.xml: expected one urlset');
+  assert.equal(new Set(urls).size, urls.length, 'sitemap.xml: duplicate URL');
+  if (allowIndexing) assert(origin, 'An indexable artifact requires a canonical origin');
+  const expected = allowIndexing ? ['/', '/privacy/'].map((path) => new URL(path, origin).href) : [];
+  assert.deepEqual(urls.sort(), expected.sort(), 'sitemap.xml: unexpected URL set (including noindex pages or wrong canonical origin)');
+}
 
 export function checkHtml(html, file, origin, { allowIndexing = true, requireHomepageSeo = false } = {}) {
   const nodes = elements(parse(html));
+  for (const tag of ['title', 'h1']) {
+    const matches = nodes.filter((node) => node.tagName === tag);
+    assert.equal(matches.length, 1, `${file}: expected one ${tag}`);
+    assert(normalizedText(textContent(matches[0])), `${file}: empty ${tag}`);
+  }
+  const descriptions = nodes.filter((node) => node.tagName === 'meta' && attribute(node, 'name')?.toLowerCase() === 'description');
+  assert.equal(descriptions.length, 1, `${file}: expected one description`);
+  assert(attribute(descriptions[0], 'content')?.trim(), `${file}: empty description`);
   const csp = nodes.find((node) => node.tagName === 'meta' && attribute(node, 'http-equiv')?.toLowerCase() === 'content-security-policy');
   assert(csp, `${file}: missing enforced CSP`);
   const policy = parsePolicy(attribute(csp, 'content') ?? '');
@@ -65,7 +113,9 @@ export function checkHtml(html, file, origin, { allowIndexing = true, requireHom
       assert(!value || !/^(?:javascript|vbscript):/i.test(value.replace(/[\u0000-\u0020]/g, '')), `${file}: unsafe URL scheme`);
     }
   }
-  const robots = nodes.find((node) => node.tagName === 'meta' && attribute(node, 'name')?.toLowerCase() === 'robots');
+  const robotTags = nodes.filter((node) => node.tagName === 'meta' && ['robots', 'googlebot', 'bingbot', 'yandex'].includes(attribute(node, 'name')?.toLowerCase()));
+  assert(robotTags.length <= 1 && robotTags.every((node) => attribute(node, 'name').toLowerCase() === 'robots'), `${file}: duplicate or conflicting robots directives`);
+  const robots = robotTags[0];
   const expectsNoindex = file === '404.html' || !allowIndexing;
   if (expectsNoindex) {
     assert.equal(attribute(robots ?? {}, 'content'), 'noindex,follow', `${file}: missing noindex,follow`);
@@ -73,7 +123,9 @@ export function checkHtml(html, file, origin, { allowIndexing = true, requireHom
     assert.equal(attribute(robots ?? {}, 'content'), undefined, `${file}: unexpected robots directive`);
   }
   if (origin && file !== '404.html') {
-    const canonical = nodes.find((node) => node.tagName === 'link' && attribute(node, 'rel') === 'canonical');
+    const canonicals = nodes.filter((node) => node.tagName === 'link' && attribute(node, 'rel')?.toLowerCase().split(/\s+/).includes('canonical'));
+    assert.equal(canonicals.length, 1, `${file}: expected one canonical`);
+    const canonical = canonicals[0];
     const pathname = file === 'index.html' ? '/' : `/${file.replace(/index\.html$/, '')}`;
     assert.equal(attribute(canonical ?? {}, 'href'), new URL(pathname, origin).href, `${file}: wrong canonical`);
   }
@@ -88,6 +140,27 @@ export function checkHtml(html, file, origin, { allowIndexing = true, requireHom
     assert.equal(structuredData.url, origin, 'index.html: wrong LocalBusiness URL');
     const types = Array.isArray(structuredData['@type']) ? structuredData['@type'] : [structuredData['@type']];
     assert(types.includes('Bakery') && types.includes('LocalBusiness'), 'index.html: incomplete LocalBusiness types');
+    assert.equal(structuredData['@context'], 'https://schema.org', 'index.html: wrong schema context');
+    const visibleText = normalizedText(textContent(nodes.find((node) => node.tagName === 'body')));
+    const contacts = nodes.find((node) => attribute(node, 'id') === 'contacts');
+    assert(contacts, 'index.html: missing visible contacts');
+    const contactText = normalizedText(textContent(contacts));
+    for (const [label, value] of Object.entries({ name: structuredData.name, streetAddress: structuredData.address?.streetAddress, addressLocality: structuredData.address?.addressLocality })) {
+      assert(typeof value === 'string' && value.trim(), `index.html: missing schema ${label}`);
+      assert((label === 'name' ? visibleText : contactText).includes(value), `index.html: schema ${label} differs from visible content`);
+    }
+    assert.equal(structuredData.address?.['@type'], 'PostalAddress', 'index.html: wrong address type');
+    assert.equal(structuredData.address?.addressCountry, 'KZ', 'index.html: wrong address country');
+    const phones = elements(contacts).filter((node) => node.tagName === 'a' && attribute(node, 'href')?.startsWith('tel:')).map((node) => attribute(node, 'href').replace(/\D/g, ''));
+    assert(Array.isArray(structuredData.telephone), 'index.html: missing schema phones');
+    assert.deepEqual(structuredData.telephone.map((phone) => phone.replace(/\D/g, '')).sort(), phones.sort(), 'index.html: schema phones differ from visible contacts');
+    const hours = structuredData.openingHoursSpecification;
+    assert(Array.isArray(hours) && hours.length === 1, 'index.html: expected one opening hours specification');
+    assert.equal(hours[0]['@type'], 'OpeningHoursSpecification');
+    assert.deepEqual([...hours[0].dayOfWeek].sort(), ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].sort(), 'index.html: expected daily hours');
+    assert.match(hours[0].opens, /^\d{2}:\d{2}$/);
+    assert.match(hours[0].closes, /^\d{2}:\d{2}$/);
+    assert(contactText.includes(`пн–вс: ${hours[0].opens}–${hours[0].closes}`), 'index.html: schema hours differ from visible contacts');
   }
 }
 
@@ -110,7 +183,7 @@ export async function checkArtifacts(directory = 'website/dist', origin = proces
     assert(!/(?:^|\/)(?:node_modules|storybook|storybook-static|functions|\.git)(?:\/|$)/i.test(file), `Unexpected build directory: ${file}`);
   }
   for (const file of ['index.html', 'privacy/index.html', '404.html', 'robots.txt', 'sitemap.xml', '_headers']) assert(files.includes(file), `Missing build file: ${file}`);
-  const headers = await readFile(resolve(root, '_headers'), 'utf8');
+  const headers = (await readFile(resolve(root, '_headers'), 'utf8')).replace(/\r\n/g, '\n');
   assert(/Content-Security-Policy:\s*[^\n]*frame-ancestors 'none'/i.test(headers), 'Missing HTTP frame-ancestors policy');
   assert(/\/_astro\/\*\n\s+Cache-Control:\s*public, max-age=31536000, immutable/i.test(headers), 'Missing immutable cache policy for fingerprinted assets');
   assert(/\/fonts\/\*\n\s+Cache-Control:\s*public, max-age=2592000/i.test(headers), 'Missing cache policy for fonts');
@@ -122,19 +195,16 @@ export async function checkArtifacts(directory = 'website/dist', origin = proces
       requireHomepageSeo: true,
     });
   }
-  const robots = await readFile(resolve(root, 'robots.txt'), 'utf8');
+  const robots = (await readFile(resolve(root, 'robots.txt'), 'utf8')).replace(/\r\n/g, '\n');
   assert.match(robots, /^User-agent: \*\nAllow: \/\n/m, 'robots.txt must allow crawling');
   const sitemap = await readFile(resolve(root, 'sitemap.xml'), 'utf8');
+  checkSitemap(sitemap, origin, allowIndexing);
   if (allowIndexing) {
     assert(origin, 'An indexable artifact requires a canonical origin');
     const sitemapUrl = new URL('/sitemap.xml', origin).href;
     assert.match(robots, new RegExp(`^Sitemap: ${sitemapUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'm'), 'robots.txt: wrong sitemap URL');
-    for (const pathname of ['/', '/privacy/']) {
-      assert(sitemap.includes(`<loc>${new URL(pathname, origin).href}</loc>`), `sitemap.xml: missing ${pathname}`);
-    }
   } else {
     assert.doesNotMatch(robots, /^Sitemap:/m, 'robots.txt must not advertise noindex pages');
-    assert(!sitemap.includes('<loc>'), 'sitemap.xml must not include noindex pages');
   }
   console.log(`Artifact security OK: ${files.length} files, ${pages.length} pages.`);
 }
