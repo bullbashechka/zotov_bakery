@@ -1,12 +1,21 @@
 import { gsap } from 'gsap';
+import { ScrollSmoother } from 'gsap/ScrollSmoother';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 const activeRoots = new WeakMap<Document, () => void>();
 
-/** Animates in-page navigation while leaving normal page scrolling to the browser. */
+/** Keeps inertial desktop scrolling and animates in-page navigation through the same scroller. */
 export function initSmoothScroll(root: Document): () => void {
   const existingCleanup = activeRoots.get(root);
   if (existingCleanup) return existingCleanup;
 
+  const wrapper = root.querySelector<HTMLElement>('#smooth-wrapper');
+  const content = root.querySelector<HTMLElement>('#smooth-content');
+  if (!wrapper || !content) return () => {};
+
+  gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
+  const media = gsap.matchMedia();
+  let smoother: ScrollSmoother | undefined;
   let navigation: gsap.core.Tween | undefined;
 
   const stopNavigation = () => {
@@ -40,12 +49,22 @@ export function initSmoothScroll(root: Document): () => void {
       root.body.append(offsetProbe);
       const margin = offsetProbe.getBoundingClientRect().height;
       offsetProbe.remove();
-      const end = Math.max(0, target.getBoundingClientRect().top + window.scrollY - margin);
-      const start = window.scrollY;
-      const setScroll = (value: number) => window.scrollTo({ top: value, behavior: 'instant' });
+      const end = Math.max(0, (smoother
+        ? smoother.offset(target, 'top top')
+        : target.getBoundingClientRect().top + window.scrollY) - margin);
+      const start = smoother ? smoother.scrollTop() : window.scrollY;
+      const setScroll = (value: number) => {
+        if (smoother) smoother.scrollTop(value);
+        else window.scrollTo({ top: value, behavior: 'instant' });
+      };
 
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         setScroll(end);
+        return;
+      }
+
+      if (smoother) {
+        smoother.scrollTo(end, true);
         return;
       }
 
@@ -64,11 +83,34 @@ export function initSmoothScroll(root: Document): () => void {
   window.addEventListener('wheel', stopNavigation, { passive: true });
   window.addEventListener('touchstart', stopNavigation, { passive: true });
 
+  media.add(
+    '(prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine)',
+    () => {
+      root.documentElement.dataset.smoothScroll = 'true';
+      smoother = ScrollSmoother.create({
+        wrapper,
+        content,
+        smooth: 1.4,
+        smoothTouch: false,
+        effects: false,
+        ignoreMobileResize: true,
+      });
+
+      return () => {
+        stopNavigation();
+        delete root.documentElement.dataset.smoothScroll;
+        smoother?.kill();
+        smoother = undefined;
+      };
+    },
+  );
+
   const cleanup = () => {
     stopNavigation();
     root.removeEventListener('click', handleAnchorClick);
     window.removeEventListener('wheel', stopNavigation);
     window.removeEventListener('touchstart', stopNavigation);
+    media.revert();
     activeRoots.delete(root);
   };
   activeRoots.set(root, cleanup);
