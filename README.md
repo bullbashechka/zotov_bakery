@@ -55,6 +55,10 @@ PUBLIC_WEBSITE_URL=https://zotov-landing.pages.dev PUBLIC_ALLOW_INDEXING=false b
 
 Для Cloudflare Pages безопасные значения временного запуска также явно закреплены в `wrangler.jsonc` для Preview и Production: домен `zotov-landing.pages.dev`, индексация выключена. При подключении брендового домена обновите Wrangler-конфигурацию вместе с переменными окружения и только после проверки переключите индексацию на `true`.
 
+SEO-переменные необходимо передавать до запуска сборки Astro. Изменение переменных Cloudflare после сборки не переписывает готовые HTML, robots.txt и sitemap.xml: требуется новая сборка. Для локальной проверки открытого режима используйте `PUBLIC_WEBSITE_URL=https://seo-check.example` и `PUBLIC_ALLOW_INDEXING=true`; такую сборку не публикуйте. После проверки восстановите локальную сборку с текущим техническим доменом и `PUBLIC_ALLOW_INDEXING=false`.
+
+Проверка артефактов входит в `release:check` и контролирует метаданные, canonical, robots, строгий XML sitemap и соответствие JSON-LD видимым контактам. Для браузерного SEO-прогона запустите локальный Pages-сервер на порту 4329 (`bun run cf:dev --port 4329`), дождитесь готовности и выполните `node scripts/seo/browser-check.mjs http://127.0.0.1:4329`. Скрипт проверяет главную и privacy на 390/1440 px с JavaScript и без него; результаты и снимки сохраняются в `artifacts/seo/browser/`. После проверки остановите сервер.
+
 ```bash
 PUBLIC_WEBSITE_URL=https://example.com \
 PUBLIC_ALLOW_INDEXING=true \
@@ -109,7 +113,7 @@ PUBLIC_WEBSITE_URL=https://example.com PUBLIC_ALLOW_INDEXING=true bun run cf:dep
 PUBLIC_WEBSITE_URL=https://preview.example.com PUBLIC_ALLOW_INDEXING=false bun run cf:deploy:preview
 ```
 
-Команды публикации сначала выполняют `release:check`. Production-публикация разрешена из чистой ветки `dev`, preview — из отдельной feature-ветки с alias `preview`.
+Команды публикации сначала выполняют `release:check`. Production-публикация разрешена из чистой ветки `main`, preview — из отдельной feature-ветки с alias `preview`.
 
 ## Документация
 
