@@ -147,7 +147,7 @@ class SiteHeader extends HTMLElement {
     document.body.style.removeProperty('top');
     document.body.style.removeProperty('width');
     document.body.style.removeProperty('overflow');
-    window.scrollTo(0, this.lockedScrollY);
+    window.scrollTo({ top: this.lockedScrollY, behavior: 'instant' });
   }
 }
 

@@ -168,10 +168,6 @@
     scroll-behavior: smooth;
   }
 
-  html[data-smooth-scroll='true'] {
-    scroll-behavior: auto;
-  }
-
   body {
     @apply min-h-screen bg-page font-sans text-ink antialiased;
     text-rendering: optimizeLegibility;
