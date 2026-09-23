@@ -8,13 +8,15 @@ const whatsappUrl = getWhatsAppUrl('honeyCake');
 ---
 
 <section id={HOME_SECTION_IDS.honeyCake} class="honey-cake" data-section-spacing-target aria-labelledby="honey-cake-title">
-  <div class="honey-cake__surface" aria-hidden="true"></div>
   <div class="honey-cake__container">
     <h2 id="honey-cake-title" class="honey-cake__title" data-section-title data-motion="heading">
       Медовик от <span class="honey-cake__brand-z">Z</span>OTOV bakery
     </h2>
 
     <div class="honey-cake__content" data-section-end>
+      <div class="honey-cake__surface" aria-hidden="true"></div>
+      <div class="honey-cake__scallop honey-cake__scallop--top" aria-hidden="true"></div>
+      <div class="honey-cake__scallop honey-cake__scallop--bottom" aria-hidden="true"></div>
       <Wrapper
         width="min(100%, 42rem)"
         margin="0 auto"
@@ -50,8 +52,6 @@ const whatsappUrl = getWhatsAppUrl('honeyCake');
     </div>
   </div>
 
-  <div class="honey-cake__scallop honey-cake__scallop--top" aria-hidden="true"></div>
-  <div class="honey-cake__scallop honey-cake__scallop--bottom" aria-hidden="true"></div>
 </section>
 
 <style>
@@ -181,6 +181,36 @@ const whatsappUrl = getWhatsAppUrl('honeyCake');
     .honey-cake__copy p {
       font-size: 1rem;
       line-height: 1.21;
+    }
+  }
+
+  @media (max-width: 47.999rem) {
+    .honey-cake {
+      padding-bottom: 2rem;
+    }
+
+    .honey-cake__content {
+      position: relative;
+      isolation: isolate;
+    }
+
+    .honey-cake__surface,
+    .honey-cake__scallop {
+      right: calc((100% - 100vw) / 2);
+      left: calc((100% - 100vw) / 2);
+    }
+
+    .honey-cake__surface {
+      top: 0;
+      bottom: calc(var(--honey-cake-scallop-height) - 2rem);
+    }
+
+    .honey-cake__scallop--top {
+      top: calc(-1 * var(--honey-cake-scallop-height));
+    }
+
+    .honey-cake__scallop--bottom {
+      bottom: -2rem;
     }
   }
 

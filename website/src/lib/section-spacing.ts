@@ -42,8 +42,13 @@ export function initSectionSpacing(root: ParentNode): () => void {
       const currentAdjustment = Number.parseFloat(
         getComputedStyle(target).getPropertyValue('--section-heading-gap-adjust'),
       ) || 0;
-      const actualGap = title.getBoundingClientRect().top - end.getBoundingClientRect().bottom;
-      const adjustment = Math.round((currentAdjustment + desiredGap - actualGap) * 1000) / 1000;
+      const endBottom = end.getBoundingClientRect().bottom;
+      const actualGap = title.getBoundingClientRect().top - endBottom;
+      // A section's background must never cover the preceding content or controls.
+      const minimumAdjustment = currentAdjustment + endBottom - target.getBoundingClientRect().top;
+      const adjustment = Math.round(
+        Math.max(currentAdjustment + desiredGap - actualGap, minimumAdjustment) * 1000,
+      ) / 1000;
       return { target, currentAdjustment, adjustment };
     });
 
