@@ -12,7 +12,7 @@ const policy = `default-src 'self'; script-src 'self' 'sha256-${hash}'; object-s
 function html(body = `<script>${script}</script>`, csp = policy, pathname = '/', robots = '') {
   const origin = 'https://test.pages.dev';
   const homepageSeo = pathname === '/'
-    ? `<meta property="og:url" content="${origin}/"><meta property="og:image" content="${origin}/social-preview.jpg"><script type="application/ld+json">{"@context":"https://schema.org","@type":["Bakery","LocalBusiness"],"url":"${origin}"}</script>`
+    ? `<meta property="og:url" content="${origin}/"><meta property="og:image" content="${origin}/social-preview.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":["Bakery","LocalBusiness"],"url":"${origin}"}</script>`
     : '';
   return `<!doctype html><html><head><meta http-equiv="Content-Security-Policy" content="${csp}"><link rel="canonical" href="${origin}${pathname}">${robots}${homepageSeo}</head><body>${body}</body></html>`;
 }
