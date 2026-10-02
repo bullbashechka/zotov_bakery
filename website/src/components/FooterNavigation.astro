@@ -5,6 +5,7 @@ interface Props {
 }
 const { variant } = Astro.props;
 const links = variant === 'primary' ? HOME_NAV_LINKS : POLICY_LINKS;
+const isHomePage = Astro.url.pathname === '/';
 ---
 
 <nav
@@ -12,7 +13,11 @@ const links = variant === 'primary' ? HOME_NAV_LINKS : POLICY_LINKS;
   data-variant={variant}
   aria-label={variant === 'primary' ? 'Навигация в подвале' : 'Юридическая информация'}
 >
-  {links.map((link) => <a href={link.href.startsWith('#') ? `/${link.href}` : link.href}>{link.label}</a>)}
+  {
+    links.map((link) => (
+      <a href={link.href.startsWith('#') && !isHomePage ? `/${link.href}` : link.href}>{link.label}</a>
+    ))
+  }
 </nav>
 
 <style>
