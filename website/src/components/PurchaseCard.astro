@@ -1,4 +1,4 @@
-﻿---
+---
 import ActionLink from './ActionLink.astro';
 import type { PurchaseOption } from '@/lib/purchase';
 interface Props { option: PurchaseOption }
@@ -135,6 +135,7 @@ const addressesId = `purchase-addresses-${option.kind}`;
   .where-to-buy__image[data-kind='delivery'], .where-to-buy__image[data-kind='supermarket'] { object-fit: contain; }
   .where-to-buy__content { display: flex; flex-direction: column; min-width: 0; gap: 1.125rem; padding: 1.5rem 1.25rem; }
   .where-to-buy__content h3, .purchase-card__back h3 { font-family: 'Vetrino', Georgia, serif; font-size: clamp(1.5rem, 6.25vw, 1.875rem); font-weight: 400; line-height: 1; }
+  .where-to-buy__content h3 { hyphens: auto; overflow-wrap: anywhere; }
   .where-to-buy__content p { font-size: 1rem; line-height: 1.3; }
   .purchase-card__back p { font-size: 0.875rem; line-height: 1.5; }
   .purchase-card__action { margin-top: auto; padding-top: 0.5rem; }
@@ -160,6 +161,14 @@ const addressesId = `purchase-addresses-${option.kind}`;
     .purchase-card__addresses { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 1.25rem; }
   }
   @media (min-width: 75rem) {
+    .where-to-buy__card[data-kind='supermarket'] { grid-column: 1 / -1; }
+    .where-to-buy__card[data-kind='supermarket'] .purchase-card__front {
+      grid-template-columns: minmax(0, 34%) minmax(0, 1fr);
+      grid-template-rows: 1fr;
+      min-height: 17rem;
+    }
+    .where-to-buy__card[data-kind='supermarket'] .where-to-buy__image-wrap { aspect-ratio: auto; min-height: 0; }
+    .where-to-buy__card[data-kind='supermarket'] .where-to-buy__content { padding: 1.5rem; }
     .purchase-card__back h3 { font-size: 1.375rem; }
     .purchase-card__addresses { grid-template-columns: minmax(0, 1fr); }
     .purchase-card__back-header { flex-direction: column-reverse; }

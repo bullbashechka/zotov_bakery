@@ -23,14 +23,14 @@ export const PURCHASE_OPTIONS = [
     kind: 'bakery',
   },
   {
-    title: 'В супермаркетах aimer',
+    title: 'С доставкой на дом или в офис',
     description:
-      'Продукцию ZOTOV bakery можно найти в магазинах сети в Петропавловске. Ассортимент может отличаться. Наличие конкретного десерта уточняйте в выбранном магазине AIMER.',
-    action: 'Посмотреть адреса',
-    href: PURCHASE_LINKS.aimerTwoGisUrl,
-    image: '/where-to-buy/aimer.png',
+      'Наличие, адрес и время доставки согласуем в WhatsApp. Подскажем стоимость и условия доставки.',
+    action: 'Заказать доставку',
+    href: getWhatsAppUrl('delivery'),
+    image: '/where-to-buy/delivery.png',
     imageAlt: '',
-    kind: 'supermarket',
+    kind: 'delivery',
   },
   {
     title: 'В магазинах «Семейный»',
@@ -49,13 +49,13 @@ export const PURCHASE_OPTIONS = [
     ],
   },
   {
-    title: 'С доставкой на дом или в офис',
+    title: 'В супермаркетах aimer',
     description:
-      'Наличие, адрес и время доставки согласуем в WhatsApp. Подскажем стоимость и условия доставки.',
-    action: 'Заказать доставку',
-    href: getWhatsAppUrl('delivery'),
-    image: '/where-to-buy/delivery.png',
+      'Продукцию ZOTOV bakery можно найти в магазинах сети в Петропавловске. Ассортимент может отличаться. Наличие конкретного десерта уточняйте в выбранном магазине AIMER.',
+    action: 'Посмотреть адреса',
+    href: PURCHASE_LINKS.aimerTwoGisUrl,
+    image: '/where-to-buy/aimer.png',
     imageAlt: '',
-    kind: 'delivery',
+    kind: 'supermarket',
   },
 ] as const satisfies readonly PurchaseOption[];
