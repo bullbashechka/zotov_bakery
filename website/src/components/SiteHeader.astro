@@ -5,22 +5,24 @@ import siteHeaderScript from '@/scripts/site-header.inline.js?raw';
 
 const desktopLeftLinks = [HOME_NAV_LINKS[1], HOME_NAV_LINKS[0], HOME_NAV_LINKS[2]];
 const desktopRightLinks = HOME_NAV_LINKS.slice(3);
+const isHomePage = Astro.url.pathname === '/';
+const getNavigationHref = (href: string) => isHomePage ? href : `/${href}`;
 ---
 
 <site-header id="site-top" data-menu-open="false">
   <div class="site-header__content">
-    <a class="site-header__logo" href="#main-content" aria-label="ZOTOV bakery, в начало страницы">
+    <a class="site-header__logo" href={isHomePage ? '#main-content' : '/'} aria-label={isHomePage ? 'ZOTOV bakery, в начало страницы' : 'ZOTOV bakery, на главную страницу'}>
       <HeaderMascot />
     </a>
 
     <nav class="site-header__desktop-nav" aria-label="Основная навигация">
       <div class="site-header__link-group site-header__link-group--left">
-        {desktopLeftLinks.map((link) => <a href={link.href}>{link.label}</a>)}
+        {desktopLeftLinks.map((link) => <a href={getNavigationHref(link.href)}>{link.label}</a>)}
       </div>
       <div aria-hidden="true"></div>
       <div class="site-header__desktop-actions">
         <div class="site-header__link-group">
-          {desktopRightLinks.map((link) => <a href={link.href}>{link.label}</a>)}
+          {desktopRightLinks.map((link) => <a href={getNavigationHref(link.href)}>{link.label}</a>)}
         </div>
         <a class="site-header__phone" href={CONTACTS.mobile.href}>
           <span class="site-header__phone-icon" aria-hidden="true">
@@ -55,7 +57,7 @@ const desktopRightLinks = HOME_NAV_LINKS.slice(3);
   <div id="mobile-navigation" class="site-header__mobile-panel">
     <div class="site-header__mobile-panel-content">
       <nav aria-label="Основная навигация">
-        {HOME_NAV_LINKS.map((link) => <a href={link.href}>{link.label}</a>)}
+        {HOME_NAV_LINKS.map((link) => <a href={getNavigationHref(link.href)}>{link.label}</a>)}
       </nav>
       <a class="site-header__mobile-phone" href={CONTACTS.mobile.href}>
         <span class="site-header__phone-icon" aria-hidden="true">

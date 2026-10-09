@@ -1,5 +1,5 @@
 ---
-import { CONTACTS, HOME_NAV_LINKS, PRIVACY_UPDATED_AT, SITE_OWNER, SITE_OWNER_EMAIL, SITE_OWNER_LEGAL_ADDRESS, getWhatsAppUrl } from '@/lib/site';
+import { CONTACTS, PRIVACY_UPDATED_AT, SITE_OWNER, SITE_OWNER_EMAIL, SITE_OWNER_LEGAL_ADDRESS, getWhatsAppUrl } from '@/lib/site';
 
 const whatsappUrl = getWhatsAppUrl();
 const analyticsEnabled = Boolean(import.meta.env.PUBLIC_YANDEX_METRIKA_ID?.trim());
@@ -7,9 +7,6 @@ const analyticsEnabled = Boolean(import.meta.env.PUBLIC_YANDEX_METRIKA_ID?.trim(
 
 <article class="privacy-policy">
   <div class="privacy-policy__content">
-    <a class="privacy-policy__logo" href="/" aria-label="ZOTOV bakery, на главную страницу">
-      <img src="/zotov-logo.svg" width="331" height="127" alt="ZOTOV bakery" />
-    </a>
     <h1>Конфиденциальность и использование данных</h1>
     <p class="privacy-policy__updated">Актуально с {PRIVACY_UPDATED_AT}</p>
 
@@ -67,10 +64,6 @@ const analyticsEnabled = Boolean(import.meta.env.PUBLIC_YANDEX_METRIKA_ID?.trim(
       </p>
     </section>
 
-    <nav class="privacy-policy__navigation" aria-label="Разделы главной страницы">
-      {HOME_NAV_LINKS.map((link) => <a href={`/${link.href}`}>{link.label}</a>)}
-    </nav>
-
     <div class="privacy-policy__actions">
       <a class="privacy-policy__home" href="/">Вернуться на главную</a>
       {analyticsEnabled && <button type="button" data-cookie-settings>Настройки cookie</button>}
@@ -82,7 +75,7 @@ const analyticsEnabled = Boolean(import.meta.env.PUBLIC_YANDEX_METRIKA_ID?.trim(
   .privacy-policy {
     min-height: 100vh;
     background: var(--page);
-    padding: clamp(3rem, 8vw, 7rem) 1rem 5rem;
+    padding: calc(var(--header-expanded-height) + 2rem) 1rem 5rem;
   }
 
   .privacy-policy__content {
@@ -91,20 +84,8 @@ const analyticsEnabled = Boolean(import.meta.env.PUBLIC_YANDEX_METRIKA_ID?.trim(
     overflow-wrap: anywhere;
   }
 
-  .privacy-policy__logo {
-    display: block;
-    width: min(12rem, 52vw);
-    border-radius: 0.5rem;
-  }
-
-  .privacy-policy__logo img {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
-
   h1 {
-    margin-top: 2rem;
+    margin-top: 0;
     font-family: 'Vetrino', Georgia, serif;
     font-size: clamp(2.25rem, 7vw, 4rem);
     font-weight: 400;

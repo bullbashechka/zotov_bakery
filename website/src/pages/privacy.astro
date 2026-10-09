@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import PrivacyPolicy from '@/components/PrivacyPolicy.astro';
+import SiteHeader from '@/components/SiteHeader.astro';
 import { getCanonicalUrl, validateSearchIndexing } from '@/lib/site-origin.mjs';
 
 const production = import.meta.env.PROD;
@@ -14,5 +15,6 @@ const canonicalUrl = getCanonicalUrl(import.meta.env.PUBLIC_WEBSITE_URL, Astro.u
   {canonicalUrl}
   robots={allowIndexing ? undefined : 'noindex,follow'}
 >
+  <SiteHeader slot="header" />
   <PrivacyPolicy />
 </BaseLayout>

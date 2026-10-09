@@ -6,7 +6,7 @@ class SiteHeader extends HTMLElement {
     this.toggle = this.querySelector('.site-header__menu-toggle');
     this.panel = this.querySelector('.site-header__mobile-panel');
     this.backdrop = this.querySelector('.site-header__backdrop');
-    this.menuLinks = [...this.panel.querySelectorAll('a[href^="#"]')];
+    this.menuLinks = [...this.panel.querySelectorAll('nav a[href]')];
     this.desktopQuery = window.matchMedia('(min-width: 80rem)');
     this.events = new AbortController();
     this.compact = false;
@@ -74,7 +74,7 @@ class SiteHeader extends HTMLElement {
         'click',
         () => {
           const targetId = link.getAttribute('href');
-          const target = targetId ? document.querySelector(targetId) : null;
+          const target = targetId?.startsWith('#') ? document.querySelector(targetId) : null;
 
           this.setMenuOpen(false);
 
