@@ -1,199 +1,169 @@
----
+﻿---
 import ActionLink from './ActionLink.astro';
-import Wrapper from './Wrapper.astro';
 import type { PurchaseOption } from '@/lib/purchase';
-interface Props {
-  option: PurchaseOption;
-}
+interface Props { option: PurchaseOption }
 const { option } = Astro.props;
+const hasAddresses = Boolean(option.addresses?.length);
+const addressesId = `purchase-addresses-${option.kind}`;
 ---
 
-<article class="where-to-buy__card" data-kind={option.kind} data-motion="card">
-  <div class="where-to-buy__image-wrap" aria-hidden="true">
-    <img
-      class="where-to-buy__image"
-      data-kind={option.kind}
-      src={option.image}
-      width="400"
-      height="280"
-      alt={option.imageAlt}
-      loading="lazy"
-    />
+<article class="where-to-buy__card" data-kind={option.kind} data-motion="card" data-flippable={hasAddresses || undefined}>
+  <div class="purchase-card__rotor">
+    <div class="purchase-card__front">
+      <div class="where-to-buy__image-wrap" aria-hidden="true">
+        <img class="where-to-buy__image" data-kind={option.kind} src={option.image} width="400" height="280" alt={option.imageAlt} loading="lazy" />
+      </div>
+      <div class="where-to-buy__content">
+        <h3>{option.title}</h3>
+        <p>{option.description}</p>
+        <div class="purchase-card__action">
+          {hasAddresses ? (
+            <button type="button" class="purchase-card__button purchase-card__open" aria-expanded="false" aria-controls={addressesId}>{option.action}</button>
+          ) : (
+            <ActionLink variant="surface" href={option.href} fullWidth external>{option.action}</ActionLink>
+          )}
+        </div>
+      </div>
+    </div>
+    {hasAddresses && (
+      <div id={addressesId} class="purchase-card__back" role="group" aria-labelledby={`${addressesId}-title`}>
+        <div class="purchase-card__back-header">
+          <div><h3 id={`${addressesId}-title`}>Магазины «Семейный»</h3><p>Петропавловск</p></div>
+          <button type="button" class="purchase-card__back-button" aria-label="Назад к карточке «Семейный»">← Назад</button>
+        </div>
+        <ul class="purchase-card__addresses">
+          {option.addresses?.map((address) => (
+            <li><a href={address.href} target="_blank" rel="noopener noreferrer"><span>{address.label}<small>Открыть в 2ГИС</small></span><span aria-hidden="true">↗</span></a></li>
+          ))}
+        </ul>
+        <p class="purchase-card__note">Ассортимент и наличие уточняйте в магазине.</p>
+      </div>
+    )}
   </div>
-  <div class="where-to-buy__content">
-    <h3>{option.title}</h3>
-    <p>{option.description}</p>
-  </div>
-  <Wrapper margin="auto 0.625rem 0.625rem" at={{ tablet: { margin: '0 0.75rem 0.75rem' } }}>
-    <ActionLink variant="surface" href={option.href} fullWidth external>{option.action}</ActionLink>
-  </Wrapper>
 </article>
 
 <script>
   import { gsap } from 'gsap';
   import { mountMotion } from '@/lib/motion-lifecycle';
-  const cleanup = mountMotion('.where-to-buy__card', ({ element: card, fine, signal, context }) => {
-    const tween = (target: gsap.TweenTarget, vars: gsap.TweenVars) =>
-      context.add(() => gsap.to(target, { duration: 0.22, overwrite: 'auto', ...vars }));
-    const image = card.querySelector('img');
+  // Functional controls also run when reduced motion disables mountMotion.
+  const disposers: (() => void)[] = [];
+  document.querySelectorAll<HTMLElement>('.where-to-buy__card[data-flippable]').forEach((card) => {
+    if (card.dataset.enhanced) return;
+    const front = card.querySelector<HTMLElement>('.purchase-card__front');
+    const back = card.querySelector<HTMLElement>('.purchase-card__back');
+    const openButton = card.querySelector<HTMLButtonElement>('.purchase-card__open');
+    const backButton = card.querySelector<HTMLButtonElement>('.purchase-card__back-button');
+    if (!front || !back || !openButton || !backButton) return;
+    const events = new AbortController();
+    const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const options = { signal: events.signal };
+    let pinned = false;
     let hovering = false;
-    const update = () => {
-      const active = hovering || card.contains(document.activeElement);
-      // Individual translate does not compete with the entrance transform.
-      tween(card, { translate: active ? '0px -4px' : '0px 0px' });
-      if (image) tween(image, { scale: active ? 1.025 : 1 });
+    const setOpen = (opened: boolean, moveFocus = false) => {
+      const active = document.activeElement;
+      if ((opened ? front : back).contains(active) && active instanceof HTMLElement) active.blur();
+      card.dataset.open = String(opened);
+      openButton.setAttribute('aria-expanded', String(opened));
+      front.inert = opened;
+      back.inert = !opened;
+      front.setAttribute('aria-hidden', String(opened));
+      back.setAttribute('aria-hidden', String(!opened));
+      if (moveFocus) {
+        // Delay until visibility switches so focus works during a reverse flip too.
+        requestAnimationFrame(() => {
+          if (events.signal.aborted || card.dataset.open !== String(opened)) return;
+          (opened ? backButton : openButton).focus({ preventScroll: true });
+        });
+      }
     };
-    if (fine) {
-      card.addEventListener(
-        'pointerenter',
-        () => {
-          hovering = true;
-          update();
-        },
-        { signal },
-      );
-      card.addEventListener(
-        'pointerleave',
-        () => {
-          hovering = false;
-          update();
-        },
-        { signal },
-      );
-    }
-    card.addEventListener('focusin', update, { signal });
-    card.addEventListener(
-      'focusout',
-      () =>
-        queueMicrotask(() => {
-          if (!signal.aborted) update();
-        }),
-      { signal },
-    );
+    const close = () => { pinned = false; setOpen(false, true); };
+    card.dataset.enhanced = 'true';
+    setOpen(false);
+    card.addEventListener('pointerenter', () => { hovering = true; }, options);
+    openButton.addEventListener('pointerenter', () => { if (fine.matches) setOpen(true); }, options);
+    card.addEventListener('pointerdown', (event) => {
+      // On desktop hover can turn the button away before the click lands.
+      if (event.button === 0 && card.dataset.open === 'true' && event.target instanceof Element && !event.target.closest('a, .purchase-card__back-button')) {
+        pinned = true;
+        setOpen(true, true);
+      }
+    }, options);
+    openButton.addEventListener('click', () => { pinned = true; setOpen(true, true); }, options);
+    backButton.addEventListener('click', close, options);
+    card.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && card.dataset.open === 'true') { event.preventDefault(); close(); }
+    }, options);
+    card.addEventListener('pointerleave', () => {
+      hovering = false;
+      if (!pinned && !card.contains(document.activeElement)) setOpen(false);
+    }, options);
+    card.addEventListener('focusout', () => {
+      queueMicrotask(() => {
+        if (!events.signal.aborted && !pinned && !hovering && !card.contains(document.activeElement)) setOpen(false);
+      });
+    }, options);
+    disposers.push(() => {
+      events.abort();
+      front.inert = false; back.inert = false;
+      front.removeAttribute('aria-hidden'); back.removeAttribute('aria-hidden');
+      openButton.setAttribute('aria-expanded', 'false');
+      delete card.dataset.enhanced; delete card.dataset.open;
+    });
   });
-  if (import.meta.hot) import.meta.hot.dispose(cleanup);
+  const cleanup = mountMotion('.where-to-buy__card', ({ element: card, fine, signal, context }) => {
+    const image = card.querySelector('img');
+    const tween = (active: boolean) => context.add(() => {
+      gsap.to(card, { translate: active ? '0px -4px' : '0px 0px', duration: 0.22, overwrite: 'auto' });
+      if (image) gsap.to(image, { scale: active ? 1.025 : 1, duration: 0.22, overwrite: 'auto' });
+    });
+    if (fine) {
+      card.addEventListener('pointerenter', () => tween(true), { signal });
+      card.addEventListener('pointerleave', () => tween(false), { signal });
+    }
+  });
+  if (import.meta.hot) import.meta.hot.dispose(() => { cleanup(); disposers.forEach((dispose) => dispose()); });
 </script>
 
 <style>
-  .where-to-buy__card {
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    min-width: 0;
-    overflow: hidden;
-    border-radius: 0.75rem;
-    background: var(--text-primary);
+  .where-to-buy__card { min-width: 0; height: 100%; perspective: 1200px; }
+  .purchase-card__rotor { height: 100%; display: grid; transform-style: preserve-3d; transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1); }
+  .purchase-card__front, .purchase-card__back { min-width: 0; overflow: hidden; border-radius: 0.75rem; background: var(--text-primary); color: var(--page); backface-visibility: hidden; }
+  .purchase-card__front { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr; min-height: 32.125rem; }
+  .where-to-buy__image-wrap { display: grid; min-width: 0; aspect-ratio: 10 / 7; place-items: center; overflow: hidden; background: var(--surface); }
+  .where-to-buy__image { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .where-to-buy__image[data-kind='bakery'], .where-to-buy__image[data-kind='semeiniy'] { width: min(82.75%, 20.6875rem); height: auto; object-fit: contain; }
+  .where-to-buy__image[data-kind='delivery'], .where-to-buy__image[data-kind='supermarket'] { object-fit: contain; }
+  .where-to-buy__content { display: flex; flex-direction: column; min-width: 0; gap: 1.125rem; padding: 1.5rem 1.25rem; }
+  .where-to-buy__content h3, .purchase-card__back h3 { font-family: 'Vetrino', Georgia, serif; font-size: clamp(1.5rem, 6.25vw, 1.875rem); font-weight: 400; line-height: 1; }
+  .where-to-buy__content p { font-size: 1rem; line-height: 1.3; }
+  .purchase-card__back p { font-size: 0.875rem; line-height: 1.5; }
+  .purchase-card__action { margin-top: auto; padding-top: 0.5rem; }
+  .purchase-card__button, .purchase-card__back-button { min-height: 2.75rem; border: 1px solid transparent; border-radius: 0.5rem; padding: 0.625rem 0.75rem; font: inherit; font-size: 0.875rem; line-height: 1.25; cursor: pointer; }
+  .purchase-card__button { width: 100%; background: var(--surface); color: var(--text-primary); font-weight: 500; transition: background-color 0.2s ease; }
+  .purchase-card__button:hover { background: var(--surface-elevated); }
+  .purchase-card__open, .purchase-card__back-button { display: none; }
+  [data-enhanced] .purchase-card__open, [data-enhanced] .purchase-card__back-button { display: inline-flex; align-items: center; justify-content: center; }
+  .purchase-card__back { display: flex; flex-direction: column; gap: 1rem; padding: 1.25rem; }
+  [data-enhanced] .purchase-card__front, [data-enhanced] .purchase-card__back { grid-area: 1 / 1; }
+  [data-enhanced] .purchase-card__back { transform: rotateY(180deg); }
+  [data-open='true'] .purchase-card__rotor { transform: rotateY(180deg); }
+  .purchase-card__back-header { display: flex; align-items: start; justify-content: space-between; gap: 0.5rem; }
+  .purchase-card__back-header p { margin-top: 0.5rem; }
+  .purchase-card__back-button { flex-shrink: 0; border-color: var(--page); color: var(--page); background: transparent; }
+  .purchase-card__addresses { display: grid; list-style: none; margin: 0; padding: 0; }
+  .purchase-card__addresses a { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; min-height: 3.5rem; padding: 0.625rem 0; border-bottom: 1px solid rgb(244 236 230 / 25%); color: inherit; font-size: 0.875rem; line-height: 1.4; text-decoration: none; transition: color 0.2s ease; }
+  .purchase-card__addresses a:hover { color: var(--surface-elevated); text-decoration: underline; text-underline-offset: 0.2rem; }
+  .purchase-card__addresses small { display: block; margin-top: 0.25rem; font-size: 0.75rem; opacity: 0.8; }
+  .purchase-card__note { margin-top: auto; opacity: 0.8; }
+  @media (min-width: 40rem) {
+    .where-to-buy__content { padding: 1rem; }
+    .purchase-card__addresses { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 1.25rem; }
   }
-
-  .where-to-buy__image-wrap {
-    display: grid;
-    aspect-ratio: 10 / 7;
-    place-items: center;
-    overflow: hidden;
-    background: var(--surface);
-  }
-
-  .where-to-buy__image {
-    display: block;
-    width: 100%;
-    height: 100%;
-  }
-
-  .where-to-buy__image[data-kind='bakery'] {
-    width: min(82.75%, 20.6875rem);
-    height: auto;
-  }
-
-  .where-to-buy__image[data-kind='supermarket'],
-  .where-to-buy__image[data-kind='delivery'] {
-    object-fit: cover;
-  }
-
-  .where-to-buy__content {
-    display: grid;
-    align-content: start;
-    gap: 1.125rem;
-    padding: 1.5rem 1.25rem;
-    color: var(--page);
-  }
-
-  .where-to-buy__content h3 {
-    max-width: 20.4375rem;
-    font-family: 'Vetrino', Georgia, serif;
-    font-size: clamp(1.5rem, 6.25vw, 1.875rem);
-    font-weight: 400;
-    line-height: 1;
-  }
-
-  .where-to-buy__content p {
-    max-width: 22.375rem;
-    font-size: 1rem;
-    line-height: 1.3;
-  }
-
-  @media (min-width: 40rem) and (max-width: 74.999rem) {
-    .where-to-buy__card {
-      height: 100%;
-    }
-
-    .where-to-buy__content {
-      padding: 1rem 1rem 0.5rem;
-    }
-
-    .where-to-buy__content h3 {
-      font-size: 1.875rem;
-    }
-
-    .where-to-buy__content p {
-      font-size: 1rem;
-      line-height: 1.2;
-    }
-
-    .where-to-buy__card[data-kind='delivery'] {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      grid-template-rows: 1fr auto;
-      height: auto;
-    }
-
-    .where-to-buy__card[data-kind='delivery'] .where-to-buy__image-wrap {
-      grid-column: 1;
-      grid-row: 1 / -1;
-      min-height: 11rem;
-      aspect-ratio: auto;
-    }
-
-    .where-to-buy__card[data-kind='delivery'] .where-to-buy__image {
-      object-fit: contain;
-    }
-
-    .where-to-buy__card[data-kind='delivery'] .where-to-buy__content {
-      grid-column: 2;
-      grid-row: 1;
-    }
-
-    .where-to-buy__card[data-kind='delivery'] > [data-wrapper] {
-      grid-column: 2;
-      grid-row: 2;
-    }
-  }
-
   @media (min-width: 75rem) {
-    .where-to-buy__card {
-      height: 100%;
-      min-height: 32.125rem;
-    }
-
-    .where-to-buy__content {
-      gap: 1.125rem;
-      padding: 1rem 1rem 0.5rem;
-    }
-
-    .where-to-buy__content h3 {
-      font-size: 1.875rem;
-    }
-
-    .where-to-buy__content p {
-      font-size: 1rem;
-      line-height: 1.2;
-    }
+    .purchase-card__back h3 { font-size: 1.375rem; }
+    .purchase-card__addresses { grid-template-columns: minmax(0, 1fr); }
+    .purchase-card__back-header { flex-direction: column-reverse; }
+    .purchase-card__back-button { align-self: flex-end; }
   }
+  @media (prefers-reduced-motion: reduce) { .purchase-card__rotor { transition: none; } }
 </style>
