@@ -38,7 +38,7 @@ export const PURCHASE_OPTIONS = [
       'Четыре магазина в Петропавловске. Ассортимент и наличие уточняйте в выбранном магазине.',
     action: 'Посмотреть адреса',
     href: 'https://semeiniy.kz/stores/',
-    image: '/where-to-buy/semeiniy.png',
+    image: '/where-to-buy/semeiniy.webp',
     imageAlt: '',
     kind: 'semeiniy',
     addresses: [
