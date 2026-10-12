@@ -13,7 +13,7 @@ export interface PurchaseOption {
   addresses?: readonly { label: string; href: string }[];
 }
 
-import { getWhatsAppUrl, PURCHASE_LINKS } from './site';
+import { CONTACTS, getWhatsAppUrl, PURCHASE_LINKS } from './site';
 
 export const PURCHASE_OPTIONS = [
   {
@@ -29,7 +29,7 @@ export const PURCHASE_OPTIONS = [
   {
     title: 'С доставкой на дом или в офис',
     description:
-      'Напишите нам в WhatsApp. Подскажем, что есть в наличии, и уточним стоимость и условия доставки.',
+      `Напишите нам в WhatsApp. Подскажем, что есть в наличии, и уточним стоимость и условия доставки. ${CONTACTS.orderAcceptanceNote}`,
     action: 'Заказать доставку',
     href: getWhatsAppUrl('delivery'),
     image: deliveryImage,

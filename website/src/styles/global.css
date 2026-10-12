@@ -12,7 +12,7 @@
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
-  src: url('/fonts/Montserrat-Variable.woff2') format('woff2');
+  src: url('/fonts/Montserrat-LatinCyrillic-v1.woff2') format('woff2');
 }
 
 @font-face {
@@ -20,7 +20,7 @@
   font-style: italic;
   font-weight: 100 900;
   font-display: swap;
-  src: url('/fonts/Montserrat-VariableItalic.woff2') format('woff2');
+  src: url('/fonts/Montserrat-LatinCyrillicItalic-v1.woff2') format('woff2');
 }
 
 @font-face {
@@ -59,6 +59,33 @@
     U+FEFF, U+FFFD;
 }
 
+
+/* Width and vertical metrics matched to local Arial/Georgia fallbacks. */
+@font-face {
+  font-family: 'Montserrat Fallback';
+  src: local('Arial');
+  size-adjust: 108.145%;
+  ascent-override: 89.510%;
+  descent-override: 23.210%;
+  line-gap-override: 0.000%;
+}
+@font-face {
+  font-family: 'Vetrino Fallback';
+  src: local('Georgia');
+  size-adjust: 116.193%;
+  ascent-override: 73.757%;
+  descent-override: 18.848%;
+  line-gap-override: 0.000%;
+}
+@font-face {
+  font-family: 'Nunito Fallback';
+  src: local('Arial');
+  size-adjust: 101.308%;
+  ascent-override: 99.795%;
+  descent-override: 34.844%;
+  line-gap-override: 0.000%;
+}
+
 :root {
   color-scheme: light;
   --page: #f4ece6;
@@ -67,6 +94,7 @@
   --text-primary: #3b2627;
   --text-muted: #6b5252;
   --accent: #d47212;
+  --accent-text: #9b4f0b;
   --accent-muted: #cb721f;
   --focus: #8a4300;
   --advantages-heading-bg: #3b2627;
@@ -154,8 +182,8 @@
   --color-accent: var(--accent);
   --color-accent-muted: var(--accent-muted);
   --color-focus: var(--focus);
-  --font-sans: 'Montserrat', Arial, sans-serif;
-  --font-display: 'Vetrino', Georgia, serif;
+  --font-sans: 'Montserrat', 'Montserrat Fallback', Arial, sans-serif;
+  --font-display: 'Vetrino', 'Vetrino Fallback', Georgia, serif;
 }
 
 @layer base {

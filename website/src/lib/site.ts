@@ -22,7 +22,7 @@ export const CONTACTS = {
   address: 'г. Петропавловск, ул. Лермонтова, 63.',
   twoGisUrl: 'https://2gis.kz/petropavlovsk/firm/70000001038755983',
   hours: 'пн–вс: 09:00–22:00',
-  orderAcceptanceNote: 'заказы принимаются до 18:00',
+  orderAcceptanceNote: 'Заказы на сегодняшний день принимаем до 18:00.',
   bakery: {
     display: '+7 (7152) 42-43-54',
     href: 'tel:+77152424354',

@@ -1,23 +1,3 @@
-// Prepare the copy animation before paint; the cake itself remains static.
-{
-  const hero = document.querySelector('.hero');
-  if (
-    hero &&
-    !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
-    !location.hash &&
-    window.scrollY < 20 &&
-    performance.now() < 1000
-  ) {
-    hero.dataset.heroEntrance = 'pending';
-    const showPending = () => {
-      if (hero.dataset.heroEntrance === 'pending') hero.dataset.heroEntrance = 'complete';
-    };
-    window.setTimeout(showPending, 1200);
-    hero.addEventListener('focusin', showPending, { once: true });
-    hero.addEventListener('pointerdown', showPending, { once: true });
-  }
-}
-
 const media = document.querySelector('[data-hero-media]');
 const image = media?.querySelector('img');
 

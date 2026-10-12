@@ -1,3 +1,4 @@
+import { onEntranceInterruption } from './entrance-interruption';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
@@ -24,6 +25,9 @@ export function initPageMotion(root: ParentNode): () => void {
     played.add(target);
     scenes.get(target)?.progress(1).pause();
   };
+  const stopInterruptions = onEntranceInterruption(() => {
+    targets.forEach(finish);
+  });
   const finishRelated = (element: Element, includeDescendants = false) => {
     targets.forEach((target) => {
       if (target.contains(element) || (includeDescendants && element.contains(target))) finish(target);
@@ -72,10 +76,10 @@ export function initPageMotion(root: ParentNode): () => void {
           if (!timeline || played.has(target)) return;
           played.add(target);
           const kind = target.getAttribute('data-motion');
-          if (kind === 'card' || kind === 'answer') {
+          if (!mobile && (kind === 'card' || kind === 'answer')) {
             timeline.delay(cardDelay);
             cardDelay += 0.12;
-          } else if (kind === 'dessert-right') {
+          } else if (!mobile && kind === 'dessert-right') {
             timeline.delay(0.1);
           }
           timeline.restart(true);
@@ -98,6 +102,12 @@ export function initPageMotion(root: ParentNode): () => void {
       }
 
       const kind = target.dataset.motion;
+      // Mobile text and controls retain their static layout and full opacity.
+      if (mobile && !target.hasAttribute('data-motion-line')
+        && !['image', 'dessert-left', 'dessert-right'].includes(kind ?? '')) {
+        played.add(target);
+        return;
+      }
       const copy = target.querySelectorAll('[data-motion-copy]');
       if (kind === 'heading' && !copy.length) {
         // Animate only the generated lines: the heading can retain layout transforms
@@ -127,8 +137,8 @@ export function initPageMotion(root: ParentNode): () => void {
             const length = path.getTotalLength();
             timeline.fromTo(path,
               { strokeDasharray: `${length} ${length}`, strokeDashoffset: length },
-              { strokeDashoffset: 0, duration: 1.3 / paths.length, ease: 'power2.inOut' },
-              index * (1.3 / paths.length),
+              { strokeDashoffset: 0, duration: (mobile ? 0.35 : 1.3) / paths.length, ease: 'power2.inOut' },
+              index * ((mobile ? 0.35 : 1.3) / paths.length),
             );
           });
         } else if (kind === 'heading') {
@@ -138,8 +148,8 @@ export function initPageMotion(root: ParentNode): () => void {
         } else if (kind === 'image' || kind === 'dessert-left' || kind === 'dessert-right') {
           const x = kind === 'dessert-left' ? -32 : kind === 'dessert-right' ? 32 : 0;
           timeline.fromTo(target,
-            { x: mobile ? x / 2 : x, y: mobile ? 18 : 28, scale: 0.96, opacity: 0 },
-            { x: 0, y: 0, scale: 1, opacity: 1, duration: 1.15, clearProps: 'transform,opacity' },
+            { x: mobile ? 0 : x, y: mobile ? 8 : 28, scale: mobile ? 1 : 0.96, opacity: 0 },
+            { x: 0, y: 0, scale: 1, opacity: 1, duration: mobile ? 0.35 : 1.15, clearProps: 'transform,opacity' },
           );
         } else if (kind === 'card') {
           timeline.fromTo(target,
@@ -191,6 +201,7 @@ export function initPageMotion(root: ParentNode): () => void {
   if (layoutRoot) layoutObserver.observe(layoutRoot);
 
   const cleanup = () => {
+    stopInterruptions();
     events.abort();
     layoutObserver.disconnect();
     window.clearTimeout(refreshTimer);
