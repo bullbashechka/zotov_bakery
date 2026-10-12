@@ -8,7 +8,7 @@
 - Tailwind CSS 4
 - React 19
 - Bun 1.3.14
-- Cloudflare Pages
+- Статический хостинг Hoster.kz (`https://zotov.kz`); Cloudflare Pages — дополнительный технический предпросмотр
 
 ## Требования
 
@@ -21,6 +21,7 @@
 
 ```bash
 bun install
+bun run hooks:install
 bun run dev
 ```
 
@@ -37,6 +38,7 @@ bun run dev
 | `bun run check:ui` | Проверить правила устройства UI-компонентов и наличие Storybook-историй. |
 | `bun run security:check` | Проверить аудит зависимостей, секреты и SVG-файлы. |
 | `bun run release:check` | Выполнить полный локальный набор проверок перед публикацией. |
+| `bun run hooks:install` | Один раз на клон установить проверки перед пушем в `main`/`master`. |
 | `bun run storybook` | Запустить библиотеку компонентов на `:6006` и Astro-примеры на `:4322`. |
 | `bun run build:storybook` | Собрать автономную библиотеку в `website/storybook-static/`. |
 
@@ -44,7 +46,7 @@ bun run dev
 
 ```bash
 bun run typecheck
-PUBLIC_WEBSITE_URL=https://zotov-landing.pages.dev PUBLIC_ALLOW_INDEXING=false bun run build
+PUBLIC_WEBSITE_URL=https://zotov.kz PUBLIC_ALLOW_INDEXING=true bun run build
 ```
 
 ## Переменные окружения
@@ -55,12 +57,12 @@ PUBLIC_WEBSITE_URL=https://zotov-landing.pages.dev PUBLIC_ALLOW_INDEXING=false b
 
 Для Cloudflare Pages безопасные значения временного запуска также явно закреплены в `wrangler.jsonc` для Preview и Production: домен `zotov-landing.pages.dev`, индексация выключена. При подключении брендового домена обновите Wrangler-конфигурацию вместе с переменными окружения и только после проверки переключите индексацию на `true`.
 
-SEO-переменные необходимо передавать до запуска сборки Astro. Изменение переменных Cloudflare после сборки не переписывает готовые HTML, robots.txt и sitemap.xml: требуется новая сборка. Для локальной проверки открытого режима используйте `PUBLIC_WEBSITE_URL=https://seo-check.example` и `PUBLIC_ALLOW_INDEXING=true`; такую сборку не публикуйте. После проверки восстановите локальную сборку с текущим техническим доменом и `PUBLIC_ALLOW_INDEXING=false`.
+SEO-переменные необходимо передавать до запуска сборки Astro. Изменение окружения после сборки не переписывает готовые HTML, robots.txt и sitemap.xml: требуется новая сборка. Для основного сайта используйте `PUBLIC_WEBSITE_URL=https://zotov.kz` и `PUBLIC_ALLOW_INDEXING=true`; технические предпросмотры собирайте со своим origin и `false`.
 
-Проверка артефактов входит в `release:check` и контролирует метаданные, canonical, robots, строгий XML sitemap и соответствие JSON-LD видимым контактам. Для браузерного SEO-прогона запустите локальный Pages-сервер на порту 4329 (`bun run cf:dev --port 4329`), дождитесь готовности и выполните `node scripts/seo/browser-check.mjs http://127.0.0.1:4329`. Скрипт проверяет главную и privacy на 390/1440 px с JavaScript и без него; результаты и снимки сохраняются в `artifacts/seo/browser/`. После проверки остановите сервер.
+Проверка артефактов входит в `release:check` и контролирует метаданные, canonical, robots, XML sitemap и соответствие JSON-LD видимым контактам. Короткий browser smoke запускает готовые файлы локально, проверяет основные взаимодействия на 390/1440 px и доступность контента без JavaScript; снимки сохраняются в `artifacts/checks/`. Сервер и браузер останавливаются автоматически. Он не подтверждает настройки Apache/Hoster: HTTPS, редиректы, HTTP-заголовки и 404 проверяются на опубликованном домене отдельно.
 
 ```bash
-PUBLIC_WEBSITE_URL=https://example.com \
+PUBLIC_WEBSITE_URL=https://zotov.kz \
 PUBLIC_ALLOW_INDEXING=true \
 bun run release:check
 ```
@@ -82,7 +84,17 @@ bun run release:check
 node node_modules/playwright/cli.js install --only-shell chromium
 ```
 
-В Linux или CI добавьте `--with-deps`, чтобы поставить системные зависимости браузера. Проверка секретов скачивает закреплённый Gitleaks и требует доступа к GitHub.
+В Linux добавьте `--with-deps`, чтобы поставить системные зависимости браузера. Проверка секретов скачивает закреплённый Gitleaks при первом запуске и проверяет его хеш. Аудит зависимостей требует доступа к реестру; недоступность проверки останавливает пуш.
+
+## Локальные проверки перед main
+
+GitHub Actions удалены. Перед каждым пушем в production-ветку `main` (также `master`) и перед merge через GitHub выполните весь `release:check` с production-переменными из примера выше. Команда ничего не публикует. Не обходите проверки через `--no-verify`.
+
+`bun run hooks:install` устанавливает только `pre-push`, сохраняя остальные hooks. При существующем `pre-push` или `core.hooksPath` установщик останавливается: подключите [.githooks/pre-push](.githooks/pre-push) к своему менеджеру hooks вручную, передавая stdin Git. Установка локальная: после клонирования её нужно повторить.
+
+Hook смотрит на целевую ветку remote, поэтому работает и для `git push origin dev:main`. Он требует чистое рабочее дерево и checkout отправляемого коммита, запускает все проверки с `https://zotov.kz` и `PUBLIC_ALLOW_INDEXING=true`, затем повторно сверяет состояние. Другие ветки и удаление refs не запускают release-проверки. GitHub UI не запускает локальные hooks; перед merge требуется самостоятельный локальный прогон соответствующего состояния кода. Публикация на Hoster остаётся отдельным согласованным действием.
+
+Обоснование состава проверок и удалений: [локальный аудит](docs/local-checks.md).
 
 ## Структура
 
@@ -95,12 +107,13 @@ website/
   public/           шрифты, SVG и статические изображения
   stories/          истории компонентов
 scripts/security/   проверки безопасности и release-процедуры
+scripts/checks/     локальная установка hook и проверка отправляемого коммита
 docs/               аудиты и технические отчёты
 ```
 
 Визуальные стили принадлежат компонентам, а внешнее размещение задаёт `Wrapper`. Подробности о UI-библиотеке, API компонентов и проверках — в [docs/ui-refactor.md](docs/ui-refactor.md).
 
-## Cloudflare Pages
+## Дополнительный предпросмотр Cloudflare Pages
 
 [wrangler.jsonc](wrangler.jsonc) задаёт имя Pages-проекта и каталог сборки `website/dist`. Перед первой публикацией замените `name`, если имя проекта в Cloudflare отличается от `zotov-landing`.
 
@@ -114,6 +127,8 @@ PUBLIC_WEBSITE_URL=https://preview.example.com PUBLIC_ALLOW_INDEXING=false bun r
 ```
 
 Команды публикации сначала выполняют `release:check`. Production-публикация разрешена из чистой ветки `main`, preview — из отдельной feature-ветки с alias `preview`.
+
+Эти команды сохранены для старого Pages-проекта и технического предпросмотра. Основной сайт публикуется на Hoster по [инструкции запуска](docs/domain-launch.md), с [Apache-конфигурацией](scripts/deploy/hoster.htaccess). Пуш в GitHub сам по себе не должен публиковать сайт.
 
 ## Документация
 

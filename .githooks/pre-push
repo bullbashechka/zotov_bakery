@@ -1,0 +1,5 @@
+#!/bin/sh
+set -eu
+# zotov-local-pre-push: installed by bun run hooks:install
+root=$(git rev-parse --show-toplevel)
+exec node "$root/scripts/checks/pre-push.mjs" "$@"
