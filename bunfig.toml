@@ -4,3 +4,48 @@ linker = "hoisted"
 # Не принимать пакеты, опубликованные менее 21 дня назад.
 # Значение задаётся в секундах и применяется к install/add/update.
 minimumReleaseAge = 1814400
+
+# Исправления уязвимостей для выпуска zotov.kz (2026-10-12).
+# Остальные пакеты по-прежнему проходят правило 21 дня.
+minimumReleaseAgeExcludes = [
+  "http-cache-semantics",
+  "smol-toml",
+  "source-map-js",
+  "undici",
+  "wrangler",
+  "miniflare",
+  "workerd",
+  "@cloudflare/workerd-darwin-arm64",
+  "@cloudflare/workerd-darwin-64",
+  "@cloudflare/workerd-linux-arm64",
+  "@cloudflare/workerd-linux-64",
+  "@cloudflare/workerd-windows-64",
+  "@cloudflare/unenv-preset",
+  "sharp",
+  "@img/sharp-darwin-arm64",
+  "@img/sharp-darwin-x64",
+  "@img/sharp-freebsd-wasm32",
+  "@img/sharp-linux-arm",
+  "@img/sharp-linux-arm64",
+  "@img/sharp-linux-ppc64",
+  "@img/sharp-linux-riscv64",
+  "@img/sharp-linux-s390x",
+  "@img/sharp-linux-x64",
+  "@img/sharp-linuxmusl-arm64",
+  "@img/sharp-linuxmusl-x64",
+  "@img/sharp-webcontainers-wasm32",
+  "@img/sharp-wasm32",
+  "@img/sharp-win32-arm64",
+  "@img/sharp-win32-ia32",
+  "@img/sharp-win32-x64",
+  "@img/sharp-libvips-linux-arm",
+  "@img/sharp-libvips-linux-x64",
+  "@img/sharp-libvips-darwin-x64",
+  "@img/sharp-libvips-linux-arm64",
+  "@img/sharp-libvips-linux-ppc64",
+  "@img/sharp-libvips-linux-s390x",
+  "@img/sharp-libvips-darwin-arm64",
+  "@img/sharp-libvips-linux-riscv64",
+  "@img/sharp-libvips-linuxmusl-x64",
+  "@img/sharp-libvips-linuxmusl-arm64",
+]

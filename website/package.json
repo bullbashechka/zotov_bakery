@@ -34,6 +34,7 @@
     "@astrojs/compiler": "2.13.1",
     "@storybook/addon-docs": "^10.5.10",
     "@storybook/html-vite": "^10.5.10",
+    "@types/node": "24.13.6",
     "prettier": "^3.9.6",
     "prettier-plugin-astro": "^0.14.1",
     "storybook": "^10.5.10",
