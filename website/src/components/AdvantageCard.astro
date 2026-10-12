@@ -26,7 +26,7 @@ const { advantage, itemNumber, total } = Astro.props;
   import { mountMotion } from '@/lib/motion-lifecycle';
   const cleanup = mountMotion(
     '[data-advantages-card]',
-    ({ element: card, fine, signal, onceVisible, track, untrack }) => {
+    ({ element: card, fine, mobile, signal, onceVisible, track, untrack }) => {
       const art = card.querySelector<HTMLElement>('[data-motion-art]');
       if (!art) return;
       const index = ['family', 'history', 'production', 'ingredients'].indexOf(
@@ -43,16 +43,17 @@ const { advantage, itemNumber, total } = Astro.props;
           [{ rotate: -3 }, { rotate: 1 }, { rotate: 0 }],
         ][index % 4];
         const animation = animate(art, {
-          keyframes: frames,
-          duration: 750,
+          keyframes: mobile ? [{ rotate: -1 }, { rotate: 0 }] : frames,
+          duration: mobile ? 300 : 750,
           ease: 'outQuad',
           onComplete: (self) => {
             running = false;
             self.revert();
-            untrack(self);
+            untrack(tracked);
           },
         });
-        track(animation);
+        const tracked = { revert() { animation.revert(); running = false; } };
+        track(tracked);
       };
       onceVisible(play);
       if (fine) card.addEventListener('pointerenter', play, { signal });
@@ -79,7 +80,7 @@ const { advantage, itemNumber, total } = Astro.props;
 
   .advantages__card-title {
     max-width: 14.75rem;
-    font-family: 'Vetrino', Georgia, serif;
+    font-family: 'Vetrino', 'Vetrino Fallback', Georgia, serif;
     font-size: clamp(1.25rem, calc(0.9921rem + 1.0582vw), 1.5rem);
     font-weight: 400;
     line-height: 1;

@@ -59,126 +59,28 @@ import heroPreparationScript from '@/scripts/hero-preparation.inline.js?raw';
 
 <script>
   import { gsap } from 'gsap';
-  import { SplitText } from 'gsap/SplitText';
-
-  /** Hero copy entrance composition; the cake intentionally stays static. */
-  function initHeroMotion(root: ParentNode): () => void {
-    const hero = root.querySelector<HTMLElement>('[data-hero-entrance]');
-    const title = hero?.querySelector<HTMLElement>('.hero__title');
-    if (!hero || !title || hero.dataset.heroEntrance !== 'pending') return () => {};
-
+  // Copy is visible from the first paint, including when fonts or scripts fail.
+  const media = gsap.matchMedia();
+  let played = false;
+  media.add('(min-width: 48rem) and (prefers-reduced-motion: no-preference)', () => {
+    if (played || location.hash || scrollY > 20) return;
+    const copy = document.querySelector('.hero__copy');
+    if (!copy) return;
+    played = true;
+    const entrance = gsap.fromTo(copy, { y: 8 }, {
+      y: 0, duration: 0.4, ease: 'power2.out', clearProps: 'transform',
+    });
     const events = new AbortController();
-    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    let split: SplitText | undefined;
-    let timeline: gsap.core.Timeline | undefined;
-    let context: gsap.Context | undefined;
-    let finished = false;
-
-    const finish = () => {
-      if (finished) return;
-      finished = true;
-      timeline?.progress(1).pause();
-      split?.revert();
-      context?.revert();
-      hero.dataset.heroEntrance = 'complete';
-      events.abort();
-    };
-
-    hero.addEventListener('focusin', finish, { signal: events.signal });
-    hero.addEventListener('pointerdown', finish, { signal: events.signal });
-    window.addEventListener(
-      'scroll',
-      () => {
-        if (window.scrollY > 80) finish();
-      },
-      { signal: events.signal, passive: true },
-    );
-    window.addEventListener('pagehide', finish, { signal: events.signal });
-    motion.addEventListener(
-      'change',
-      (event) => {
-        if (event.matches) finish();
-      },
-      { signal: events.signal },
-    );
-
-    void document.fonts.ready
-      .then(() => {
-        if (finished || motion.matches || hero.dataset.heroEntrance !== 'pending') {
-          finish();
-          return;
-        }
-
-        gsap.registerPlugin(SplitText);
-        const mobile = window.innerWidth < 768;
-        context = gsap.context(() => {}, hero);
-        context.add(() => {
-          split = SplitText.create(title, {
-            type: 'lines',
-            mask: 'lines',
-            linesClass: 'hero__text-line',
-            reduceWhiteSpace: false,
-            autoSplit: true,
-            aria: 'auto',
-            onSplit(self) {
-              timeline = gsap.timeline({ defaults: { ease: 'power3.out' }, onComplete: finish });
-              timeline.fromTo(
-                self.lines,
-                { yPercent: 110 },
-                { yPercent: 0, duration: 1.05, stagger: 0.13, ease: 'power4.out' },
-                0.2,
-              );
-              timeline.fromTo(
-                '.hero__intro',
-                { y: mobile ? 12 : 20, opacity: 0 },
-                { y: 0, opacity: 1, duration: 0.75 },
-                0.45,
-              );
-              timeline.fromTo(
-                '.hero__actions',
-                { opacity: 0.4 },
-                { opacity: 1, duration: 0.55 },
-                0.65,
-              );
-              return timeline;
-            },
-          });
-        });
-        hero.dataset.heroEntrance = 'active';
-      })
-      .catch(finish);
-
-    return finish;
-  }
-
-  const cleanup = initHeroMotion(document);
-  if (import.meta.hot) import.meta.hot.dispose(cleanup);
+    const finish = () => entrance.progress(1).pause();
+    copy?.addEventListener('focusin', finish, { signal: events.signal });
+    copy?.addEventListener('pointerdown', finish, { signal: events.signal });
+    window.addEventListener('scroll', finish, { passive: true, signal: events.signal });
+    return () => events.abort();
+  });
+  if (import.meta.hot) import.meta.hot.dispose(() => media.revert());
 </script>
 
 <style>
-  .hero[data-hero-entrance='pending'] .hero__title,
-  .hero[data-hero-entrance='pending'] .hero__intro {
-    opacity: 0;
-  }
-
-  .hero[data-hero-entrance='pending'] .hero__actions {
-    opacity: 0.4;
-  }
-
-  .hero__title :global(.hero__text-line-mask) {
-    /* Keep glyph overhangs visible without adding height to the split heading. */
-    overflow: clip;
-    overflow-clip-margin: 0.12em;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .hero[data-hero-entrance='pending'] .hero__title,
-    .hero[data-hero-entrance='pending'] .hero__intro,
-    .hero[data-hero-entrance='pending'] .hero__actions {
-      opacity: 1;
-    }
-  }
-
   .hero {
     position: relative;
     z-index: 4;
@@ -264,7 +166,7 @@ import heroPreparationScript from '@/scripts/hero-preparation.inline.js?raw';
     background: var(--text-primary);
     color: var(--surface-elevated);
     padding: 0.625rem 1.25rem;
-    font-family: 'Vetrino', Georgia, serif;
+    font-family: 'Vetrino', 'Vetrino Fallback', Georgia, serif;
     font-size: 0.9375rem;
     line-height: 1;
     white-space: nowrap;
@@ -283,7 +185,7 @@ import heroPreparationScript from '@/scripts/hero-preparation.inline.js?raw';
 
   .hero__title {
     max-width: 23.1875rem;
-    font-family: 'Vetrino', Georgia, serif;
+    font-family: 'Vetrino', 'Vetrino Fallback', Georgia, serif;
     font-size: 1.75rem;
     font-weight: 400;
     line-height: 1.06;
@@ -296,13 +198,13 @@ import heroPreparationScript from '@/scripts/hero-preparation.inline.js?raw';
   }
 
   .hero__brand-z {
-    font-family: 'Bergamasco', 'Vetrino', Georgia, serif;
+    font-family: 'Bergamasco', 'Vetrino', 'Vetrino Fallback', Georgia, serif;
   }
 
   .hero__intro {
     max-width: 20.6875rem;
     margin-top: 0.625rem;
-    font-family: 'Nunito', Arial, sans-serif;
+    font-family: 'Nunito', 'Nunito Fallback', Arial, sans-serif;
     font-size: 1rem;
     line-height: 1;
   }

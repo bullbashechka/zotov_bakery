@@ -1,3 +1,5 @@
+import { CONTACTS } from './site';
+
 export const FAQ_ITEMS: ReadonlyArray<{
   question: string;
   answer: string;
@@ -15,7 +17,7 @@ export const FAQ_ITEMS: ReadonlyArray<{
   {
     question: 'Есть ли доставка?',
     answer:
-      'Да, доступна доставка на дом или в офис. Стоимость и условия зависят от адреса и уточняются при оформлении заказа в WhatsApp.',
+      `Да, доступна доставка на дом или в офис. Стоимость и условия зависят от адреса и уточняются при оформлении заказа в WhatsApp. ${CONTACTS.orderAcceptanceNote}`,
   },
   {
     question: 'Одинаковый ли ассортимент в ZOTOV bakery и AIMER?',

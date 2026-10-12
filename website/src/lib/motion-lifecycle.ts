@@ -1,3 +1,4 @@
+import { onEntranceInterruption } from './entrance-interruption';
 import { gsap } from 'gsap';
 
 interface Revertible {
@@ -6,6 +7,7 @@ interface Revertible {
 interface MotionScope {
   element: HTMLElement;
   fine: boolean;
+  mobile: boolean;
   signal: AbortSignal;
   context: gsap.Context;
   onceVisible(play: () => void): void;
@@ -23,6 +25,7 @@ export function mountMotion(selector: string, setup: (scope: MotionScope) => voi
     media.add(
       {
         motion: '(prefers-reduced-motion: no-preference)',
+        mobile: '(max-width: 47.999rem)',
         fine: '(hover: hover) and (pointer: fine)',
       },
       (context) => {
@@ -31,12 +34,20 @@ export function mountMotion(selector: string, setup: (scope: MotionScope) => voi
         const animations = new Set<Revertible>();
         const cleanups: (() => void)[] = [];
         let observer: IntersectionObserver | undefined;
+        let stopInterruptions = () => {};
         setup({
           element,
           fine: Boolean(context.conditions.fine),
+          mobile: Boolean(context.conditions.mobile),
           signal: events.signal,
           context,
           onceVisible(play) {
+            stopInterruptions = onEntranceInterruption(() => {
+              played = true;
+              observer?.disconnect();
+              animations.forEach((animation) => animation.revert());
+              animations.clear();
+            });
             if (played || !('IntersectionObserver' in window)) return;
             observer = new IntersectionObserver(
               (entries) => {
@@ -60,6 +71,7 @@ export function mountMotion(selector: string, setup: (scope: MotionScope) => voi
           },
         });
         return () => {
+          stopInterruptions();
           events.abort();
           observer?.disconnect();
           animations.forEach((animation) => animation.revert());
