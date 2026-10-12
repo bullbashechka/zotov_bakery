@@ -29,7 +29,7 @@ const addressesId = `purchase-addresses-${option.kind}`;
       <div id={addressesId} class="purchase-card__back" role="group" aria-labelledby={`${addressesId}-title`}>
         <div class="purchase-card__back-header">
           <div><h3 id={`${addressesId}-title`}>{option.addressesTitle ?? option.title}</h3><p>Петропавловск</p></div>
-          <button type="button" class="purchase-card__back-button" aria-label={`Назад к карточке: ${option.title}`}>← Назад</button>
+          <button type="button" class="purchase-card__back-button" aria-label={`Назад к карточке: ${option.title}`}>Назад</button>
         </div>
         <ul class="purchase-card__addresses">
           {option.addresses?.map((address) => (
