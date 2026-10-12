@@ -1,5 +1,9 @@
 # Подготовка SEO к запуску — 23 сентября 2026
 
+> Исторический отчёт. Основной сайт теперь `https://zotov.kz` на Hoster.kz.
+> Расширенный `scripts/seo/browser-check.mjs` удалён; актуальный короткий smoke
+> входит в [локальный release-процесс](local-checks.md).
+
 ## Статус
 
 Подготовка и проверки выполнены. Текущий технический домен намеренно закрыт от индексации. Подключение брендового домена, публикация, Search Console и Яндекс Вебмастер не выполнялись. Новые товарные страницы не создавались.
@@ -48,4 +52,4 @@ Screaming Frog запускался через официальный CLI уст
 - [Screaming Frog overview](../artifacts/seo/screaming-frog/crawl_overview.csv), [внутренние URL](../artifacts/seo/screaming-frog/internal_all.csv).
 - Логи: `artifacts/seo/typecheck.log`, `tests.log`, `build-open.log`, `build-closed.log`, `artifacts-closed.log`.
 
-Каталог `artifacts/` исключён из Git; для передачи отчёта другому человеку передавать его вместе с этими файлами. Исходники автоматической браузерной проверки: `scripts/seo/browser-check.mjs`. Сервер запускается отдельно и останавливается после проверки. Обе сборки выполняются последовательно с явно заданными `PUBLIC_WEBSITE_URL` и `PUBLIC_ALLOW_INDEXING`; заключительной всегда остаётся закрытая сборка.
+Каталог `artifacts/` исключён из Git; для передачи исторического отчёта другому человеку передавать его вместе с этими файлами. Этот отчёт получен прежним расширенным браузерным скриптом; текущая проверка — `scripts/security/browser-smoke.mjs` в составе `release:check`, снимки в `artifacts/checks/`. Для production используйте `https://zotov.kz` с indexing=true; для технического предпросмотра — его origin и false.

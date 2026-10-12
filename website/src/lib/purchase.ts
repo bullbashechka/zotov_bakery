@@ -45,7 +45,7 @@ export const PURCHASE_OPTIONS = [
     image: '/where-to-buy/aimer.png',
     imageAlt: '',
     kind: 'supermarket',
-    addressesTitle: 'Магазины aimer',
+    addressesTitle: 'Супермаркеты aimer',
     addresses: [
       { label: 'ул. Магжана Жумабаева, 91 · DOSTYQ mall', href: 'https://2gis.kz/petropavlovsk/firm/70000001039298482' },
       { label: 'ул. Конституции Казахстана, 74', href: 'https://2gis.kz/petropavlovsk/firm/70000001067005212' },
@@ -60,7 +60,7 @@ export const PURCHASE_OPTIONS = [
     image: '/where-to-buy/semeiniy.webp',
     imageAlt: '',
     kind: 'semeiniy',
-    addressesTitle: 'Магазины «Семейный»',
+    addressesTitle: 'Супермаркеты «Семейный»',
     addresses: [
       { label: 'ул. Магжана Жумабаева, 138', href: 'https://2gis.kz/petropavlovsk/firm/70000001065562526' },
       { label: 'ул. Нурсултана Назарбаева, 252', href: 'https://2gis.kz/petropavlovsk/firm/70000001109510087' },

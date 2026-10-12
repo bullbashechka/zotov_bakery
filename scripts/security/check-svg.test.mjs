@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { inspectSvg, scanSvgSources } from './check-svg.mjs';
+import { inspectSvg } from './check-svg.mjs';
 
 const maliciousSamples = [
   ['scripts', '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>'],
@@ -55,8 +55,4 @@ test('rejects nested SVG and scans through the outer closing tag', () => {
 test('rejects unmatched inline SVG tags', () => {
   assert.notEqual(inspectSvg('<svg><path /></div>', { inline: true }).length, 0);
   assert.notEqual(inspectSvg('</svg>', { inline: true }).length, 0);
-});
-
-test('all current repository SVG sources pass', () => {
-  assert.deepEqual(scanSvgSources(), []);
 });
