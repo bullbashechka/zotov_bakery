@@ -9,6 +9,7 @@ const cosmetic =
 const generatedMarkup = {
   'HeaderMascot.astro': new Set(['svg']),
   'HoneyCakeIllustration.astro': new Set(['picture', 'img']),
+  'PurchaseCard.astro': new Set(['img']),
   'Hero.astro': new Set(['.hero__text-line-mask']),
   'ConversionSection.astro': new Set(['svg', 'img']),
 };

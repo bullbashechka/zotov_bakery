@@ -1,10 +1,13 @@
+import type { ImageMetadata } from 'astro';
+import deliveryImage from '@/assets/where-to-buy/delivery.png';
+
 export interface PurchaseOption {
   kind: 'bakery' | 'supermarket' | 'semeiniy' | 'delivery';
   title: string;
   description: string;
   action: string;
   href: string;
-  image: string;
+  image: string | ImageMetadata;
   imageAlt: string;
   addressesTitle?: string;
   addresses?: readonly { label: string; href: string }[];
@@ -29,7 +32,7 @@ export const PURCHASE_OPTIONS = [
       'Напишите нам в WhatsApp. Подскажем, что есть в наличии, и уточним стоимость и условия доставки.',
     action: 'Заказать доставку',
     href: getWhatsAppUrl('delivery'),
-    image: '/where-to-buy/delivery.png',
+    image: deliveryImage,
     imageAlt: '',
     kind: 'delivery',
   },

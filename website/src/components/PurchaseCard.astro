@@ -1,4 +1,5 @@
 ---
+import { Picture } from 'astro:assets';
 import ActionLink from './ActionLink.astro';
 import type { PurchaseOption } from '@/lib/purchase';
 interface Props { option: PurchaseOption }
@@ -11,7 +12,21 @@ const addressesId = `purchase-addresses-${option.kind}`;
   <div class="purchase-card__rotor">
     <div class="purchase-card__front">
       <div class="where-to-buy__image-wrap" aria-hidden="true">
-        <img class="where-to-buy__image" data-kind={option.kind} src={option.image} width="400" height="280" alt={option.imageAlt} loading="lazy" />
+        {typeof option.image === 'string' ? (
+          <img class="where-to-buy__image" data-kind={option.kind} src={option.image} width="400" height="280" alt={option.imageAlt} loading="lazy" />
+        ) : (
+          <Picture
+            src={option.image}
+            formats={['avif', 'webp']}
+            fallbackFormat="webp"
+            widths={[400, 640, 960, 1280, 1528]}
+            sizes="(min-width: 1280px) 544px, (min-width: 1200px) calc((100vw - 60px) * 544 / 1220), (min-width: 768px) calc((100vw - 60px) / 2), (min-width: 736px) 704px, calc(100vw - 32px)"
+            width={640}
+            quality={80}
+            alt={option.imageAlt}
+            loading="lazy"
+          />
+        )}
       </div>
       <div class="where-to-buy__content">
         <h3>{option.title}</h3>
@@ -132,9 +147,9 @@ const addressesId = `purchase-addresses-${option.kind}`;
   .where-to-buy__image-wrap { position: relative; min-width: 0; min-height: 0; aspect-ratio: 10 / 7; overflow: hidden; border-radius: 12px; background: var(--surface); }
   .where-to-buy__card[data-kind='supermarket'] .where-to-buy__image-wrap { background: #fdfdfd; }
   .where-to-buy__card[data-kind='semeiniy'] .where-to-buy__image-wrap { background: #2d9703; }
-  .where-to-buy__image { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; }
-  .where-to-buy__image[data-kind='bakery'] { padding: 8.625%; }
-  .where-to-buy__image[data-kind='semeiniy'] { padding: 9%; }
+  .where-to-buy__image-wrap :global(img) { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; }
+  .where-to-buy__card[data-kind='bakery'] .where-to-buy__image-wrap :global(img) { padding: 8.625%; }
+  .where-to-buy__card[data-kind='semeiniy'] .where-to-buy__image-wrap :global(img) { padding: 9%; }
   .where-to-buy__content { display: flex; flex-direction: column; min-width: 0; gap: 10px; padding: 20px; }
   .where-to-buy__content h3, .purchase-card__back h3 { font-family: 'Vetrino', Georgia, serif; font-size: 24px; font-weight: 400; line-height: 1; }
   .where-to-buy__content h3, .where-to-buy__content p, .purchase-card__back h3, .purchase-card__back p, .purchase-card__addresses a { overflow-wrap: anywhere; }
@@ -171,7 +186,7 @@ const addressesId = `purchase-addresses-${option.kind}`;
     }
     .where-to-buy__card[data-kind='delivery'] .purchase-card__front { grid-template-columns: minmax(0, 544fr) minmax(0, 352fr); }
     .where-to-buy__card:not([data-kind='bakery']) .where-to-buy__image-wrap { aspect-ratio: auto; }
-    .where-to-buy__image[data-kind='delivery'] { object-fit: cover; }
+    .where-to-buy__card[data-kind='delivery'] .where-to-buy__image-wrap :global(img) { object-fit: cover; }
     .where-to-buy__content { padding: 17px 14px 8px 16px; }
     .where-to-buy__card[data-kind='delivery'] .where-to-buy__content { padding: 22px 7px 9px 22px; }
     .where-to-buy__card[data-kind='delivery'] .where-to-buy__content h3 { max-width: 255px; }
