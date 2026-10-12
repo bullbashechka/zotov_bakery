@@ -24,8 +24,7 @@
     "check:ui": "bun run --cwd website check:ui",
     "security:check": "node scripts/security/security-check.mjs",
     "release:check": "node scripts/security/release-check.mjs",
-    "hooks:install": "node scripts/checks/install-hooks.mjs",
-    "package:hoster": "node scripts/deploy/package-hoster.mjs"
+    "hooks:install": "node scripts/checks/install-hooks.mjs"
   },
   "devDependencies": {
     "parse5": "7.3.0",
