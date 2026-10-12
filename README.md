@@ -39,6 +39,7 @@ bun run dev
 | `bun run security:check` | Проверить аудит зависимостей, секреты и SVG-файлы. |
 | `bun run release:check` | Выполнить полный локальный набор проверок перед публикацией. |
 | `bun run hooks:install` | Один раз на клон установить проверки перед пушем в `main`/`master`. |
+| `bun run package:hoster` | Пройти локальные release-проверки и создать ZIP для загрузки в Plesk. |
 | `bun run storybook` | Запустить библиотеку компонентов на `:6006` и Astro-примеры на `:4322`. |
 | `bun run build:storybook` | Собрать автономную библиотеку в `website/storybook-static/`. |
 
