@@ -30,12 +30,12 @@ import { HOME_SECTION_IDS } from '@/lib/site';
   }
 
   .where-to-buy__inner {
-    width: min(100%, 77.5rem);
+    width: min(calc(100% - 32px), 704px);
     margin-inline: auto;
   }
 
   .where-to-buy__title {
-    width: min(calc(100% - 2rem), 72.125rem);
+    width: 100%;
     margin-inline: auto;
     color: var(--text-primary);
     font-family: 'Vetrino', Georgia, serif;
@@ -48,16 +48,18 @@ import { HOME_SECTION_IDS } from '@/lib/site';
   .where-to-buy__track {
     display: grid;
     gap: 1.25rem;
-    width: min(calc(100% - 2rem), 44rem);
+    width: 100%;
     margin: 2.5rem auto 0;
     outline-offset: 0.5rem;
   }
 
-  @media (min-width: 64rem) {
+  @media (min-width: 768px) {
+    .where-to-buy__inner {
+      width: min(calc(100% - 40px), 1240px);
+    }
+
     .where-to-buy__track {
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      grid-auto-rows: 1fr;
-      width: min(calc(100% - 2.5rem), 77.5rem);
       align-items: stretch;
     }
   }
@@ -76,25 +78,20 @@ import { HOME_SECTION_IDS } from '@/lib/site';
     }
   }
 
-  @media (min-width: 75rem) {
+  @media (min-width: 1200px) {
     .where-to-buy {
       padding-block: 5.9375rem 7.5rem;
     }
 
-    .where-to-buy__inner {
-      width: min(calc(100% - 2.5rem), 77.5rem);
-    }
-
     .where-to-buy__track {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      grid-auto-rows: auto;
-      width: 100%;
-      gap: 1.25rem;
-      margin-top: 2.4375rem;
+      grid-template-columns: minmax(0, 334fr) repeat(2, minmax(0, 443fr));
+      grid-template-rows: repeat(2, minmax(229px, auto));
+      gap: 10px;
+      margin-top: 66px;
     }
 
     .where-to-buy__title {
-      font-size: 3rem;
+      font-size: 48px;
     }
   }
 </style>
