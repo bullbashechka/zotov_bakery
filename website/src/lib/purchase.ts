@@ -6,6 +6,7 @@ export interface PurchaseOption {
   href: string;
   image: string;
   imageAlt: string;
+  addressesTitle?: string;
   addresses?: readonly { label: string; href: string }[];
 }
 
@@ -25,7 +26,7 @@ export const PURCHASE_OPTIONS = [
   {
     title: 'С доставкой на дом или в офис',
     description:
-      'Наличие, адрес и время доставки согласуем в WhatsApp. Подскажем стоимость и условия доставки.',
+      'Напишите нам в WhatsApp. Подскажем, что есть в наличии, и уточним стоимость и условия доставки.',
     action: 'Заказать доставку',
     href: getWhatsAppUrl('delivery'),
     image: '/where-to-buy/delivery.png',
@@ -33,29 +34,35 @@ export const PURCHASE_OPTIONS = [
     kind: 'delivery',
   },
   {
-    title: 'В магазинах «Семейный»',
+    title: 'В супермаркетах «aimer»',
     description:
-      'Четыре магазина в Петропавловске. Ассортимент и наличие уточняйте в выбранном магазине.',
+      'Продукцию ZOTOV bakery можно найти в магазинах сети в Петропавловске. Ассортимент может отличаться.',
+    action: 'Посмотреть адреса',
+    href: PURCHASE_LINKS.aimerTwoGisUrl,
+    image: '/where-to-buy/aimer.png',
+    imageAlt: '',
+    kind: 'supermarket',
+    addressesTitle: 'Магазины aimer',
+    addresses: [
+      { label: 'ул. Магжана Жумабаева, 91 · DOSTYQ mall', href: 'https://2gis.kz/petropavlovsk/firm/70000001039298482' },
+      { label: 'ул. Конституции Казахстана, 74', href: 'https://2gis.kz/petropavlovsk/firm/70000001067005212' },
+    ],
+  },
+  {
+    title: 'В супермаркетах «Семейный»',
+    description:
+      'Продукцию ZOTOV bakery можно найти в магазинах сети в Петропавловске. Ассортимент может отличаться.',
     action: 'Посмотреть адреса',
     href: 'https://semeiniy.kz/stores/',
     image: '/where-to-buy/semeiniy.webp',
     imageAlt: '',
     kind: 'semeiniy',
+    addressesTitle: 'Магазины «Семейный»',
     addresses: [
       { label: 'ул. Магжана Жумабаева, 138', href: 'https://2gis.kz/petropavlovsk/firm/70000001065562526' },
       { label: 'ул. Нурсултана Назарбаева, 252', href: 'https://2gis.kz/petropavlovsk/firm/70000001109510087' },
       { label: 'ул. Нурсултана Назарбаева, 339Б', href: 'https://2gis.kz/petropavlovsk/firm/70000001066611682' },
       { label: 'ул. Жалела Кизатова, 3Е', href: 'https://2gis.kz/petropavlovsk/firm/70000001093844342' },
     ],
-  },
-  {
-    title: 'В супермаркетах aimer',
-    description:
-      'Продукцию ZOTOV bakery можно найти в магазинах сети в Петропавловске. Ассортимент может отличаться. Наличие конкретного десерта уточняйте в выбранном магазине AIMER.',
-    action: 'Посмотреть адреса',
-    href: PURCHASE_LINKS.aimerTwoGisUrl,
-    image: '/where-to-buy/aimer.png',
-    imageAlt: '',
-    kind: 'supermarket',
   },
 ] as const satisfies readonly PurchaseOption[];

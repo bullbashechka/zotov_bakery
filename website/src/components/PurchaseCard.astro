@@ -28,15 +28,15 @@ const addressesId = `purchase-addresses-${option.kind}`;
     {hasAddresses && (
       <div id={addressesId} class="purchase-card__back" role="group" aria-labelledby={`${addressesId}-title`}>
         <div class="purchase-card__back-header">
-          <div><h3 id={`${addressesId}-title`}>Магазины «Семейный»</h3><p>Петропавловск</p></div>
-          <button type="button" class="purchase-card__back-button" aria-label="Назад к карточке «Семейный»">← Назад</button>
+          <div><h3 id={`${addressesId}-title`}>{option.addressesTitle ?? option.title}</h3><p>Петропавловск</p></div>
+          <button type="button" class="purchase-card__back-button" aria-label={`Назад к карточке: ${option.title}`}>← Назад</button>
         </div>
         <ul class="purchase-card__addresses">
           {option.addresses?.map((address) => (
             <li><a href={address.href} target="_blank" rel="noopener noreferrer"><span>{address.label}<small>Открыть в 2ГИС</small></span><span aria-hidden="true">↗</span></a></li>
           ))}
         </ul>
-        <p class="purchase-card__note">Ассортимент и наличие уточняйте в магазине.</p>
+        <p class="purchase-card__note">Ассортимент и наличие уточняйте в выбранном магазине.</p>
       </div>
     )}
   </div>
@@ -125,54 +125,60 @@ const addressesId = `purchase-addresses-${option.kind}`;
 </script>
 
 <style>
-  .where-to-buy__card { min-width: 0; height: 100%; perspective: 1200px; }
+  .where-to-buy__card { min-width: 0; perspective: 1200px; }
   .purchase-card__rotor { height: 100%; display: grid; transform-style: preserve-3d; transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1); }
-  .purchase-card__front, .purchase-card__back { min-width: 0; overflow: hidden; border-radius: 0.75rem; background: var(--text-primary); color: var(--page); backface-visibility: hidden; }
-  .purchase-card__front { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr; min-height: 32.125rem; }
-  .where-to-buy__image-wrap { display: grid; min-width: 0; aspect-ratio: 10 / 7; place-items: center; overflow: hidden; background: var(--surface); }
-  .where-to-buy__image { display: block; width: 100%; height: 100%; object-fit: cover; }
-  .where-to-buy__image[data-kind='bakery'], .where-to-buy__image[data-kind='semeiniy'] { width: min(82.75%, 20.6875rem); height: auto; object-fit: contain; }
-  .where-to-buy__image[data-kind='delivery'], .where-to-buy__image[data-kind='supermarket'] { object-fit: contain; }
-  .where-to-buy__content { display: flex; flex-direction: column; min-width: 0; gap: 1.125rem; padding: 1.5rem 1.25rem; }
-  .where-to-buy__content h3, .purchase-card__back h3 { font-family: 'Vetrino', Georgia, serif; font-size: clamp(1.5rem, 6.25vw, 1.875rem); font-weight: 400; line-height: 1; }
-  .where-to-buy__content h3 { hyphens: auto; overflow-wrap: anywhere; }
-  .where-to-buy__content p { font-size: 1rem; line-height: 1.3; }
-  .purchase-card__back p { font-size: 0.875rem; line-height: 1.5; }
-  .purchase-card__action { margin-top: auto; padding-top: 0.5rem; }
-  .purchase-card__button, .purchase-card__back-button { min-height: 2.75rem; border: 1px solid transparent; border-radius: 0.5rem; padding: 0.625rem 0.75rem; font: inherit; font-size: 0.875rem; line-height: 1.25; cursor: pointer; }
-  .purchase-card__button { width: 100%; background: var(--surface); color: var(--text-primary); font-weight: 500; transition: background-color 0.2s ease; }
+  .purchase-card__front, .purchase-card__back { min-width: 0; overflow: hidden; border-radius: 12px; background: var(--text-primary); color: var(--page); backface-visibility: hidden; }
+  .purchase-card__front { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr; }
+  .where-to-buy__image-wrap { position: relative; min-width: 0; min-height: 0; aspect-ratio: 10 / 7; overflow: hidden; border-radius: 12px; background: var(--surface); }
+  .where-to-buy__card[data-kind='supermarket'] .where-to-buy__image-wrap { background: #fdfdfd; }
+  .where-to-buy__card[data-kind='semeiniy'] .where-to-buy__image-wrap { background: #2d9703; }
+  .where-to-buy__image { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; }
+  .where-to-buy__image[data-kind='bakery'] { padding: 8.625%; }
+  .where-to-buy__image[data-kind='semeiniy'] { padding: 9%; }
+  .where-to-buy__content { display: flex; flex-direction: column; min-width: 0; gap: 10px; padding: 20px; }
+  .where-to-buy__content h3, .purchase-card__back h3 { font-family: 'Vetrino', Georgia, serif; font-size: 24px; font-weight: 400; line-height: 1; }
+  .where-to-buy__content h3, .where-to-buy__content p, .purchase-card__back h3, .purchase-card__back p, .purchase-card__addresses a { overflow-wrap: anywhere; }
+  .where-to-buy__content p { font-size: 16px; line-height: 1.2; }
+  .purchase-card__back p { font-size: 14px; line-height: 1.3; }
+  .purchase-card__action { margin-top: auto; padding-top: 12px; }
+  .purchase-card__button, .purchase-card__back-button { min-height: 48px; border: 1px solid transparent; border-radius: 6px; padding: 10px; font: inherit; font-size: 16px; line-height: 1.2; cursor: pointer; }
+  .purchase-card__button { width: 100%; background: var(--surface); color: var(--text-primary); font-weight: 600; transition: background-color 0.2s ease; }
   .purchase-card__button:hover { background: var(--surface-elevated); }
   .purchase-card__open, .purchase-card__back-button { display: none; }
   [data-enhanced] .purchase-card__open, [data-enhanced] .purchase-card__back-button { display: inline-flex; align-items: center; justify-content: center; }
-  .purchase-card__back { display: flex; flex-direction: column; gap: 1rem; padding: 1.25rem; }
+  .purchase-card__back { display: flex; flex-direction: column; gap: 12px; padding: 16px; }
+  /* Both faces remain in the same grid cell, so opening never changes height. */
   [data-enhanced] .purchase-card__front, [data-enhanced] .purchase-card__back { grid-area: 1 / 1; }
   [data-enhanced] .purchase-card__back { transform: rotateY(180deg); }
   [data-open='true'] .purchase-card__rotor { transform: rotateY(180deg); }
-  .purchase-card__back-header { display: flex; align-items: start; justify-content: space-between; gap: 0.5rem; }
-  .purchase-card__back-header p { margin-top: 0.5rem; }
-  .purchase-card__back-button { flex-shrink: 0; border-color: var(--page); color: var(--page); background: transparent; }
+  .purchase-card__back-header { display: flex; flex-wrap: wrap; align-items: start; justify-content: space-between; gap: 8px; }
+  .purchase-card__back-header p { margin-top: 6px; }
+  .purchase-card__back-button { flex-shrink: 0; border-color: var(--page); color: var(--page); background: transparent; font-size: 14px; }
   .purchase-card__addresses { display: grid; list-style: none; margin: 0; padding: 0; }
-  .purchase-card__addresses a { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; min-height: 3.5rem; padding: 0.625rem 0; border-bottom: 1px solid rgb(244 236 230 / 25%); color: inherit; font-size: 0.875rem; line-height: 1.4; text-decoration: none; transition: color 0.2s ease; }
+  .purchase-card__addresses a { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 48px; padding: 8px 0; border-bottom: 1px solid rgb(244 236 230 / 25%); color: inherit; font-size: 14px; line-height: 1.3; text-decoration: none; transition: color 0.2s ease; }
   .purchase-card__addresses a:hover { color: var(--surface-elevated); text-decoration: underline; text-underline-offset: 0.2rem; }
-  .purchase-card__addresses small { display: block; margin-top: 0.25rem; font-size: 0.75rem; opacity: 0.8; }
+  .purchase-card__addresses small { display: block; margin-top: 4px; font-size: 12px; opacity: 0.8; }
   .purchase-card__note { margin-top: auto; opacity: 0.8; }
-  @media (min-width: 40rem) {
-    .where-to-buy__content { padding: 1rem; }
-    .purchase-card__addresses { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 1.25rem; }
-  }
-  @media (min-width: 75rem) {
-    .where-to-buy__card[data-kind='supermarket'] { grid-column: 1 / -1; }
-    .where-to-buy__card[data-kind='supermarket'] .purchase-card__front {
-      grid-template-columns: minmax(0, 34%) minmax(0, 1fr);
+  @media (min-width: 1200px) {
+    .where-to-buy__card[data-kind='bakery'] { grid-column: 1; grid-row: 1 / 3; }
+    .where-to-buy__card[data-kind='delivery'] { grid-column: 2 / 4; grid-row: 1; }
+    .where-to-buy__card[data-kind='supermarket'] { grid-column: 2; grid-row: 2; }
+    .where-to-buy__card[data-kind='semeiniy'] { grid-column: 3; grid-row: 2; }
+    .where-to-buy__card:not([data-kind='bakery']) .purchase-card__front {
+      grid-template-columns: minmax(0, 191fr) minmax(0, 252fr);
       grid-template-rows: 1fr;
-      min-height: 17rem;
+      min-height: 229px;
     }
-    .where-to-buy__card[data-kind='supermarket'] .where-to-buy__image-wrap { aspect-ratio: auto; min-height: 0; }
-    .where-to-buy__card[data-kind='supermarket'] .where-to-buy__content { padding: 1.5rem; }
-    .purchase-card__back h3 { font-size: 1.375rem; }
-    .purchase-card__addresses { grid-template-columns: minmax(0, 1fr); }
-    .purchase-card__back-header { flex-direction: column-reverse; }
-    .purchase-card__back-button { align-self: flex-end; }
+    .where-to-buy__card[data-kind='delivery'] .purchase-card__front { grid-template-columns: minmax(0, 544fr) minmax(0, 352fr); }
+    .where-to-buy__card:not([data-kind='bakery']) .where-to-buy__image-wrap { aspect-ratio: auto; }
+    .where-to-buy__image[data-kind='delivery'] { object-fit: cover; }
+    .where-to-buy__content { padding: 17px 14px 8px 16px; }
+    .where-to-buy__card[data-kind='delivery'] .where-to-buy__content { padding: 22px 7px 9px 22px; }
+    .where-to-buy__card[data-kind='delivery'] .where-to-buy__content h3 { max-width: 255px; }
+    .where-to-buy__card[data-kind='bakery'] .where-to-buy__content { padding: 24px 20px 6px; }
+    .where-to-buy__card[data-kind='bakery'] .purchase-card__action { margin-inline: -14px; }
+    .purchase-card__back h3 { font-size: 22px; }
+    .purchase-card__addresses { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 16px; }
   }
   @media (prefers-reduced-motion: reduce) { .purchase-card__rotor { transition: none; } }
 </style>
