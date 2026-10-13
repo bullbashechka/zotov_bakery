@@ -34,9 +34,9 @@ const addressesId = `purchase-addresses-${option.kind}`;
         <p>{option.description}</p>
         <div class="purchase-card__action">
           {hasAddresses ? (
-            <button type="button" class="purchase-card__button purchase-card__open" aria-expanded="false" aria-controls={addressesId}>{option.action}</button>
+            <div class="purchase-card__open"><ActionLink as="button" variant="surface" size="purchase" controls={addressesId}>{option.action}</ActionLink></div>
           ) : (
-            <ActionLink variant="surface" href={option.href} fullWidth external>{option.action}</ActionLink>
+            <ActionLink variant="surface" size="purchase" href={option.href} fullWidth external>{option.action}</ActionLink>
           )}
         </div>
       </div>
@@ -67,7 +67,7 @@ const addressesId = `purchase-addresses-${option.kind}`;
     if (card.dataset.enhanced) return;
     const front = card.querySelector<HTMLElement>('.purchase-card__front');
     const back = card.querySelector<HTMLElement>('.purchase-card__back');
-    const openButton = card.querySelector<HTMLButtonElement>('.purchase-card__open');
+    const openButton = card.querySelector<HTMLButtonElement>('.purchase-card__open button');
     const backButton = card.querySelector<HTMLButtonElement>('.purchase-card__back-button');
     if (!front || !back || !openButton || !backButton) return;
     const events = new AbortController();
@@ -158,10 +158,9 @@ const addressesId = `purchase-addresses-${option.kind}`;
   .where-to-buy__content p { font-size: 16px; line-height: 1.2; }
   .purchase-card__back p { font-size: 14px; line-height: 1.3; }
   .purchase-card__action { margin-top: auto; padding-top: 12px; }
-  .purchase-card__button, .purchase-card__back-button { min-height: 48px; border: 1px solid transparent; border-radius: 6px; padding: 10px; font: inherit; font-size: 16px; line-height: 1.2; cursor: pointer; }
-  .purchase-card__button { width: 100%; background: var(--surface); color: var(--text-primary); font-weight: 600; transition: background-color 0.2s ease; }
-  .purchase-card__button:hover { background: var(--surface-elevated); }
+  .purchase-card__back-button { min-height: 48px; border: 1px solid transparent; border-radius: 6px; padding: 10px; font: inherit; font-size: 16px; line-height: 1.2; cursor: pointer; }
   .purchase-card__open, .purchase-card__back-button { display: none; }
+  .purchase-card__open { width: 100%; }
   [data-enhanced] .purchase-card__open, [data-enhanced] .purchase-card__back-button { display: inline-flex; align-items: center; justify-content: center; }
   .purchase-card__back { display: flex; flex-direction: column; gap: 12px; padding: 16px; }
   /* Both faces remain in the same grid cell, so opening never changes height. */
