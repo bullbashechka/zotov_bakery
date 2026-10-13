@@ -136,10 +136,13 @@ try {
     if (process.env.PUBLIC_YANDEX_METRIKA_ID) assert(analytics.includes('/metrika/tag.js'), 'Metrika did not load after consent');
     if (process.env.PUBLIC_GOOGLE_ANALYTICS_ID) {
       assert(analytics.includes('/gtag/js'), 'Google Analytics did not load after consent');
+      const googleTag = new URL(await consentPage.locator('[data-google-analytics]').getAttribute('src'));
+      assert.equal(googleTag.searchParams.get('id'), process.env.PUBLIC_GOOGLE_ANALYTICS_ID, 'Wrong Google tag measurement ID');
       assert.equal(await consentPage.evaluate((id) => window[`ga-disable-${id}`], process.env.PUBLIC_GOOGLE_ANALYTICS_ID), false, 'Google Analytics remained disabled after permission');
       const commands = () => consentPage.evaluate(() => (window.dataLayer ?? []).map((command) => Array.from(command)));
       const configured = (await commands()).filter((command) => command[0] === 'config');
       assert.equal(configured.length, 1, 'Duplicate Google page configuration');
+      assert.equal(configured[0][1], process.env.PUBLIC_GOOGLE_ANALYTICS_ID, 'Wrong Google page measurement ID');
       assert.equal(configured[0][2].allow_google_signals, false, 'Google signals enabled');
       const defaultConsent = (await commands()).find((command) => command[0] === 'consent' && command[1] === 'default');
       assert.equal(defaultConsent[2].ad_storage, 'denied', 'Advertising storage enabled');

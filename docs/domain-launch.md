@@ -88,7 +88,14 @@ Cloudflare DNS остаётся отдельным вариантом, без н
 
 ### Первый запуск через ZIP в Plesk
 
-Финальный архив: `artifacts/deploy/zotov-kz-production.zip`. Предыдущий
+Для нового production-архива из корня репозитория выполните `bun run deploy:archive`.
+Команда запускает полный `release:check` с доменом `https://zotov.kz`, индексацией
+и GA4 `G-CJVPRBC0P6`, проверяет согласия, затем создаёт
+`artifacts/deploy/zotov-kz-<дата-время-UTC>-<commit>[-dirty].zip` и JSON с параметрами
+и контрольными суммами. Яндекс Метрика отключена. Существующие ZIP сохраняются;
+новый архив готов к ручной загрузке и не публикуется автоматически.
+
+Архив первого запуска: `artifacts/deploy/zotov-kz-production.zip`. Предыдущий
 `zotov-kz-preview.zip` закрыт от поисковиков и не подходит для финального запуска.
 Собирать production с `PUBLIC_WEBSITE_URL=https://zotov.kz` и
 `PUBLIC_ALLOW_INDEXING=true` только после успешного `release:check`.
@@ -103,7 +110,7 @@ Cloudflare DNS остаётся отдельным вариантом, без н
    отключить Smart static files processing и Serve static files directly by nginx.
    Иначе nginx может обойти заголовки и 404 из `.htaccess`. Если этих настроек
    нет в тарифе, попросить поддержку Hoster передать запросы в Apache.
-3. Через «Файлы» загрузить ZIP в httpdocs и распаковать туда же с заменой
+3. Через «Файлы» загрузить новый проверенный ZIP в httpdocs и распаковать туда же с заменой
    index.html. Не удалять существующие cgi-bin и bitrixsetup.php.
 4. Проверить, что index.html, _astro, fonts, privacy и .htaccess лежат прямо
    в httpdocs. Удалить ZIP из публичного каталога после распаковки.

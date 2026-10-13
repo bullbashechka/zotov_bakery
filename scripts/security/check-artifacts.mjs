@@ -26,6 +26,28 @@ const sources = (policy, name, fallback) => policy.get(name) ?? policy.get(fallb
 const textContent = (node) => node.nodeName === '#text' ? node.value : (node.childNodes ?? []).map(textContent).join('');
 const normalizedText = (value) => value.replace(/\s+/g, ' ').trim();
 
+export function checkAnalyticsHtml(html, file, { measurementId, metrikaId } = {}) {
+  const nodes = elements(parse(html));
+  const banners = nodes.filter((node) => attribute(node, 'data-cookie-consent') !== undefined);
+  const settings = nodes.filter((node) => attribute(node, 'data-cookie-settings') !== undefined);
+  if (!measurementId && !metrikaId) {
+    assert.equal(banners.length, 0, `${file}: unexpected analytics banner`);
+    assert.equal(settings.length, 0, `${file}: unexpected analytics settings`);
+    return;
+  }
+  assert.equal(banners.length, 1, `${file}: expected one analytics consent banner`);
+  const banner = banners[0];
+  assert.equal(attribute(banner, 'data-measurement-id'), measurementId || undefined, `${file}: wrong Google Analytics ID`);
+  assert.equal(attribute(banner, 'data-counter-id'), metrikaId || undefined, `${file}: wrong Metrika ID`);
+  const controls = elements(banner);
+  for (const name of ['data-cookie-allow', 'data-cookie-deny']) {
+    assert(controls.some((node) => node.tagName === 'button' && attribute(node, name) !== undefined), `${file}: missing consent choice`);
+  }
+  if (['index.html', 'privacy/index.html'].includes(file)) {
+    assert(settings.some((node) => node.tagName === 'button'), `${file}: missing analytics settings`);
+  }
+}
+
 export function checkSitemap(xml, origin, allowIndexing) {
   const parser = sax.parser(true, { xmlns: true });
   const namespace = 'http://www.sitemaps.org/schemas/sitemap/0.9';
@@ -164,7 +186,7 @@ export function checkHtml(html, file, origin, { allowIndexing = true, requireHom
   }
 }
 
-export async function checkArtifacts(directory = 'website/dist', origin = process.env.PUBLIC_WEBSITE_URL, { allowIndexing = true } = {}) {
+export async function checkArtifacts(directory = 'website/dist', origin = process.env.PUBLIC_WEBSITE_URL, { allowIndexing = true, expectedAnalytics } = {}) {
   const root = resolve(directory);
   const files = [];
   async function walk(dir) {
@@ -190,7 +212,9 @@ export async function checkArtifacts(directory = 'website/dist', origin = proces
   for (const line of headers.split('\n')) assert(line.length <= 2000, 'Pages header line exceeds limit');
   const pages = files.filter((file) => file.endsWith('.html'));
   for (const file of pages) {
-    checkHtml(await readFile(resolve(root, file), 'utf8'), file, origin, {
+    const html = await readFile(resolve(root, file), 'utf8');
+    if (expectedAnalytics) checkAnalyticsHtml(html, file, expectedAnalytics);
+    checkHtml(html, file, origin, {
       allowIndexing,
       requireHomepageSeo: true,
     });
@@ -212,5 +236,9 @@ export async function checkArtifacts(directory = 'website/dist', origin = proces
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   await checkArtifacts(process.argv[2], process.env.PUBLIC_WEBSITE_URL, {
     allowIndexing: process.env.PUBLIC_ALLOW_INDEXING === 'true',
+    expectedAnalytics: {
+      measurementId: process.env.PUBLIC_GOOGLE_ANALYTICS_ID?.trim(),
+      metrikaId: process.env.PUBLIC_YANDEX_METRIKA_ID?.trim(),
+    },
   });
 }
