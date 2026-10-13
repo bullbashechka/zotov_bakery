@@ -83,7 +83,7 @@ export function checkHtml(html, file, origin, { allowIndexing = true, requireHom
   const scripts = sources(policy, 'script-src-elem', 'script-src');
   assert(scripts.length > 0, `${file}: missing script policy`);
   assert(!scripts.some((value) => ["'unsafe-inline'", "'unsafe-eval'", '*', 'https:', 'http:', 'data:'].includes(value)), `${file}: unsafe script policy`);
-  assert(scripts.every((value) => ["'self'", "'none'", 'https://mc.yandex.ru', 'https://yastatic.net'].includes(value) || /^'sha(?:256|384|512)-[A-Za-z0-9+/]+=*'$/.test(value)), `${file}: unexpected script source`);
+  assert(scripts.every((value) => ["'self'", "'none'", 'https://mc.yandex.ru', 'https://yastatic.net', 'https://www.googletagmanager.com'].includes(value) || /^'sha(?:256|384|512)-[A-Za-z0-9+/]+=*'$/.test(value)), `${file}: unexpected script source`);
   const styles = sources(policy, 'style-src-elem', 'style-src');
   // Wrapper emits trusted, per-instance CSS; GSAP also updates style attributes.
   // The release policy deliberately permits inline styles, never inline scripts.

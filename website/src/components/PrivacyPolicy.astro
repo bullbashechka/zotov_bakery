@@ -1,8 +1,10 @@
 ---
 import { CONTACTS, PRIVACY_UPDATED_AT, SITE_OWNER, SITE_OWNER_EMAIL, SITE_OWNER_LEGAL_ADDRESS, getWhatsAppUrl } from '@/lib/site';
+import { analyticsConfig } from '@/lib/analytics-config';
 
 const whatsappUrl = getWhatsAppUrl();
-const analyticsEnabled = Boolean(import.meta.env.PUBLIC_YANDEX_METRIKA_ID?.trim());
+const analyticsEnabled = analyticsConfig.enabled;
+const services = [analyticsConfig.measurementId && 'Google Analytics', analyticsConfig.metrikaId && 'Яндекс Метрику'].filter(Boolean).join(' и ');
 ---
 
 <article class="privacy-policy">
@@ -35,23 +37,33 @@ const analyticsEnabled = Boolean(import.meta.env.PUBLIC_YANDEX_METRIKA_ID?.trim(
     </section>
 
     <section>
-      <h2>Яндекс Метрика и cookie</h2>
+      <h2>Аналитика сайта и cookie</h2>
       <p>
-        С вашего разрешения сайт загружает Яндекс Метрику. Она помогает оценивать посещаемость и
-        переходы к способам связи: WhatsApp, телефону, картам и Instagram. Нажатие не считается
-        заказом или покупкой. Вебвизор и запись действий на странице отключены.
+        {analyticsEnabled ? `С вашего разрешения сайт загружает ${services}.` : 'Аналитика сайта сейчас отключена.'}
+        Аналитика помогает оценивать посещаемость и переходы к способам связи: WhatsApp, телефону,
+        картам и Instagram. Нажатие не считается заказом или покупкой. Запись экрана и действий
+        посетителя не используется.
       </p>
       <p>
-        До нажатия «Разрешить» Метрика не загружается. Ваш выбор хранится в браузере 180 дней. При
-        отказе сайт продолжает работать полностью.
+        До нажатия «Разрешить» аналитические сервисы не загружаются и данные им не отправляются.
+        После согласия сервисы могут использовать cookie и получать сведения об устройстве,
+        просмотренных страницах и нажатиях. Ваш выбор хранится в браузере 180 дней. При отказе
+        сайт продолжает работать полностью.
       </p>
+      {analyticsConfig.measurementId && (
+        <p>
+          Данные Google Analytics обрабатываются Google. Подробнее — в{' '}
+          <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">политике конфиденциальности Google</a>.
+          Рекламная персонализация для этого подключения отключена.
+        </p>
+      )}
     </section>
 
     <section>
       <h2>Как изменить выбор</h2>
       <p>
         Откройте «Настройки cookie» ниже или в подвале главной страницы. Отзыв согласия прекращает дальнейшую
-        отправку аналитических событий и удаляет доступные сайту cookie Метрики. Ранее отправленные
+        отправку аналитических событий и удаляет доступные сайту аналитические cookie. Ранее отправленные
         данные и cookie внешних доменов автоматически не удаляются.
       </p>
     </section>

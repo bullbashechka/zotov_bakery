@@ -4,8 +4,9 @@ import FooterLogo from './FooterLogo.astro';
 import FooterNavigation from './FooterNavigation.astro';
 import Copyright from './Copyright.astro';
 import Wrapper from './Wrapper.astro';
+import { analyticsConfig } from '@/lib/analytics-config';
 
-const analyticsEnabled = Boolean(import.meta.env.PUBLIC_YANDEX_METRIKA_ID?.trim());
+const analyticsEnabled = analyticsConfig.enabled;
 ---
 
 <div class="site-footer__surface">

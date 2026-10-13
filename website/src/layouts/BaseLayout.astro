@@ -1,6 +1,7 @@
 ---
 import PageFrame from '@/components/PageFrame.astro';
 import CookieConsent from '@/components/CookieConsent.astro';
+import { analyticsConfig } from '@/lib/analytics-config';
 import '@/styles/global.css';
 
 interface Props {
@@ -13,11 +14,6 @@ interface Props {
 }
 
 const { title, description, canonicalUrl, robots, socialImageUrl, structuredData } = Astro.props;
-const rawMetrikaId = import.meta.env.PUBLIC_YANDEX_METRIKA_ID?.trim();
-if (rawMetrikaId && !/^\d+$/.test(rawMetrikaId)) {
-  throw new TypeError('PUBLIC_YANDEX_METRIKA_ID must contain digits only.');
-}
-const metrikaId = rawMetrikaId || undefined;
 ---
 
 <!doctype html>
@@ -71,6 +67,6 @@ const metrikaId = rawMetrikaId || undefined;
       <slot />
       <slot name="footer" slot="footer" />
     </PageFrame>
-    <CookieConsent counterId={metrikaId} />
+    <CookieConsent counterId={analyticsConfig.metrikaId} measurementId={analyticsConfig.measurementId} />
   </body>
 </html>

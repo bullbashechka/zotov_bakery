@@ -42,7 +42,7 @@ export const SITE_OWNER_EMAIL = 'zotov.buh@gmail.com';
 export const SITE_TITLE = 'ZOTOV bakery — пекарня в Петропавловске';
 export const SITE_DESCRIPTION =
   'Торты, десерты и выпечка ZOTOV bakery в Петропавловске. Покупайте в нашей пекарне и магазинах AIMER. Наличие уточняйте по телефону или в WhatsApp.';
-export const PRIVACY_UPDATED_AT = '2 октября 2026 года';
+export const PRIVACY_UPDATED_AT = '13 октября 2026 года';
 
 export const PURCHASE_LINKS = {
   aimerTwoGisUrl: 'https://2gis.kz/petropavlovsk/search/aimer',

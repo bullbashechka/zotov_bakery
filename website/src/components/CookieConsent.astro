@@ -1,32 +1,38 @@
 ---
 interface Props {
   counterId?: string;
+  measurementId?: string;
 }
 
-const { counterId } = Astro.props;
+const { counterId, measurementId } = Astro.props;
+const services = [measurementId && 'Google Analytics', counterId && 'Яндекс Метрику'].filter(Boolean).join(' и ');
 ---
 
 {
-  counterId && (
-    <section
-      class="cookie-consent"
-      data-cookie-consent
-      data-counter-id={counterId}
-      aria-labelledby="cookie-consent-title"
-      hidden
-    >
-      <div class="cookie-consent__copy">
-        <h2 id="cookie-consent-title">Аналитика сайта</h2>
-        <p>
-          С вашего разрешения используем Яндекс Метрику, чтобы понимать, как пользуются сайтом.
-          Без согласия аналитика отключена. <a href="/privacy/">Подробнее</a>
-        </p>
-      </div>
-      <div class="cookie-consent__actions">
-        <button type="button" data-cookie-allow>Разрешить</button>
-        <button type="button" data-cookie-deny>Отказаться</button>
-      </div>
-    </section>
+  (counterId || measurementId) && (
+    <>
+      <section
+        class="cookie-consent"
+        data-cookie-consent
+        data-counter-id={counterId}
+        data-measurement-id={measurementId}
+        aria-labelledby="cookie-consent-title"
+        hidden
+      >
+        <div class="cookie-consent__copy">
+          <h2 id="cookie-consent-title">Аналитика сайта</h2>
+          <p>
+            С вашего разрешения используем {services}, чтобы понимать, как пользуются сайтом.
+            Без согласия аналитика отключена. <a href="/privacy/">Подробнее</a>
+          </p>
+        </div>
+        <div class="cookie-consent__actions">
+          <button type="button" data-cookie-allow>Разрешить</button>
+          <button type="button" data-cookie-deny>Отказаться</button>
+        </div>
+      </section>
+      <div class="cookie-consent__spacer" data-cookie-consent-spacer aria-hidden="true" hidden></div>
+    </>
   )
 }
 
@@ -58,6 +64,10 @@ const { counterId } = Astro.props;
 
   .cookie-consent[hidden] {
     display: none;
+  }
+
+  .cookie-consent__spacer {
+    height: 0;
   }
 
   .cookie-consent h2 {

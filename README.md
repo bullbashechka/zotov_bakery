@@ -67,7 +67,22 @@ PUBLIC_ALLOW_INDEXING=true \
 bun run release:check
 ```
 
-`PUBLIC_YANDEX_METRIKA_ID` включает Яндекс Метрику и баннер согласия. Значение должно состоять только из цифр; пустая переменная отключает оба элемента.
+`PUBLIC_GOOGLE_ANALYTICS_ID` включает Google Analytics 4: укажите Measurement ID веб-потока в формате `G-…`. `PUBLIC_YANDEX_METRIKA_ID` независимо включает Яндекс Метрику и должен быть положительным целым числом. Если обе переменные пусты, аналитика, баннер и настройки cookie отключены. Для запуска только Google оставьте ID Метрики пустым.
+
+Один компактный баннер называет включённые сервисы. Используется basic consent mode: до разрешения, при отказе и после отзыва согласия Google-тег не загружается и запросов Google Analytics нет. Google signals и рекламная персонализация отключены. Выбор хранится 180 дней; при сбое записи отказ дополнительно сохраняется в служебной cookie, а старое разрешение удаляется, если хранилище это позволяет; прежнее разрешение на Метрику не включает Google автоматически, прежний отказ сохраняется. Ссылки на контакты открываются сразу независимо от загрузки аналитики.
+
+Для Google учитываются события `whatsapp_click`, `phone_click`, `map_bakery_click`, `map_aimer_click`, `map_semeiniy_click` и `instagram_click`. Они означают нажатия, а не подтверждённые обращения или заказы. В настройках веб-потока отключите автоматическое измерение исходящих ссылок, чтобы не смешивать его с этими событиями. Не включайте рекламные функции без отдельного решения о согласии и обновления CSP.
+
+Google ID задаётся **до сборки**, как и SEO-переменные. Проверка ниже использует вымышленные ID и перехватывает внешние теги локально; она проверяет сайт, а не получение данных вашим реальным аккаунтом Google.
+
+```bash
+PUBLIC_WEBSITE_URL=https://zotov.kz \
+PUBLIC_ALLOW_INDEXING=true \
+PUBLIC_GOOGLE_ANALYTICS_ID=G-TEST123456 \
+bun run release:check
+```
+
+Search Console не требует аналитического скрипта. Создайте доменный ресурс `zotov.kz` в Google-аккаунте владельца бизнеса, добавьте полученную TXT-запись в DNS, подтвердите владение и отправьте `https://zotov.kz/sitemap.xml`. Не удаляйте TXT-запись после подтверждения. До публикации проверьте, что production-сборка разрешает индексацию; новые данные в Search Console и Analytics не появятся задним числом за период до подключения.
 
 ```bash
 PUBLIC_WEBSITE_URL=https://example.com \
@@ -76,7 +91,7 @@ PUBLIC_YANDEX_METRIKA_ID=12345678 \
 bun run release:check
 ```
 
-Для Метрики создайте JavaScript-события `whatsapp_click`, `phone_click`, `map_bakery_click`, `map_aimer_click` и `instagram_click`. Вебвизор и автоматическое отслеживание ссылок должны быть выключены.
+Для Метрики создайте JavaScript-события `whatsapp_click`, `phone_click`, `map_bakery_click`, `map_aimer_click`, `map_semeiniy_click` и `instagram_click`. Вебвизор и автоматическое отслеживание ссылок должны быть выключены.
 
 `release:check` выполняет frozen install, security checks, тесты, typecheck, production-сборку, проверку артефакта и browser smoke. Для последней проверки один раз установите Chromium из зафиксированной версии Playwright:
 
