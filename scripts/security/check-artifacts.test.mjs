@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto';
 import { mkdtemp, mkdir, writeFile, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { checkHtml, checkArtifacts, checkSitemap } from './check-artifacts.mjs';
+import { checkHtml, checkArtifacts, checkSitemap, checkAnalyticsHtml } from './check-artifacts.mjs';
 
 const script = 'window.safe = true;';
 const hash = createHash('sha256').update(script).digest('base64');
@@ -26,6 +26,18 @@ function html(body = `<script>${script}</script>`, csp = policy, pathname = '/',
 
 test('allows explicitly hashed code and correct Pages origin', () => {
   checkHtml(html(), 'index.html', 'https://test.pages.dev');
+});
+
+test('analytics artifact contract rejects missing consent and wrong measurement IDs', () => {
+  const expected = { measurementId: 'G-CJVPRBC0P6' };
+  const consent = '<section data-cookie-consent data-measurement-id="G-CJVPRBC0P6"><button data-cookie-allow>Разрешить</button><button data-cookie-deny>Отказаться</button></section><button data-cookie-settings>Настройки cookie</button>';
+  checkAnalyticsHtml(html(consent), 'index.html', expected);
+  checkAnalyticsHtml(html(), 'index.html', {});
+  assert.throws(() => checkAnalyticsHtml(html(), 'index.html', expected), /consent banner/);
+  assert.throws(() => checkAnalyticsHtml(html(consent.replace('G-CJVPRBC0P6', 'G-WRONG123')), 'index.html', expected), /wrong Google/);
+  assert.throws(() => checkAnalyticsHtml(html(consent.replace('data-cookie-settings', 'data-other')), 'index.html', expected), /missing analytics settings/);
+  assert.throws(() => checkAnalyticsHtml(html(consent.replace('data-cookie-deny', 'data-other')), 'index.html', expected), /missing consent choice/);
+  assert.throws(() => checkAnalyticsHtml(html(consent), 'index.html', {}), /unexpected analytics banner/);
 });
 test('rejects injected, mutated and remotely sourced executable code', () => {
   for (const body of [`<script>${script}alert(1)</script>`, '<script src="https://example.invalid/evil.js"></script>', '<img src="/x" onerror="alert(1)">', '<a href="java&#9;script:alert(1)">x</a>']) {

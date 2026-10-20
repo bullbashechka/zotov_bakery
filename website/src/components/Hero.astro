@@ -22,11 +22,6 @@ import heroPreparationScript from '@/scripts/hero-preparation.inline.js?raw';
   </div>
 
   <div class="hero__inner">
-    <p class="hero__location">
-      <img src="/hero/location-pin.svg" width="14" height="18" alt="" />
-      <span>г. Петропавловск</span>
-    </p>
-
     <div class="hero__copy">
       <h1 class="hero__title">
         Тот самый медовик из&nbsp;детства по&nbsp;семейному рецепту{' '}
@@ -84,7 +79,7 @@ import heroPreparationScript from '@/scripts/hero-preparation.inline.js?raw';
   .hero {
     position: relative;
     z-index: 4;
-    min-height: 38.5rem;
+    min-height: 35.75rem;
     overflow: hidden;
     isolation: isolate;
     background:
@@ -148,35 +143,11 @@ import heroPreparationScript from '@/scripts/hero-preparation.inline.js?raw';
     z-index: 1;
     display: flex;
     width: min(calc(100% - 2rem), 77.5rem);
-    min-height: 38.5rem;
+    min-height: 35.75rem;
     flex-direction: column;
     margin-inline: auto;
     padding-top: 0;
     padding-bottom: 14.6875rem;
-  }
-
-  .hero__location {
-    display: inline-flex;
-    min-height: 2.75rem;
-    align-items: center;
-    align-self: flex-end;
-    justify-content: center;
-    gap: 0.875rem;
-    border-radius: 0.5rem;
-    background: var(--text-primary);
-    color: var(--surface-elevated);
-    padding: 0.625rem 1.25rem;
-    font-family: 'Vetrino', 'Vetrino Fallback', Georgia, serif;
-    font-size: 0.9375rem;
-    line-height: 1;
-    white-space: nowrap;
-  }
-
-  .hero__location img {
-    display: block;
-    flex: none;
-    width: 0.875rem;
-    height: 1.125rem;
   }
 
   .hero__copy {
@@ -245,7 +216,7 @@ import heroPreparationScript from '@/scripts/hero-preparation.inline.js?raw';
   @media (min-width: 40rem) and (max-width: 56.249rem) {
     .hero,
     .hero__inner {
-      min-height: 31rem;
+      min-height: 28.5rem;
     }
 
     .hero__cake {
@@ -261,19 +232,10 @@ import heroPreparationScript from '@/scripts/hero-preparation.inline.js?raw';
       padding-bottom: 0;
     }
 
-    .hero__location {
-      position: absolute;
-      top: 0;
-      right: 3.75rem;
-      min-height: 2.75rem;
-      padding: 0.75rem 1.625rem;
-      font-size: 1.25rem;
-    }
-
     .hero__copy {
       width: 100%;
       max-width: 37.625rem;
-      margin-top: 4.375rem;
+      margin-top: 1.875rem;
     }
 
     .hero__title {
@@ -301,7 +263,7 @@ import heroPreparationScript from '@/scripts/hero-preparation.inline.js?raw';
   @media (min-width: 56.25rem) and (max-width: 74.999rem) {
     .hero,
     .hero__inner {
-      min-height: 30.3125rem;
+      min-height: 28.8125rem;
     }
 
     .hero__cake {
@@ -318,19 +280,10 @@ import heroPreparationScript from '@/scripts/hero-preparation.inline.js?raw';
       padding-bottom: 0;
     }
 
-    .hero__location {
-      position: absolute;
-      top: 0;
-      right: 1.875rem;
-      min-height: 2.75rem;
-      padding: 0.75rem 1.625rem;
-      font-size: 1.25rem;
-    }
-
     .hero__copy {
       width: 100%;
       max-width: 50.4375rem;
-      margin-top: 6.5rem;
+      margin-top: 5rem;
     }
 
     .hero__title {
@@ -364,7 +317,7 @@ import heroPreparationScript from '@/scripts/hero-preparation.inline.js?raw';
 
   @media (min-width: 75rem) {
     .hero {
-      min-height: calc(35.1875rem + var(--header-expanded-height));
+      min-height: calc(30.6875rem + var(--header-expanded-height));
       background:
         radial-gradient(ellipse 66% 74% at 25% 94%, rgb(205 195 185 / 41%) 0%, transparent 74%),
         radial-gradient(ellipse 62% 73% at 84% 58%, rgb(255 253 249 / 51%) 0%, transparent 76%),
@@ -373,7 +326,7 @@ import heroPreparationScript from '@/scripts/hero-preparation.inline.js?raw';
 
     .hero__inner {
       display: block;
-      min-height: calc(35.1875rem + var(--header-expanded-height));
+      min-height: calc(30.6875rem + var(--header-expanded-height));
       padding-bottom: 0;
     }
 
@@ -393,21 +346,9 @@ import heroPreparationScript from '@/scripts/hero-preparation.inline.js?raw';
       filter: blur(1rem);
     }
 
-    .hero__location {
-      position: absolute;
-      top: calc(1.625rem + var(--header-expanded-height));
-      right: 0;
-      width: 16.5rem;
-      min-height: 2.875rem;
-      justify-content: center;
-      gap: 1.0625rem;
-      padding: 0.75rem 1.625rem;
-      font-size: 1.25rem;
-    }
-
     .hero__copy {
       position: absolute;
-      top: calc(6.1875rem + var(--header-expanded-height));
+      top: calc(1.6875rem + var(--header-expanded-height));
       left: 0;
       margin-top: 0;
     }

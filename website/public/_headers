@@ -1,5 +1,5 @@
 /*
-  Content-Security-Policy: frame-ancestors 'none'
+  Content-Security-Policy: frame-ancestors 'none'; connect-src 'self' https://mc.yandex.ru https://mc.yandex.com https://www.googletagmanager.com https://*.google-analytics.com https://*.google.com
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), geolocation=(), microphone=()
